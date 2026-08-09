@@ -1,0 +1,31 @@
+# --- heavy / regenerable ---
+dump.*
+*.dump
+*.lammpstrj
+*.xyz
+*.traj
+*.pth
+*.pt
+*.ckpt
+checkpoint*/
+deployed_*/
+log.lammps
+restart.*
+*.restart
+
+# --- python ---
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# --- os / editor ---
+.DS_Store
+.ipynb_checkpoints/
+
+# --- keep ---
+!.gitkeep
+!01_input/*.data
+.DS_Store
+init_struct/

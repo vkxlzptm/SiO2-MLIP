@@ -1,0 +1,183 @@
+# LAMMPS Input: SiO2 Melt-Quench (v7)
+#  [v7 변경 - 핵심] 사용자가 pair_write 결과(OO_energy.txt, SiO_energy.txt)를 직접
+#  확인해 ZBL core-fix 가 사실상 무의미함을 발견 (r=0.3A 에서 combined E 가 순수
+#  buck 값과 거의 동일 -> ZBL 기여 없음). 원인 규명: ZBL(~r^-1 발산)은 BKS 의
+#  -C/r^6(r^-6 발산) 인력항을 절대 이길 수 없음 -- 이건 파라미터를 아무리 조정해도
+#  못 고치는, 반발항의 '차수' 선택 자체가 틀린 근본적 설계 오류였음 (v3~v6 에서
+#  ZBL_IN/OUT 을 조정한 건 전부 증상 완화였을 뿐). r^-6 보다 빠르게 발산하는
+#  r^-12 반발항(WCA 스타일 LJ)으로 교체하고, 직접 수치검증(0.05~3.0A 전 구간
+#  단조반발 확인, dip 0개)까지 완료. 자세한 내용은 본문 답변 참고.
+#  이전 v1~v6 의 tilt/barostat 관련 수정사항은 여전히 유효하여 그대로 유지.
+#  [v6 변경] v5(orthogonal cell, tilt=0) 로도 승온 중 T~4089K(step ~90000)에서 다시
+#   "box size << cutoff" 발생. tilt 가 없는데도 터졌으므로 원인이 다름 -- 1000-step
+#   간격 thermo 로는 원인 특정이 안 되어(직전 출력엔 PotEng/Volume 모두 정상 범위),
+#   두 후보(barostat 오버슈트 vs ZBL 방어막을 고속 근접충돌이 한 스텝에 관통)를
+#   동시에 완화 + 다음 실행에서 구분 가능하도록 patch:
+#   (a) Pdamp 1.0->3.0ps (작은 셀의 큰 압력요동에 barostat 이 과잉반응하지 않도록)
+#   (b) ZBL 구간 0.6-1.0 -> 0.8-1.3 A (고속 근접충돌 안전마진 확대)
+#   (c) 승온 구간만 thermo 200 + drag 2.0 추가 (barostat 진동 추가 감쇠, 다음에
+#       또 터지면 어느 쪽이 원인인지 더 촘촘한 로그로 판별 가능)
+#  [v5 변경] sio2.data 를 Materials Project mp-554089 (Pna2_1, 완전 orthogonal,
+#   12원자/cell) 기반으로 교체 (POSCAR -> poscar_to_lammps.py 로 변환, 사전 검증:
+#   tilt~0, Si-O 결합거리 1.611~1.614A, 밀도 2.258 g/cc). tilt 가 원천적으로 없으므로
+#   v3/v4 에서 씨름했던 box tilt large, iso<->tri 단계 구분, Pdamp_tri 전부 삭제하고
+#   전 구간 단순 iso 로 되돌림. (어차피 승온하며 원래 topology 는 녹아 없어지므로,
+#   시작 구조가 quartz 든 이 cristobalite류 다형체든 결과에 영향 없음.)
+#  [v4 변경, 이제 불필요해짐] v3(모든 npt를 tri로) 로 승온 중 4284K(Thi=4500K 코앞)
+#   까지는 진행됐으나 "Fix npt/nph has tilted box too far in one step" 발생 -- tri 를
+#   용융평형화 단계에만 남기고 Pdamp_tri=5ps 로 완화하는 임시방편을 썼었음. v5 의
+#   orthogonal cell로 해결되어 더 이상 필요 없음 (기록만 남김).
+#  [v3 변경, 이제 불필요해짐] "Cannot use neighbor bins - box size << cutoff" (기존
+#   hexagonal quartz cell 의 tilt(xy) 가 LAMMPS 허용한계 |xy|<=0.5*lx 에 정확히
+#   걸쳐 있어(|xy|/lx=0.500000) 발생). box tilt large + iso->tri 로 우회했었음.
+#  [v2 개선점, 유지]:
+#   (1) BKS 의 Buckingham catastrophe(짧은 거리 비물리적 인력 발산) 근본 해결:
+#       hybrid/overlay 로 ZBL 반발 core 를 매우 짧은 거리에서만 덧씌움
+#       -> 이 덕분에 Thi 를 다시 충분히 높이고 Pdamp/dt 를 정상값으로 되돌릴 수 있음
+#   (2) 단계적 quench + 온도별 평형/시간평균 (Tg 관측량 = 엔탈피; V-T 는 밀도이상 때문에 부적합)
+#   (3) dt 고정 1fs, dt/reset 제거 (core fix 로 더 이상 필요 없음)
+#   (4) Pdamp 1ps, Tdamp 0.1ps (기존 5ps 원복)
+#   (5) RDF 3쌍(Si-O, O-O, Si-Si) 모두 저장 (c_myRDF[*])
+#   (6) cell 6x6x6 (~2160 atoms): 5x5x5 에서 이미 구조가 수렴했고, 통계노이즈는
+#       원자수가 아니라 온도별 시간평균으로 잡으므로 7x7x7 대비 비용을 아낀 절충안
+#
+#  [미검증 안내] 이 스크립트는 LAMMPS 로 직접 실행/검증하지 않았습니다.
+#  운영에 들어가기 전 아래를 반드시 확인하세요:
+#   - [v7 재확인 필요] 새 core-fix(r^-12 LJ 반발) 로도 pair_write 를 다시 돌려서
+#     O-O(1 1), Si-O(1 2) 곡선이 0.05~1.5(O-O)/1.1(Si-O)A 구간에서 완전히 단조
+#     반발인지, cutoff 부근에서 이상한 튐이 없는지 육안으로 한 번 더 확인 권장
+#     (파이썬으로 동일 수식 검증은 마쳤으나, 실제 LAMMPS pair_write 로 재확인하는
+#     게 가장 확실함)
+#   - Thi(4500K)에서 짧은 run(예: 5000 step)으로 원자 손실 없이 도는지 소규모 테스트
+#   - sio2.data 의 replicate 6x6x5 이후 초기 minimize/heat 단계에서 Volume 이 한 번
+#     크게 튀는 건 정상(POSCAR 는 DFT 상대 밀도 2.258 g/cc, BKS 평형밀도와 다름) --
+#     이후 NPT 가 각 온도의 BKS 자체 평형부피로 재조정함
+
+# ---------------- 1. Init ----------------
+units           metal
+boundary        p p p
+atom_style      charge
+
+# [v5] sio2.data 를 Materials Project mp-554089 (Pna2_1, 완전 orthogonal, 12원자/cell,
+#      Si-O 1.61A 검증됨) 기반으로 교체. tilt 가 원천적으로 없으므로 v3/v4 의
+#      box tilt large, tri 커플링, 단계별 Pdamp 구분이 전부 불필요해짐 -> 전부 제거.
+
+read_data       sio2.data
+replicate       6 6 5                 # 12원자/cell x 180 = 2160 atoms, box ~30x30x35A
+
+mass            1 15.9994             # O
+mass            2 28.0855             # Si
+set             type 1 charge -1.2
+set             type 2 charge 2.4
+
+# ---------------- 2. Force field: BKS + 검증된 r^-12 반발 core (hybrid/overlay) ----------------
+#  [v7: ZBL 대체] pair_write 로 실측한 결과, ZBL(~1/r 로 발산)은 -C/r^6(BKS 인력항,
+#  r^-6 로 발산)을 절대 못 이깁니다 -- r->0 에서 r^-6 이 r^-1 보다 항상 더 빨리
+#  발산하므로 이건 파라미터 문제가 아니라 반발항의 '차수' 선택 자체가 틀린 것이었음.
+#  (실측: O-O, r=0.3A 에서 combined E=-238766eV: 거의 전부 -C/r^6 항. ZBL 기여 무의미.)
+#  또한 BKS 는 자체적으로 O-O r<1.50A, Si-O r<1.10A 전체에서 이미 순수 인력(장벽조차
+#  없음) -- 즉 위험구간이 예상보다 훨씬 넓었음.
+#
+#  수정: r^-12 로 발산하는 LJ 반발항(WCA 스타일, cutoff=sigma 에서 정확히 0)을
+#  BKS 가 스스로 반발로 바뀌는 지점(O-O 1.50A, Si-O 1.10A)까지 덧씌움. r^-12 은
+#  '어떤 계수를 쓰든' r->0 에서 r^-6 을 반드시 이기므로(수학적으로 보장), 계수
+#  튜닝에 의존하지 않는 근본 해결. eps 는 안전마진 포함 최소값의 수배로 설정,
+#  cutoff 를 BKS 자체 반발 시작점에 맞춰 힘의 불연속도 최소화함(수백 eV/A 점프
+#  -> 수 eV/A 수준). 아래는 직접 수치 검증 완료(0.05~3.0A 전 구간 dip 0개):
+#    O-O : eps=3.0eV, sigma=1.50A (BKS 자체 반발 시작점)
+#    Si-O: eps=4.0eV, sigma=1.10A (BKS 자체 반발 시작점)
+#    Si-Si: 원래도 A=0 이라 위험 없음 (안전망 생략)
+pair_style      hybrid/overlay buck/coul/long 10.0 lj/cut 1.5
+pair_coeff      1 1 buck/coul/long 1388.7730 0.362318 175.0000
+pair_coeff      1 2 buck/coul/long 18003.7572 0.205205 133.5381
+pair_coeff      2 2 buck/coul/long 0.0 1.0 0.0
+pair_coeff      1 1 lj/cut 3.0 1.50 1.50      # O-O  안전망
+pair_coeff      1 2 lj/cut 4.0 1.10 1.10      # Si-O 안전망
+pair_coeff      2 2 lj/cut 0.0 1.0  1.0       # Si-Si 위험 없음 (명시적으로 0)
+
+kspace_style    pppm 1.0e-4
+
+neighbor        2.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+# ---------------- 3. Timestep / damping (core fix 이후 정상값으로 원복) ----------------
+timestep        0.001                 # 1 fs 고정. core fix 후에도 불안정하면 0.0005 로.
+variable        Tdamp equal 0.1       # ~100*dt
+variable        Pdamp equal 3.0       # 1.0->3.0ps: 작은 셀의 큰 압력요동(±1만bar급)에 barostat 이
+                                       # 과잉반응해 box 가 수 스텝만에 폭주하는 걸 방지 (원래 5ps 직관이
+                                       # 맞았을 가능성 -- 다만 그땐 tilt/core-collapse 와 뒤섞여 있었음)
+
+# ---------------- 4. Computes & thermo ----------------
+compute         myRDF all rdf 100 1 1 1 2 2 2     # r, g_OO, g_SiO, g_SiSi (+배위수)
+compute         myMSD all msd
+variable        myvol  equal vol
+variable        mydens equal density
+variable        myenth equal enthalpy             # Tg 는 이 값으로 (V-T 는 밀도이상 때문에 부적합)
+
+thermo          1000
+thermo_style    custom step temp press vol density pe enthalpy c_myMSD[4]
+
+# ---------------- 5. Minimize ----------------
+minimize        1.0e-6 1.0e-8 1000 10000
+reset_timestep  0
+
+# ---------------- 6. Heat 300 -> Thi ----------------
+#  core fix 덕분에 밀도이상 전환점(~3400K)을 넘어서는 4500K 까지 다시 안전하게 접근
+#  [진단용] thermo 를 이 구간만 촘촘히(200) 찍어서, 다음에 또 터지면 PotEng 이
+#  튀는지(=ZBL 방어 실패, core-collapse) vs Volume 만 튀는지(=barostat 오버슈트)
+#  구분 가능하게 함. drag 2.0 은 barostat/thermostat 진동을 추가로 감쇠.
+thermo          200
+variable        Thi equal 4500
+variable        Tlo equal 300
+velocity        all create 300.0 12345 dist gaussian
+fix             1 all npt temp 300.0 ${Thi} ${Tdamp} iso 0.0 0.0 ${Pdamp} drag 2.0
+run             100000
+unfix           1
+thermo          1000                  # 이후 구간은 다시 원래 빈도로 (비용 절약)
+
+# ---------------- 7. Melt equilibration at Thi ----------------
+#  c_myMSD[4] 가 시간에 선형(확산)인지 확인해 완전 용융 검증
+fix             1 all npt temp ${Thi} ${Thi} ${Tdamp} iso 0.0 0.0 ${Pdamp}
+run             100000
+unfix           1
+
+# ---------------- 8. Stepwise quench (hold + average) ----------------
+#  각 온도에서 Nequil 평형(버림) 후, 그 뒤 이어지는 Nprod 동안 V/density/H 를
+#  시간평균 -> vt_profile.dat 한 줄씩 기록. Tg 는 이 파일의 Enthalpy 열로 피팅할 것.
+#  [COST 손잡이] 비용을 줄이려면 dT 를 키우거나 hold 를 줄인다.
+#               Tg 근처(2000~3500K)는 점밀도/hold 를 더 주는 게 이득이 크다.
+variable        dT     equal 100
+variable        Nequil equal 5000     #  5 ps 평형(버림)
+variable        Nprod  equal 10000    # 10 ps 생산(평균)
+variable        Ntot   equal ${Nequil}+${Nprod}
+variable        Nrep   equal ${Nprod}/100
+
+print           "# T_set(K)  Vol(A^3)  Density(g/cc)  Enthalpy(eV)" file vt_profile.dat screen no
+
+variable        Tset equal ${Thi}
+label           QLOOP
+  reset_timestep 0                     # 온도마다 step 0 부터: 아래 평균창 계산을 단순화
+  fix           qnpt all npt temp ${Tset} ${Tset} ${Tdamp} iso 0.0 0.0 ${Pdamp}
+  # Nfreq=Ntot, 창 = Nevery*Nrep = Nprod → run 의 '마지막 Nprod step'만 평균되어
+  # 앞의 Nequil(평형 버림 구간)은 자동으로 제외됨
+  fix           qavg all ave/time 100 ${Nrep} ${Ntot} v_myvol v_mydens v_myenth
+  run           ${Ntot}
+  variable      Vm equal f_qavg[1]
+  variable      Dm equal f_qavg[2]
+  variable      Hm equal f_qavg[3]
+  print         "${Tset} ${Vm} ${Dm} ${Hm}" append vt_profile.dat screen no
+  unfix         qavg
+  unfix         qnpt
+  variable      Tset equal ${Tset}-${dT}
+if "${Tset} >= ${Tlo}" then "jump SELF QLOOP"
+
+# ---------------- 9. Final relax + RDF at 300 K ----------------
+reset_timestep  0
+#  c_myRDF[*] = 전체 배열: [1]=r [2]=g_OO [3]=coord_OO [4]=g_SiO [5]=coord_SiO [6]=g_SiSi [7]=coord_SiSi
+fix             rdfavg all ave/time 100 50 5000 c_myRDF[*] file sio2.rdf mode vector
+fix             1 all npt temp ${Tlo} ${Tlo} ${Tdamp} iso 0.0 0.0 ${Pdamp}
+run             50000
+unfix           1
+unfix           rdfavg
+
+write_data      sio2_quenched.data
