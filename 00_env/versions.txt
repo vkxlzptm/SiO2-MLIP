@@ -1,0 +1,6 @@
+date: 2026-08-10T00:56:37+09:00
+cpu: Model name: 11th Gen Intel(R) Core(TM) i5-11600K @ 3.90GHz
+torch 2.13.0+cpu | sevenn 0.13.0 | ase 3.29.0
+sevenn path: /home/dhl/SevenNet-src/sevenn/__init__.py
+libtorch: /home/dhl/anaconda3/envs/mlip/lib/python3.11/site-packages/torch/share/cmake
+gcc: 9 | cmake: cmake version 3.16.3
