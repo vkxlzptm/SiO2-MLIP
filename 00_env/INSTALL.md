@@ -132,6 +132,31 @@ PY
 ```
 → **양쪽 모두 빈 리스트여야 정상.** 뭔가 나오면 조용히 틀린 포텐셜이 되므로 즉시 중단.
 
+### 2-3. 빌드 도구 (cmake 버전이 미묘함)
+
+실측: 시스템 gcc **9**, 시스템 cmake **3.16.3** (Ubuntu 20.04 기본값).
+
+- cmake 3.16은 libtorch 2.x의 `TorchConfig.cmake`(≥3.18 요구)에 못 미친다 → 올려야 함
+- 그런데 **cmake 4.x는 반대로 위험하다.** 4.0부터 `cmake_minimum_required(VERSION < 3.5)`
+  호환성이 제거되어, 2023년 LAMMPS 트리에서 "Compatibility with CMake < 3.5 has been removed"로
+  죽는 경우가 있다.
+- → **3.18 ≤ cmake < 4.0 구간으로 고정한다.**
+
+```bash
+pip install "cmake<4"          # 3.31.x 계열이 설치됨
+hash -r
+which cmake && cmake --version # ~/anaconda3/envs/mlip/bin/cmake, 3.31.x 확인
+```
+
+> 이미 4.x를 깔았다면 위 명령이 다운그레이드해준다.
+> 굳이 4.x를 유지해야 한다면 cmake 인자에 `-D CMAKE_POLICY_VERSION_MINIMUM=3.5`를 추가할 것.
+
+gcc 9는 일단 그대로 시도한다. libtorch 헤더에서 C++17 관련 에러가 나면 (sudo 없이):
+```bash
+conda install -c conda-forge gxx_linux-64=11 -y
+export CXX=$CONDA_PREFIX/bin/x86_64-conda-linux-gnu-g++
+```
+
 ## 3. LAMMPS 빌드
 
 ### 3-1. 소스 받기 + 패치
@@ -140,7 +165,9 @@ PY
 cd ~
 git clone https://github.com/lammps/lammps.git lammps_sevenn \
     --branch stable_2Aug2023_update3 --depth=1
-sevenn patch_lammps ./lammps_sevenn
+
+sevenn patch_lammps --help          # 옵션 확인 (cxx_standard 지정 방법 등)
+sevenn patch_lammps ./lammps_sevenn # --d3 / --enable_flash / --enable_oeq 붙이지 말 것
 ```
 
 `patch_lammps`가 하는 일:
@@ -186,13 +213,22 @@ cmake ../cmake \
 ```
 
 - `PKG_KSPACE`: BKS의 `buck/coul/long` + `pppm/ewald`에 필수. **이걸 빼면 기존 BKS 입력이 안 돈다.**
-- 에러 `MKL_INCLUDE_DIR NOT-FOUND` → `-D MKL_INCLUDE_DIR=/tmp` 추가
-- 에러 C++ 표준 관련 → `-D CMAKE_CXX_STANDARD=17 -D CMAKE_CXX_STANDARD_REQUIRED=ON` 추가
+
+에러별 대응 (나오면 인자 추가 후 재실행):
+
+| 에러 메시지 | 추가할 인자 |
+|---|---|
+| `MKL_INCLUDE_DIR NOT-FOUND` | `-D MKL_INCLUDE_DIR=/tmp` |
+| C++ 표준 관련 / libtorch 헤더 에러 | `-D CMAKE_CXX_STANDARD=17 -D CMAKE_CXX_STANDARD_REQUIRED=ON` |
+| `Compatibility with CMake < 3.5 has been removed` | `-D CMAKE_POLICY_VERSION_MINIMUM=3.5` (또는 cmake<4로 다운그레이드) |
+| `Could not find Torch` | `CMAKE_PREFIX_PATH` 경로 확인 — conda 환경이 activate 됐는지부터 볼 것 |
+
+cmake 재실행 시에는 캐시가 남아 혼란스러우므로 `rm -rf build/*` 후 다시 하는 편이 안전하다.
 
 ### 3-3. 빌드
 
 ```bash
-make -j8 2>&1 | tee ~/SiO2-MLIP/00_env/lammps_build.log
+make -j6 2>&1 | tee $PROJ/00_env/lammps_build.log
 ls -lh lmp
 mkdir -p ~/.local/bin && ln -sf ~/lammps_sevenn/build/lmp ~/.local/bin/lmp_7net
 ```
@@ -223,7 +259,7 @@ lmp_7net -h | grep -iE "e3gnn|buck/coul/long|pppm"
 ## 4. 포텐셜 배포 (deploy)
 
 ```bash
-mkdir -p ~/SiO2-MLIP/01_input/pot && cd ~/SiO2-MLIP/01_input/pot
+mkdir -p $PROJ/01_input/pot && cd $PROJ/01_input/pot
 sevenn get_model 7net-nano-5.5
 ls -lh deployed_serial.pt
 ```
@@ -287,7 +323,7 @@ lmp_7net -in in.nano_nvt        # mpirun 없이 단일 랭크
 ## 6. 버전 기록 (필수)
 
 ```bash
-cd ~/SiO2-MLIP/00_env
+cd $PROJ/00_env
 pip freeze > pip_freeze_$(date +%Y%m%d).txt
 {
   echo "date: $(date -Iseconds)"
