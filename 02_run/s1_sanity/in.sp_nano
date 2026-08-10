@@ -1,0 +1,20 @@
+units           metal
+atom_style      charge
+boundary        p p p
+atom_modify     map yes
+newton          on
+
+neighbor        1.0 bin
+neigh_modify    delay 0 every 1 check yes
+read_data       ../../01_input/sio2_quenched.data
+
+pair_style      e3gnn
+pair_coeff      * * ../../01_input/pot/deployed_serial.pt O Si
+
+variable        fmag  atom  sqrt(fx*fx+fy*fy+fz*fz)
+compute         maxf  all   reduce max v_fmag
+variable        epa   equal pe/atoms
+
+thermo_style    custom step pe v_epa press vol density c_maxf
+thermo          1
+run             0

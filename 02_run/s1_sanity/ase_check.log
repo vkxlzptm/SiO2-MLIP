@@ -1,0 +1,15 @@
+/home/dhl/anaconda3/envs/mlip/lib/python3.11/site-packages/ase/io/lammpsdata.py:72: FutureWarning: "style" is deprecated; please use "atom_style".
+  warnings.warn(
+/home/dhl/SevenNet-src/sevenn/calculator.py:94: UserWarning: No tensor product accelerator is enabled for SevenNetCalculator. SevenNet may run much slower without a TP accelerator. Please refer to the accelerator section of the documentation.
+  util.warn_no_tp_accelerator('SevenNetCalculator')
+natoms   2160  (720 Si, 1440 O)
+cell     28.7283  28.8287  33.2702
+volume   27554.315 A^3   density 2.6071 g/cm^3
+Converting model backend...
+
+E_total  -16715.922993 eV
+E/atom   -7.738853 eV
+|F|max   5.5738 eV/A
+|F|mean  1.7325 eV/A
+sum(F)   1.39e-05 eV/A  (0이어야 정상)
+P_virial 90669.6 bar  (9.067 GPa, 운동에너지 항 없음)

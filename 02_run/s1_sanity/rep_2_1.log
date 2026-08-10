@@ -1,0 +1,151 @@
+LAMMPS (2 Aug 2023 - Update 3)
+  using 1 OpenMP thread(s) per MPI task
+units           metal
+boundary        p p p
+atom_style      charge
+read_data       ../../01_input/sio2_quenched.data
+Reading data file ...
+  orthogonal box = (0.70531404 0.70777887 0.81682301) to (29.433599 29.53646 34.087002)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  2160 atoms
+  reading velocities ...
+  2160 velocities
+  read_data CPU = 0.023 seconds
+mass            1 15.9994
+mass            2 28.0855
+pair_style      e3gnn
+PairE3GNN using device : CPU
+pair_coeff      * * ${pot} O Si
+pair_coeff      * * ../../01_input/pot/deployed_nano_4.5.pt O Si
+Chemical specie 'O' is assigned to type 1
+Chemical specie 'Si' is assigned to type 2
+from sevenn version '0.13.0' single precision model, deployed: 2026-08-10
+FlashTP: no
+OEQ: no
+neighbor        1.0 bin
+neigh_modify    every 1 delay 0 check yes
+velocity        all set 0.0 0.0 0.0
+variable        epa   equal pe/atoms
+variable        fmag  atom  sqrt(fx*fx+fy*fy+fz*fz)
+compute         maxf  all reduce max v_fmag
+thermo_style    custom step temp pe v_epa press c_maxf
+thermo          1
+run             0
+WARNING: No fixes with time integration, atoms won't move (src/verlet.cpp:60)
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 5.5
+  ghost atom cutoff = 5.5
+  binsize = 2.75, bins = 11 11 13
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair e3gnn, perpetual
+      attributes: full, newton on
+      pair build: full/bin/atomonly
+      stencil: full/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 3.714 | 3.714 | 3.714 Mbytes
+   Step          Temp          PotEng         v_epa          Press          c_maxf    
+         0   0             -16707.295     -7.7348588      92298.614      5.7712612    
+Loop time of 5.12e-07 on 1 procs for 0 steps with 2160 atoms
+
+195.3% CPU use with 1 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0          | 0          | 0          |   0.0 |  0.00
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0          | 0          | 0          |   0.0 |  0.00
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 5.12e-07   |            |       |100.00
+
+Nlocal:           2160 ave        2160 max        2160 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           3328 ave        3328 max        3328 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:              0 ave           0 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:       118972 ave      118972 max      118972 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 118972
+Ave neighs/atom = 55.07963
+Neighbor list builds = 0
+Dangerous builds = 0
+velocity        all create 300.0 12345 dist gaussian mom yes
+timestep        0.001
+fix             1 all nve
+thermo          10
+run             3
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Per MPI rank memory allocation (min/avg/max) = 3.839 | 3.839 | 3.839 Mbytes
+   Step          Temp          PotEng         v_epa          Press          c_maxf    
+         0   300           -16707.295     -7.7348588      95544.012      5.7712612    
+         3   318.41363     -16712.441     -7.7372413      92807.631      4.9789194    
+Loop time of 16.0568 on 1 procs for 3 steps with 2160 atoms
+
+Performance: 0.016 ns/day, 1486.738 hours/ns, 0.187 timesteps/s, 403.568 atom-step/s
+63.1% CPU use with 1 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 16.056     | 16.056     | 16.056     |   0.0 |100.00
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0.00012166 | 0.00012166 | 0.00012166 |   0.0 |  0.00
+Output  | 0.00018656 | 0.00018656 | 0.00018656 |   0.0 |  0.00
+Modify  | 7.5054e-05 | 7.5054e-05 | 7.5054e-05 |   0.0 |  0.00
+Other   |            | 7.02e-05   |            |       |  0.00
+
+Nlocal:           2160 ave        2160 max        2160 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           3328 ave        3328 max        3328 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:              0 ave           0 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:       118972 ave      118972 max      118972 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 118972
+Ave neighs/atom = 55.07963
+Neighbor list builds = 0
+Dangerous builds = 0
+run             3
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Per MPI rank memory allocation (min/avg/max) = 3.839 | 3.839 | 3.839 Mbytes
+   Step          Temp          PotEng         v_epa          Press          c_maxf    
+         3   318.41363     -16712.441     -7.7372413      92807.633      4.9789208    
+         6   374.30014     -16728.094     -7.7444881      85143.213      4.6205129    
+Loop time of 16.0034 on 1 procs for 3 steps with 2160 atoms
+
+Performance: 0.016 ns/day, 1481.800 hours/ns, 0.187 timesteps/s, 404.913 atom-step/s
+62.8% CPU use with 1 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 16.003     | 16.003     | 16.003     |   0.0 |100.00
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0.00010364 | 0.00010364 | 0.00010364 |   0.0 |  0.00
+Output  | 0.0001207  | 0.0001207  | 0.0001207  |   0.0 |  0.00
+Modify  | 6.4036e-05 | 6.4036e-05 | 6.4036e-05 |   0.0 |  0.00
+Other   |            | 6.493e-05  |            |       |  0.00
+
+Nlocal:           2160 ave        2160 max        2160 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           3332 ave        3332 max        3332 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:              0 ave           0 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:       118982 ave      118982 max      118982 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 118982
+Ave neighs/atom = 55.084259
+Neighbor list builds = 0
+Dangerous builds = 0
+Total wall time: 0:00:48

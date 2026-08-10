@@ -1,0 +1,120 @@
+LAMMPS (2 Aug 2023 - Update 3)
+  using 1 OpenMP thread(s) per MPI task
+Reading data file ...
+  orthogonal box = (0.70531404 0.70777887 0.81682301) to (29.433599 29.53646 34.087002)
+  1 by 1 by 2 MPI processor grid
+  reading atoms ...
+  2160 atoms
+  reading velocities ...
+  2160 velocities
+  read_data CPU = 0.006 seconds
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29874255
+  grid = 24 24 25
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0013812722
+  estimated relative force accuracy = 9.5924047e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 18259 7488
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 12
+  ghost atom cutoff = 12
+  binsize = 6, bins = 5 5 6
+  2 neighbor lists, perpetual/occasional/extra = 2 0 0
+  (1) pair buck/coul/long, perpetual
+      attributes: half, newton on
+      pair build: half/bin/atomonly/newton
+      stencil: half/bin/3d
+      bin: standard
+  (2) pair lj/cut, perpetual, trim from (1)
+      attributes: half, newton on, cut 3.5
+      pair build: trim
+      stencil: none
+      bin: none
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 6.815 | 7.032 | 7.249 Mbytes
+   Step          Temp          PotEng         Press     
+         0   300           -41686.444      1305.2212    
+        20   301.40861     -41686.841     -1577.368     
+Loop time of 0.0919288 on 2 procs for 20 steps with 2160 atoms
+
+Performance: 18.797 ns/day, 1.277 hours/ns, 217.560 timesteps/s, 469.929 katom-step/s
+95.8% CPU use with 2 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.069045   | 0.073055   | 0.077065   |   1.5 | 79.47
+Kspace  | 0.013745   | 0.017738   | 0.021731   |   3.0 | 19.30
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0.00084721 | 0.00085655 | 0.00086589 |   0.0 |  0.93
+Output  | 1.0737e-05 | 1.2765e-05 | 1.4793e-05 |   0.0 |  0.01
+Modify  | 0.00010552 | 0.00010987 | 0.00011422 |   0.0 |  0.12
+Other   |            | 0.0001564  |            |       |  0.17
+
+Nlocal:           1080 ave        1098 max        1062 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Nghost:           7857 ave        7877 max        7837 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Neighs:         306059 ave      321879 max      290239 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 612118
+Ave neighs/atom = 283.38796
+Neighbor list builds = 0
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29874255
+  grid = 24 24 25
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0013812722
+  estimated relative force accuracy = 9.5924047e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 18259 7488
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 20
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 6.815 | 7.032 | 7.249 Mbytes
+   Step          Temp          PotEng         Press     
+        20   301.40861     -41686.841     -1577.368     
+       100   303.44031     -41687.433     -1547.7239    
+       200   303.25098     -41687.402     -487.31765    
+       220   307.21747     -41688.516      430.2823     
+Loop time of 0.902359 on 2 procs for 200 steps with 2160 atoms
+
+Performance: 19.150 ns/day, 1.253 hours/ns, 221.641 timesteps/s, 478.745 katom-step/s
+98.3% CPU use with 2 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.67921    | 0.71758    | 0.75595    |   4.5 | 79.52
+Kspace  | 0.13603    | 0.17407    | 0.21212    |   9.1 | 19.29
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0.0079841  | 0.0082629  | 0.0085416  |   0.3 |  0.92
+Output  | 3.1277e-05 | 3.6227e-05 | 4.1177e-05 |   0.0 |  0.00
+Modify  | 0.0010287  | 0.0010728  | 0.001117   |   0.1 |  0.12
+Other   |            | 0.001336   |            |       |  0.15
+
+Nlocal:           1080 ave        1098 max        1062 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Nghost:         7836.5 ave        7863 max        7810 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Neighs:         306055 ave      322184 max      289926 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 612110
+Ave neighs/atom = 283.38426
+Neighbor list builds = 0
+Dangerous builds = 0
+Total wall time: 0:00:01

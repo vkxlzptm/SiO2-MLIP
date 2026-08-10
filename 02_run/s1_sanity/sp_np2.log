@@ -1,0 +1,22 @@
+LAMMPS (2 Aug 2023 - Update 3)
+  using 3 OpenMP thread(s) per MPI task
+Reading data file ...
+  orthogonal box = (0.70531404 0.70777887 0.81682301) to (29.433599 29.53646 34.087002)
+  1 by 1 by 2 MPI processor grid
+  reading atoms ...
+  2160 atoms
+  reading velocities ...
+  2160 velocities
+  read_data CPU = 0.006 seconds
+
+===================================================================================
+=   BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES
+=   RANK 0 PID 112615 RUNNING AT dhl-desktop
+=   KILLED BY SIGNAL: 9 (Killed)
+===================================================================================
+
+===================================================================================
+=   BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES
+=   RANK 1 PID 112616 RUNNING AT dhl-desktop
+=   KILLED BY SIGNAL: 11 (Segmentation fault)
+===================================================================================
