@@ -11,7 +11,7 @@ BKS(고전 포텐셜)로 만든 비정질 SiO2 구조에 범용 MLIP **SevenNet-
 | 단계 | 상태 |
 |---|---|
 | S0 환경 구축 | **완료** — LAMMPS + `pair_style e3gnn` 빌드·검증·배포까지 |
-| S1 sanity + 속도 실측 | **진행 중** — single point 통과, 속도 측정 남음 |
+| S1 sanity + 속도 실측 | **완료** — 단일점·ASE 교차검증·랭크 비교·속도 실측 전부 끝 |
 | S2 구조 이완 | 미착수 |
 | S3 RDF 3자 비교 | 미착수 |
 | S4 짧은 MD (여유 시) | 미착수 |
@@ -42,29 +42,51 @@ BKS(고전 포텐셜)로 만든 비정질 SiO2 구조에 범용 MLIP **SevenNet-
   그 2.34는 인용문헌상 **박막/세라믹** 값이지 벌크 fused silica(2.20)가 아니다.
   → 우리 S2는 논문 재현이 아니라 새 측정.
 
-## S1 첫 결과 (single point, `02_run/s1_sanity/in.sp_nano`)
+## S1 결과 (상세는 `02_run/s1_sanity/NOTE.md`)
 
-BKS 구조(2160원자, 28.73×28.83×33.27 Å, ρ=2.607 g/cm³)에 7net-nano-5.5 적용:
+BKS 구조(2160원자, 28.7283×28.8287×33.2702 Å, V=27,554.3 Å³, ρ=2.6071 g/cm³)에 7net-nano-5.5 적용:
 
 ```
-PotEng   -16715.923 eV      v_epa  -7.7389 eV/atom     ← 정상 규모
-Press    +93,941 bar ≈ 9.4 GPa                          ← 핵심
-c_maxf   5.574 eV/Å (최대 원자력)                        ← 정상 범위
-FullNghs 296,870  (137.4 /atom)
-원소매핑  O→type1, Si→type2 확인
+PotEng    -16715.923 eV      v_epa  -7.7388532 eV/atom
+Press     +90,669.6 bar = +9.07 GPa   ← 순수 virial (속도 죽인 값). 핵심
+c_maxf    5.5737669 eV/Å    |F|mean 1.7325 eV/Å    sum(F) 1.4e-05
+원소매핑   O→type1, Si→type2 확인
 ```
 
-**해석**: 운동에너지 기여(nk_BT ≈ 3,250 bar, 3.5%)를 빼도 virial 압력이 **+9 GPa**.
-SevenNet-Nano는 BKS의 2.607 g/cm³ 구조를 강하게 압축된 상태로 본다 → 0 bar 이완 시 팽창, 밀도 하락 예상.
+**검증 통과 3건**
+- **ASE 교차검증**: `SevenNetCalculator('7net-nano-5.5')` = −16715.922993 eV, |F|max 5.5738.
+  LAMMPS 배포본과 소수점 6자리 일치 → **deploy 경로 무결.**
+- **압력 정정**: 기존 기록 93,941.1 bar에는 운동에너지 항 3,271.5 bar가 섞여 있었다
+  (data 파일에 속도 섹션이 있어 `read_data`가 같이 읽음). 역산 T = 302.3 K로 300 K quench와 정합.
+  **참값은 +9.07 GPa.**
+- **랭크 비교**: 2랭크는 크래시(아래 규칙 2).
+
+**속도 실측** (동일 계, NVE, neighbor 재빌드 0)
+
+| | SevenNet-Nano (1랭크×6스레드) | BKS+pppm (6랭크×1스레드) |
+|---|---|---|
+| s/step | **4.419** | 1.794e−3 |
+| atom-step/s | **488.8** | **1,204,000** |
+| 10 ps MD | **12.3 시간** | 18 초 |
+
+**BKS가 2,463배 빠르다.** → S4 MD는 하룻밤 ≈ 10 ps가 현실적 상한.
+
+**해석**: SevenNet-Nano는 BKS의 2.607 g/cm³ 구조를 강하게 압축된 상태로 본다
+→ 0 bar 이완 시 팽창, 밀도 하락 예상.
 **단 크기는 추정하지 말 것** — 실리카는 압력-부피 응답이 anomalous(3 GPa 부근 K 감소)라 선형 외삽 무효.
 
 ## 반드시 지켜야 할 실행 규칙 (전부 "조용히 틀리는" 함정)
 
 1. **`ulimit -s 262144`** — `pair_e3gnn.cpp`가 edge 배열을 스택 VLA로 잡음.
-   2160원자 = 296,870 edge × 28 byte = 8.3 MB > 기본 8 MB → **세그폴트**. 실측으로 확인됨.
-   hard limit이 262144(=root 없이 최대)라 상한은 약 900만 edge ≈ 6만 원자.
-2. **`pair_style e3gnn`에 `mpirun` 쓰지 말 것.** 로컬 tag map에 없는 이웃을 버리므로 도메인 분할 시
-   edge가 누락되고 **에러 없이 힘이 틀린다.** 단일 랭크 + OMP 스레드로 병렬.
+   `neighbor 2.0` 기준 2160원자 = 296,870 edge × 28 byte = 8.3 MB > 기본 8 MB → **세그폴트**. 실측 확인.
+   hard limit이 262144(=root 없이 최대)라 상한은 약 900만 edge.
+   **1b. e3gnn은 `neighbor 1.0 bin`을 기본으로 쓸 것.** skin만 줄여도 190,870 edge(5.3 MB)로 떨어지고
+   에너지·힘은 소수점 6자리까지 불변(S1 실측). 스택 여유가 3배 늘어난다.
+2. **`pair_style e3gnn`에 `mpirun -np 2` 이상 쓰지 말 것.** S1 실측: 도메인 분할이 잡히고
+   `read_data`까지 간 뒤 **rank1 SIGSEGV로 즉사**(rank0 SIGKILL은 런처 정리). OOM 아님(dmesg 확인),
+   LAMMPS 코어 MPI 정상(같은 바이너리로 BKS는 2랭크 완주). **원인은 e3gnn에 국한.**
+   → 이 빌드에서는 "조용히 틀린 힘"이 아니라 크래시로 드러난다. 다만 확인된 건 2160원자/2랭크 1건이므로
+   다른 조건에서 조용히 틀릴 가능성은 배제 못 함. 운용 규칙은 동일: **단일 랭크 + OMP 스레드.**
    (`e3gnn/parallel`은 GPU 전용이라 이 빌드에 없음 — CUDA 무가드 의존 때문에 빌드 시 제거함)
 3. **랭크 × 스레드 ≤ 6.** SevenNet = 1랭크×6스레드, BKS = 6랭크×1스레드.
    `.bashrc`의 `OMP_NUM_THREADS`는 **1**로 두고 명령 앞에서 덮어쓸 것.
@@ -72,14 +94,15 @@ SevenNet-Nano는 BKS의 2.607 g/cm³ 구조를 강하게 압축된 상태로 본
 5. **BKS는 빌드에 쓴 Intel MPI launcher로** 실행. OpenMPI도 설치돼 있어 섞이면 같은 계산을 N번 반복함.
 6. conda `mlip` 환경을 지우면 `lmp_7net`이 libtorch를 못 찾아 **LAMMPS 재빌드** 필요.
 
-## 바로 다음 할 일
+## 바로 다음 할 일 (S2 구조 이완)
 
-1. **속도 실측** — `02_run/s1_sanity/in.timing_nano` (run 20, NVE, `neighbor 1.0 bin`).
-   `Loop time` → 원자-스텝/초. 같은 계를 BKS로도 돌려 배수 산출. **이 자체가 발표 자료.**
-2. **ASE 교차검증** — `SevenNetCalculator('7net-nano-5.5')`로 같은 구조 single point.
-   LAMMPS 값(-16715.923 eV)과 일치하는지 → 배포 경로 검증.
-3. **1랭크 vs 2랭크 에너지 비교** — 위 규칙 2를 데이터로 확정.
-4. `02_run/s1_sanity/NOTE.md` 작성 (조건·이유·결과 한 줄씩).
+**전제: force eval 1회 = 4.42 s.** 모든 설계는 "force eval 몇 회인가"로 비용을 환산할 것.
+
+1. **S2 설계 결정 먼저** — `fix box/relax` + `minimize` (정적 이완, 수백 회 eval = 30분~1시간)로 갈지,
+   NPT MD(수천 회 eval = 하룻밤)로 갈지. 착수 전 확인받을 것.
+2. **S3 RDF 샘플링 예산** — 10 ps = 12.3 시간. 2160원자면 통계는 충분하나 평형화 구간을 빼야 함.
+3. 미측정: **OMP 스레드 스케일링**(1/2/4/6). "6코어 활용" 이라고 발표하려면 재야 함. 5분 안 걸림.
+4. 미측정: 순수 LJ 속도. BKS의 kspace 비중 19.3 %만 근거 — 배수는 추정하지 말고 필요하면 실측.
 
 ## 미해결 / 결정 필요
 

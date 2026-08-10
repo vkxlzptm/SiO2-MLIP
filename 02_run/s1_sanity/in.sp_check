@@ -1,0 +1,32 @@
+# S1-2/S1-3  단일점 (run 0)
+#   용도 (a) ASE 교차검증의 LAMMPS 기준값
+#        (b) 1랭크 vs 2랭크 비교 (STATUS 규칙 2를 데이터로 확정)
+#
+# [수정 2026-08-10] 초판은 "velocity를 안 주니 Press가 순수 virial"이라고 적었으나 틀림.
+#   sio2_quenched.data 에 velocity 섹션이 들어있어 read_data가 2160개 속도를 같이 읽는다.
+#   -> Press에 운동에너지 항이 섞임. ASE stress(virial only)와 비교하려면 속도를 0으로 죽여야 함.
+#   velocity all set 0 0 0 추가. PE는 속도와 무관하므로 -16715.923 재현은 그대로 유지됨.
+
+units           metal
+boundary        p p p
+atom_style      charge
+
+read_data       ../../01_input/sio2_quenched.data
+mass            1 15.9994
+mass            2 28.0855
+
+pair_style      e3gnn
+pair_coeff      * * ../../01_input/pot/deployed_serial.pt O Si
+
+neighbor        1.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+velocity        all set 0.0 0.0 0.0     # data 파일의 속도를 죽인다 -> Press = 순수 virial
+
+variable        epa   equal pe/atoms
+variable        fmag  atom  sqrt(fx*fx+fy*fy+fz*fz)
+compute         maxf  all reduce max v_fmag
+
+thermo_style    custom step temp pe v_epa press pxx pyy pzz c_maxf
+thermo          1
+run             0
