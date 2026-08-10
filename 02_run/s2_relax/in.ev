@@ -1,0 +1,44 @@
+# S2-2  E-V 스캔 (부피 1점당 LAMMPS 1회 실행)
+#   -var s <선형 스케일>  로 셀을 등방 스케일한 뒤 원자만 이완
+#   출발점은 S2-1의 완전 이완 구조(relaxed_final.data, V=28552.472)
+#
+# 핵심: etol = 0.0 으로 둔다. S2-1에서 etol=1e-8이 조기 종료를 일으켰음.
+#       ftol 1e-3 eV/A 와 maxeval 캡만으로 제어한다.
+
+units           metal
+boundary        p p p
+atom_style      charge
+
+read_data       relaxed_final.data
+mass            1 15.9994
+mass            2 28.0855
+
+pair_style      e3gnn
+pair_coeff      * * ../../01_input/pot/deployed_nano_4.5.pt O Si
+
+neighbor        1.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+# 등방 스케일 + 원자 좌표 remap (분수좌표 유지)
+change_box      all x scale ${s} y scale ${s} z scale ${s} remap
+
+variable        epa  equal pe/atoms
+variable        dens equal density
+variable        fmag atom sqrt(fx*fx+fy*fy+fz*fz)
+compute         maxf all reduce max v_fmag
+
+thermo          10
+thermo_style    custom step pe v_epa press vol v_dens c_maxf
+
+min_style       cg
+min_modify      dmax 0.05
+minimize        0.0 1.0e-3 150 150
+
+# 파싱용 한 줄 요약 (EVPOINT scale volume density PE epa press maxf)
+variable        Vf  equal vol
+variable        Df  equal density
+variable        Ef  equal pe
+variable        ef  equal pe/atoms
+variable        Pf  equal press
+variable        Ff  equal c_maxf
+print           "EVPOINT ${s} ${Vf} ${Df} ${Ef} ${ef} ${Pf} ${Ff}"
