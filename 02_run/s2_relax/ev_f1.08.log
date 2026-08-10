@@ -1,0 +1,129 @@
+LAMMPS (2 Aug 2023 - Update 3)
+  using 6 OpenMP thread(s) per MPI task
+# S2-2  E-V 스캔 (부피 1점당 LAMMPS 1회 실행)
+#   -var s <선형 스케일>  로 셀을 등방 스케일한 뒤 원자만 이완
+#   출발점은 S2-1의 완전 이완 구조(relaxed_final.data, V=28552.472)
+#
+# 핵심: etol = 0.0 으로 둔다. S2-1에서 etol=1e-8이 조기 종료를 일으켰음.
+#       ftol 1e-3 eV/A 와 maxeval 캡만으로 제어한다.
+
+units           metal
+boundary        p p p
+atom_style      charge
+
+read_data       relaxed_final.data
+Reading data file ...
+  orthogonal box = (0.53391992 0.53578579 0.61833177) to (29.604993 29.708453 34.285494)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  2160 atoms
+  reading velocities ...
+  2160 velocities
+  read_data CPU = 0.008 seconds
+mass            1 15.9994
+mass            2 28.0855
+
+pair_style      e3gnn
+PairE3GNN using device : CPU
+pair_coeff      * * ../../01_input/pot/deployed_nano_4.5.pt O Si
+Chemical specie 'O' is assigned to type 1
+Chemical specie 'Si' is assigned to type 2
+from sevenn version '0.13.0' single precision model, deployed: 2026-08-10
+FlashTP: no
+OEQ: no
+
+neighbor        1.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+# 등방 스케일 + 원자 좌표 remap (분수좌표 유지)
+change_box      all x scale ${s} y scale ${s} z scale ${s} remap
+change_box      all x scale 1.02598557 y scale ${s} z scale ${s} remap
+change_box      all x scale 1.02598557 y scale 1.02598557 z scale ${s} remap
+change_box      all x scale 1.02598557 y scale 1.02598557 z scale 1.02598557 remap
+Changing box ...
+  orthogonal box = (0.15620571 0.53578579 0.61833177) to (29.982708 29.708453 34.285494)
+  orthogonal box = (0.15620571 0.1567516 0.61833177) to (29.982708 30.087487 34.285494)
+  orthogonal box = (0.15620571 0.1567516 0.18090158) to (29.982708 30.087487 34.722924)
+
+variable        epa  equal pe/atoms
+variable        dens equal density
+variable        fmag atom sqrt(fx*fx+fy*fy+fz*fz)
+compute         maxf all reduce max v_fmag
+
+thermo          10
+thermo_style    custom step pe v_epa press vol v_dens c_maxf
+
+min_style       cg
+min_modify      dmax 0.05
+minimize        0.0 1.0e-3 150 150
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 5.5
+  ghost atom cutoff = 5.5
+  binsize = 2.75, bins = 11 11 13
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair e3gnn, perpetual
+      attributes: full, newton on
+      pair build: full/bin/atomonly
+      stencil: full/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 9.239 | 9.239 | 9.239 Mbytes
+   Step         PotEng         v_epa          Press          Volume         v_dens         c_maxf    
+         0  -16791.192     -7.7736998     -99140.78       30836.67       2.3295664      1.745104     
+        10  -16838.687     -7.7956882     -34293.821      30836.67       2.3295664      0.58774528   
+        20  -16842.042     -7.7972417     -37561.582      30836.67       2.3295664      0.42184822   
+        30  -16842.64      -7.7975184     -35835.21       30836.67       2.3295664      0.20321792   
+        40  -16842.795     -7.7975903     -35768.693      30836.67       2.3295664      0.13020133   
+        50  -16842.843     -7.7976123     -35629.999      30836.67       2.3295664      0.066421927  
+        60  -16842.857     -7.7976191     -35666.937      30836.67       2.3295664      0.025780924  
+        70  -16842.861     -7.797621      -35650.359      30836.67       2.3295664      0.018582951  
+        79  -16842.863     -7.7976216     -35645.247      30836.67       2.3295664      0.0092060657 
+Loop time of 334.162 on 6 procs for 79 steps with 2160 atoms
+
+460.9% CPU use with 1 MPI tasks x 6 OpenMP threads
+
+Minimization stats:
+  Stopping criterion = max force evaluations
+  Energy initial, next-to-last, final = 
+     -16791.1915087056  -16842.8626112288  -16842.8626817166
+  Force two-norm initial, final = 27.208496 0.061734345
+  Force max component initial, final = 1.5501363 0.0083681736
+  Final line search alpha, max atom move = 1 0.0083681736
+  Iterations, force evaluations = 79 150
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 334.15     | 334.15     | 334.15     |   0.0 |100.00
+Neigh   | 0.003224   | 0.003224   | 0.003224   |   0.0 |  0.00
+Comm    | 0.003095   | 0.003095   | 0.003095   |   0.0 |  0.00
+Output  | 0.00083496 | 0.00083496 | 0.00083496 |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.006595   |            |       |  0.00
+
+Nlocal:           2160 ave        2160 max        2160 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           3164 ave        3164 max        3164 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:              0 ave           0 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:       107050 ave      107050 max      107050 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 107050
+Ave neighs/atom = 49.560185
+Neighbor list builds = 1
+Dangerous builds = 0
+
+# 파싱용 한 줄 요약 (EVPOINT scale volume density PE epa press maxf)
+variable        Vf  equal vol
+variable        Df  equal density
+variable        Ef  equal pe
+variable        ef  equal pe/atoms
+variable        Pf  equal press
+variable        Ff  equal c_maxf
+print           "EVPOINT ${s} ${Vf} ${Df} ${Ef} ${ef} ${Pf} ${Ff}"
+EVPOINT 1.02598557 30836.6697105039 2.32956639395057 -16842.8626817166 -7.79762161190583 -35645.2471477604 0.00920606566341399
+Total wall time: 0:05:36
