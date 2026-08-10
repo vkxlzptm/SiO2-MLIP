@@ -1,0 +1,62 @@
+# S3  Run A — SevenNet-nano-4.5, NVT 300 K @ ρ = 2.6071 (BKS 밀도 고정)
+#
+# 설계 의도: 밀도를 BKS 값에 고정해 **밀도를 변수에서 제거**하고 포텐셜만 비교한다.
+#            (S0c 계획의 1순위. SevenNet 자체 평형밀도 2.4948은 S2에서 이미 확보.)
+# 출발 구조: relaxed_s1_atoms.data
+#            = 같은 부피에서 SevenNet으로 원자만 이완한 구조 (maxF 0.087 eV/Å).
+#            BKS 쪽은 자기 구조(sio2_quenched.data)에서 출발 → 각자 자기 평형에서 샘플링.
+# 비용: 5,000 step × 2.401 s = 약 3.34 시간 (OMP=6 단일 실행)
+#
+# 실행:
+#   ulimit -s 262144
+#   export OMP_NUM_THREADS=6 MKL_NUM_THREADS=6
+#   nohup lmp_7net -in in.nvt_7net > nvt_7net.log 2>&1 &
+
+units           metal
+boundary        p p p
+atom_style      charge
+
+read_data       ../s2_relax/relaxed_s1_atoms.data
+mass            1 15.9994       # O
+mass            2 28.0855       # Si
+
+pair_style      e3gnn
+pair_coeff      * * ../../01_input/pot/deployed_nano_4.5.pt O Si
+
+neighbor        1.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+# RDF는 pair cutoff(4.5 Å)보다 멀리 봐야 하므로 compute rdf 자체 이웃리스트를 8 Å로 요청.
+# L/2 = 13.7 Å 이므로 8 Å는 최소이미지 규약 안전 범위.
+compute         myRDF all rdf 200 1 1 1 2 2 2 cutoff 8.0
+#   출력 열: [1]=r [2]=g_OO [3]=coord_OO [4]=g_SiO [5]=coord_SiO [6]=g_SiSi [7]=coord_SiSi
+
+compute         myMSD all msd
+variable        epa equal pe/atoms
+
+timestep        0.001
+velocity        all set 0.0 0.0 0.0                       # data 파일 속도 제거 (재현성)
+velocity        all create 300.0 48291 dist gaussian mom yes
+
+thermo          100
+thermo_style    custom step temp pe v_epa press vol density c_myMSD[4]
+
+# ---------------- 평형화 2 ps (버림) ----------------
+print           "=========== EQUIL 2 ps ==========="
+fix             1 all nvt temp 300.0 300.0 0.1
+run             2000
+write_data      equil_7net.data
+
+# ---------------- 생산 3 ps (RDF 시간평균) ----------------
+# Nevery=10, Nrepeat=300, Nfreq=3000 → 3,000 step 동안 10 step 간격 300개 샘플 평균
+print           "=========== PROD 3 ps (RDF) ==========="
+reset_timestep  0
+fix             rdfavg all ave/time 10 300 3000 c_myRDF[*] file rdf_7net_3ps.dat mode vector
+dump            trj all custom 20 traj_7net.lammpstrj id type xs ys zs
+dump_modify     trj sort id
+run             3000
+undump          trj
+unfix           rdfavg
+unfix           1
+
+write_data      prod_7net.data

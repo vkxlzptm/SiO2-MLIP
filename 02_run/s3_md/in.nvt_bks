@@ -1,0 +1,65 @@
+# S3  Run A — BKS, NVT 300 K @ ρ = 2.6071 (SevenNet 런과 동일 부피·온도)
+#
+# SevenNet과 동일 조건이되, 출발 구조는 BKS 자신의 melt-quench 산물을 쓴다
+# (각 포텐셜이 자기 평형 구조에서 샘플링해야 공정한 비교).
+# BKS는 공짜나 다름없으므로 3 ps(SevenNet과 매칭) + 20 ps(수렴 확인) 둘 다 뽑는다.
+#   → 두 g(r)이 겹치면 "SevenNet의 3 ps 생산도 충분하다"는 근거가 된다.
+# 비용: 약 25,000 step × 1.79e-3 s ≈ 45 초 (6랭크)
+#
+# 실행:
+#   export OMP_NUM_THREADS=1
+#   mpirun -np 6 lmp_7net -in in.nvt_bks > nvt_bks.log 2>&1
+
+units           metal
+boundary        p p p
+atom_style      charge
+
+read_data       ../../01_input/sio2_quenched.data
+mass            1 15.9994
+mass            2 28.0855
+# 전하는 data 파일에 포함 (O −1.2, Si +2.4)
+
+pair_style      hybrid/overlay buck/coul/long 10.0 lj/cut 1.5
+pair_coeff      1 1 buck/coul/long 1388.7730 0.362318 175.0000
+pair_coeff      1 2 buck/coul/long 18003.7572 0.205205 133.5381
+pair_coeff      2 2 buck/coul/long 0.0 1.0 0.0
+pair_coeff      1 1 lj/cut 3.0 1.50 1.50
+pair_coeff      1 2 lj/cut 4.0 1.10 1.10
+pair_coeff      2 2 lj/cut 0.0 1.0  1.0
+kspace_style    pppm 1.0e-4
+
+neighbor        2.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+compute         myRDF all rdf 200 1 1 1 2 2 2 cutoff 8.0
+compute         myMSD all msd
+variable        epa equal pe/atoms
+
+timestep        0.001
+velocity        all set 0.0 0.0 0.0
+velocity        all create 300.0 48291 dist gaussian mom yes
+
+thermo          500
+thermo_style    custom step temp pe v_epa press vol density c_myMSD[4]
+
+print           "=========== EQUIL 2 ps ==========="
+fix             1 all nvt temp 300.0 300.0 0.1
+run             2000
+
+print           "=========== PROD 3 ps (SevenNet과 매칭) ==========="
+reset_timestep  0
+fix             rdfavg all ave/time 10 300 3000 c_myRDF[*] file rdf_bks_3ps.dat mode vector
+run             3000
+unfix           rdfavg
+
+print           "=========== PROD 20 ps (수렴 확인) ==========="
+reset_timestep  0
+fix             rdfavg all ave/time 10 2000 20000 c_myRDF[*] file rdf_bks_20ps.dat mode vector
+dump            trj all custom 100 traj_bks.lammpstrj id type xs ys zs
+dump_modify     trj sort id
+run             20000
+undump          trj
+unfix           rdfavg
+unfix           1
+
+write_data      prod_bks.data
