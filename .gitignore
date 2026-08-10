@@ -29,3 +29,10 @@ venv/
 !01_input/*.data
 .DS_Store
 init_struct/
+
+# --- editor swap ---
+*.swp
+*.swo
+.*.swp
+.*.swo
+*~
