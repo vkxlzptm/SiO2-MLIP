@@ -30,6 +30,9 @@ venv/
 .DS_Store
 init_struct/
 
+# --- sync 보조 (커밋 메시지 임시파일) ---
+.commit_msg
+
 # --- editor swap ---
 *.swp
 *.swo
