@@ -1,0 +1,63 @@
+# S0-check  BKS NPT 부피 평형 진단
+#
+# 왜: vt_profile.dat 분석 결과 melt-quench 전 구간에서 밀도가 2.56~2.62를 벗어난 적이 없고
+#     (변동폭 2.2 %, 인접 온도 간 변화의 노이즈/신호 = 29) 부피가 열역학적 신호를 담지 못했다.
+#     반면 엔탈피는 매끄럽다 → thermostat은 정상, barostat이 평형에 도달 못 한 것으로 의심.
+#     비정질 밀도 2.607은 α-quartz(2.648)의 98.5 %인데, 유리는 결정보다 ~17 % 낮아야 한다.
+#
+# 무엇을: 현재 구조에서 NPT 0 bar를 충분히 오래 돌려 부피가 움직이는지 본다.
+#   (a) 300 K   200 ps — 유리는 얼어 있으니 안 움직이는 게 정상 (대조군)
+#   (b) 4500 K  300 ps — 액체는 반드시 평형에 도달해야 한다. 이게 진짜 시험.
+#       여기서 밀도가 2.2~2.3으로 내려가면 원래 melt-quench의 melt가 평형이 아니었다는 뜻.
+#       2.6에 머물면 BKS(+이 core-fix)가 실제로 그 밀도를 예측하는 것.
+#
+# Pdamp를 3.0 → 1.0 ps로 줄이고 (원래 값은 작은 셀 폭주 방지용이었으나 그만큼 응답이 느림)
+# 유지 시간을 원래의 15 ps에서 크게 늘렸다.
+#
+# 비용: 약 550 ps × 557 step/s → 약 17분 (6랭크)
+# 실행: export OMP_NUM_THREADS=1 && mpirun -np 6 lmp_7net -in in.npt_check > npt_check.log 2>&1
+
+units           metal
+boundary        p p p
+atom_style      charge
+
+read_data       ../../01_input/sio2_quenched.data
+mass            1 15.9994
+mass            2 28.0855
+
+pair_style      hybrid/overlay buck/coul/long 10.0 lj/cut 1.5
+pair_coeff      1 1 buck/coul/long 1388.7730 0.362318 175.0000
+pair_coeff      1 2 buck/coul/long 18003.7572 0.205205 133.5381
+pair_coeff      2 2 buck/coul/long 0.0 1.0 0.0
+pair_coeff      1 1 lj/cut 3.0 1.50 1.50
+pair_coeff      1 2 lj/cut 4.0 1.10 1.10
+pair_coeff      2 2 lj/cut 0.0 1.0  1.0
+kspace_style    pppm 1.0e-4
+
+neighbor        2.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+timestep        0.001
+velocity        all create 300.0 91744 dist gaussian mom yes
+
+thermo          500
+thermo_style    custom step temp press vol density pe enthalpy
+
+# ---------- (a) 300 K 대조군: 유리는 얼어 있어야 함 ----------
+print "=========== (a) NPT 300 K, 0 bar, 200 ps ==========="
+fix             1 all npt temp 300.0 300.0 0.1 iso 0.0 0.0 1.0
+run             200000
+unfix           1
+write_data      npt300.data
+
+# ---------- (b) 4500 K 본시험: 액체는 반드시 평형에 도달 ----------
+print "=========== (b) heat 300 -> 4500 K, 50 ps ==========="
+fix             1 all npt temp 300.0 4500.0 0.1 iso 0.0 0.0 1.0
+run             50000
+unfix           1
+
+print "=========== (c) NPT 4500 K, 0 bar, 300 ps  <- 핵심 ==========="
+fix             1 all npt temp 4500.0 4500.0 0.1 iso 0.0 0.0 1.0
+run             300000
+unfix           1
+write_data      npt4500.data
