@@ -1,0 +1,42 @@
+# BKS 300 K 궤적 dump (결합각 분포 등 사후분석용) — ρ = 2.20
+# in.quench220 의 300 K RDF 구간에 dump를 안 걸어서 궤적이 없다.
+# SevenNet 쪽(in.nvt_7net220)과 동일한 샘플링(20 step 간격 × 150 프레임)으로 맞춘다.
+# 비용: 5,000 step ≈ 9초 (6랭크)
+# 실행: export OMP_NUM_THREADS=1 && mpirun -np 6 lmp_7net -in in.bks_traj > bks_traj.log 2>&1
+
+units           metal
+boundary        p p p
+atom_style      charge
+
+read_data       sio2_bks220.data
+mass            1 15.9994
+mass            2 28.0855
+
+pair_style      hybrid/overlay buck/coul/long 10.0 lj/cut 1.5
+pair_coeff      1 1 buck/coul/long 1388.7730 0.362318 175.0000
+pair_coeff      1 2 buck/coul/long 18003.7572 0.205205 133.5381
+pair_coeff      2 2 buck/coul/long 0.0 1.0 0.0
+pair_coeff      1 1 lj/cut 3.0 1.50 1.50
+pair_coeff      1 2 lj/cut 4.0 1.10 1.10
+pair_coeff      2 2 lj/cut 0.0 1.0  1.0
+kspace_style    pppm 1.0e-4
+
+neighbor        2.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+timestep        0.001
+velocity        all set 0.0 0.0 0.0
+velocity        all create 300.0 48291 dist gaussian mom yes   # SevenNet 런과 같은 seed
+
+thermo          500
+thermo_style    custom step temp press vol density pe
+
+fix             1 all nvt temp 300.0 300.0 0.1
+run             2000                                  # 평형 2 ps (SevenNet 런과 동일)
+
+reset_timestep  0
+dump            trj all custom 20 traj_bks220.lammpstrj id type xs ys zs
+dump_modify     trj sort id
+run             3000                                  # 생산 3 ps (SevenNet 런과 동일)
+undump          trj
+unfix           1
