@@ -1,0 +1,46 @@
+# S2'-1  SevenNet-nano-4.5 정적 이완 @ ρ = 2.20 고정 (부피 불변)
+#
+# 출발: 02_run/s0_requench/sio2_bks220.data
+#       재quench로 제대로 만든 BKS 유리. MSD 게이트 통과, Si 4배위 99.86 %,
+#       Si-Si 2.4 Å 결함 없음(g_max 0.017), Si-O-Si 151.98±12.36° (문헌 BKS 152±11과 일치).
+#
+# 목적 (a) SevenNet 기준 구조를 얻어 S3 MD의 출발점으로 삼는다
+#      (b) 같은 밀도에서 BKS→SevenNet 결합길이·각도 보정을 측정 (0 K, 열 broadening 없음)
+#
+# 지난 실수 반영:
+#   - `velocity all set 0 0 0` 필수. data 파일 속도가 조용히 따라와 Press를 오염시킨다.
+#   - `etol = 0.0`. etol=1e-8은 조기 종료를 일으킨다(S2-1에서 확인).
+#
+# 비용: 최대 400 eval × 2.401 s ≈ 16분
+# 실행: ulimit -s 262144; export OMP_NUM_THREADS=6 MKL_NUM_THREADS=6
+#       nohup lmp_7net -in in.relax220 > relax220.log 2>&1 &
+
+units           metal
+boundary        p p p
+atom_style      charge
+
+read_data       ../s0_requench/sio2_bks220.data
+mass            1 15.9994
+mass            2 28.0855
+
+pair_style      e3gnn
+pair_coeff      * * ../../01_input/pot/deployed_nano_4.5.pt O Si
+
+neighbor        1.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+velocity        all set 0.0 0.0 0.0     # Press를 순수 virial로
+
+variable        epa  equal pe/atoms
+variable        dens equal density
+variable        fmag atom sqrt(fx*fx+fy*fy+fz*fz)
+compute         maxf all reduce max v_fmag
+
+thermo          10
+thermo_style    custom step temp pe v_epa press vol v_dens c_maxf
+
+min_style       cg
+min_modify      dmax 0.05
+minimize        0.0 1.0e-3 400 400
+
+write_data      relaxed220.data

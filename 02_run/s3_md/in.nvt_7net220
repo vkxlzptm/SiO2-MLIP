@@ -1,0 +1,54 @@
+# S3'  SevenNet-nano-4.5, NVT 300 K @ ρ = 2.20 (BKS 런과 동일 조건)
+#
+# 이제 BKS·SevenNet·AIMD(Dechant, PBE)·실험이 전부 ρ = 2.20 에 놓인다.
+# BKS 쪽 대응 런: 02_run/s0_requench (300 K NVT 50 ps 평형 + 50 ps RDF)
+#   → rdf_bks220.dat.  단 BKS는 자기 구조에서, SevenNet은 자기 이완 구조에서 출발한다.
+#
+# 비용: 5,000 step × 2.401 s ≈ 3.34 시간 (OMP=6 단일 실행, mpirun 금지)
+# 실행: ulimit -s 262144; export OMP_NUM_THREADS=6 MKL_NUM_THREADS=6
+#       nohup lmp_7net -in in.nvt_7net220 > nvt_7net220.log 2>&1 &
+
+units           metal
+boundary        p p p
+atom_style      charge
+
+read_data       ../s2_relax/relaxed220.data
+mass            1 15.9994
+mass            2 28.0855
+
+pair_style      e3gnn
+pair_coeff      * * ../../01_input/pot/deployed_nano_4.5.pt O Si
+
+neighbor        1.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+# pair cutoff(4.5 Å)보다 멀리 보려고 compute rdf 자체 이웃리스트를 8 Å로 요청.
+# L/2 ≈ 15.2 Å 이므로 최소이미지 안전. BKS 런과 동일한 200 bin.
+compute         myRDF all rdf 200 1 1 1 2 2 2 cutoff 8.0
+compute         myMSD all msd
+variable        epa equal pe/atoms
+
+timestep        0.001
+velocity        all set 0.0 0.0 0.0
+velocity        all create 300.0 48291 dist gaussian mom yes
+
+thermo          100
+thermo_style    custom step temp pe v_epa press vol density c_myMSD[4]
+
+print           "=========== EQUIL 2 ps ==========="
+fix             1 all nvt temp 300.0 300.0 0.1
+run             2000
+write_data      equil_7net220.data
+
+# 생산 3 ps: 10 step 간격 300 샘플 평균
+print           "=========== PROD 3 ps (RDF) ==========="
+reset_timestep  0
+fix             rdfavg all ave/time 10 300 3000 c_myRDF[*] file rdf_7net220_3ps.dat mode vector
+dump            trj all custom 20 traj_7net220.lammpstrj id type xs ys zs
+dump_modify     trj sort id
+run             3000
+undump          trj
+unfix           rdfavg
+unfix           1
+
+write_data      prod_7net220.data
