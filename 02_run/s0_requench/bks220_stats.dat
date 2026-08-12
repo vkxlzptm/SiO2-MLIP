@@ -1,0 +1,7 @@
+# traj_bks220.lammpstrj   frames = 151
+Si-O-Si   mean  151.898  std  12.215  median  152.124  peak 150.0   n=216987
+O-Si-O    mean  109.375  std   6.329  median  108.937  peak 108.0   n=652924
+Si-O      mean   1.6147  std  0.0329 A   n=435031
+Si-Si min per frame:  mean 2.4286  min 2.3273 A
+Si 배위수  <n> 4.0014   4:99.861%  5:0.139%
+O  배위수  <n> 2.0007   1:0.069%  2:99.792%  3:0.139%
