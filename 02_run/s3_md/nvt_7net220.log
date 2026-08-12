@@ -1,0 +1,15 @@
+nohup: ignoring input
+LAMMPS (2 Aug 2023 - Update 3)
+  using 6 OpenMP thread(s) per MPI task
+Reading data file ...
+  orthogonal box = (-0.13095199 -0.13140962 -0.15165528) to (30.269865 30.375648 35.055481)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  2160 atoms
+  reading velocities ...
+  2160 velocities
+  read_data CPU = 0.006 seconds
+=========== EQUIL 2 ps ===========
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+ERROR: Compute rdf cutoff exceeds ghost atom range - use comm_modify cutoff command (src/compute_rdf.cpp:175)
+Last command: run             2000
