@@ -7,7 +7,7 @@ S = [("BKS", "../02_run/s0_requench/bks220_angles.dat", "tab:blue"),
      ("7net-nano-4.5", "../02_run/s3_md/7net220_angles.dat", "tab:red")]
 
 # 문헌 평균값 (본문 수치)
-REF_SIOSI = [("MTP npj2024  145.5", 145.5, "tab:green"),
+REF_SIOSI = [("MTP npj2024  145.5", 145.5, "tab:purple"),
              ("CPMD PW91  146", 146.0, "0.4"),
              ("BKS lit.  150-152", 151.0, "0.7")]
 
@@ -19,6 +19,16 @@ for lab, p, c in S:
     m = d[:, 1] > 0
     mean = (d[m, 0] * d[m, 1]).sum() / d[m, 1].sum()
     ax[0].axvline(mean, ls=":", lw=1, c=c)
+
+# Dechant JPCC 2026 AIMD(PBE, LES) — Fig.4b 색분리 digitize, 면적 규격화
+import os
+if os.path.exists("dechant_bad_digitized.dat"):
+    dd = np.loadtxt("dechant_bad_digitized.dat")
+    ax[0].plot(dd[:, 0], dd[:, 1], "-", lw=1.5, c="tab:green",
+               label="AIMD PBE (Dechant 2026)")
+    mean = np.trapezoid(dd[:, 0] * dd[:, 1], dd[:, 0])
+    ax[0].axvline(mean, ls=":", lw=1, c="tab:green")
+    print(f"AIMD digitize 평균 {mean:.2f}°  (논문 Table 1: 138.5°)")
 
 for lab, v, c in REF_SIOSI:
     ax[0].axvline(v, ls="--", lw=1, c=c)
