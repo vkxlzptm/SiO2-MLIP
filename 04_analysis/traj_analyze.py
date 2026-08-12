@@ -53,14 +53,32 @@ def mic(d, L):
 
 
 def analyze(path, prefix):
-    ang_sios, ang_osio, r_sio, r_oo, r_sisi = [], [], [], [], []
+    ang_sios, ang_osio, r_sio = [], [], []
     nO_all, nSi_all, sisi_min = [], [], []
     nframe = 0
+
+    # 세밀한 g(r) 직접 계산: LAMMPS compute rdf 는 8 Å/200bin = 0.04 Å 이라
+    # BKS와 SevenNet의 결합길이 차이(0.02 Å)를 한 빈 안에 묻어버린다.
+    RMAX, DR = 8.0, 0.01
+    nb_ = int(RMAX / DR)
+    edges = np.linspace(0, RMAX, nb_ + 1)
+    hSiO = np.zeros(nb_); hOO = np.zeros(nb_); hSiSi = np.zeros(nb_)
 
     for typ, pos, L in read_dump(path):
         nframe += 1
         O = np.where(typ == TYPE_O)[0]
         Si = np.where(typ == TYPE_SI)[0]
+
+        # g(r) 누적 (Si 중심 한 번 순회로 Si-O / Si-Si, O 중심으로 O-O)
+        for i in Si:
+            d = mic(pos - pos[i], L)
+            r = np.linalg.norm(d, axis=1)
+            hSiO += np.histogram(r[typ == TYPE_O], bins=edges)[0]
+            rr = r[typ == TYPE_SI]
+            hSiSi += np.histogram(rr[rr > 1e-6], bins=edges)[0]
+        for o in O:
+            r = np.linalg.norm(mic(pos[O] - pos[o], L), axis=1)
+            hOO += np.histogram(r[r > 1e-6], bins=edges)[0]
 
         # --- Si 중심: O 이웃 → 배위수 + O-Si-O 각 ---
         for i in Si:
@@ -103,6 +121,17 @@ def analyze(path, prefix):
     np.savetxt(f"{prefix}_angles.dat", np.c_[c, h1, h2],
                header="angle(deg)  P(Si-O-Si)  P(O-Si-O)   [1 deg bin, normalized]")
 
+    # --- g(r) 규격화: shell 부피 × 수밀도 × 중심원자수 × 프레임수 ---
+    V = float(L.prod())
+    rc = 0.5 * (edges[1:] + edges[:-1])
+    shell = 4 * np.pi * rc**2 * DR
+    nSi, nO = len(Si), len(O)
+    gSiO = hSiO / (shell * (nO / V) * nSi * nframe)
+    gOO = hOO / (shell * (nO / V) * nO * nframe)
+    gSiSi = hSiSi / (shell * (nSi / V) * nSi * nframe)
+    np.savetxt(f"{prefix}_gr.dat", np.c_[rc, gSiO, gOO, gSiSi],
+               header=f"r(A)  g_SiO  g_OO  g_SiSi   [dr={DR} A, {nframe} frames, V={V:.1f} A^3]")
+
     with open(f"{prefix}_stats.dat", "w") as f:
         w = lambda s: (print(s), f.write(s + "\n"))
         w(f"# {path}   frames = {nframe}")
@@ -116,7 +145,7 @@ def analyze(path, prefix):
           "  ".join(f"{k}:{100*(nO_all==k).mean():.3f}%" for k in sorted(set(nO_all))))
         w(f"O  배위수  <n> {nSi_all.mean():.4f}   " +
           "  ".join(f"{k}:{100*(nSi_all==k).mean():.3f}%" for k in sorted(set(nSi_all))))
-    print(f"-> {prefix}_angles.dat, {prefix}_stats.dat")
+    print(f"-> {prefix}_angles.dat, {prefix}_stats.dat, {prefix}_gr.dat")
 
 
 if __name__ == "__main__":
