@@ -1,0 +1,49 @@
+# S2'-2  E-V 스캔 @ 새 구조(ρ=2.20 네트워크) — SevenNet의 평형밀도 확정
+#
+# 왜: in.relax220 결과 P = -3,654 bar (-0.365 GPa). 체적탄성률을 가정해 역산하면
+#     ρ0 ≈ 2.21~2.22로 추정되지만 K를 모르므로 확정이 아니다. E-V로 직접 잰다.
+#     BKS는 같은 네트워크에서 2.312를 줬다(측정값). 이 비교가 이 프로젝트의 핵심 숫자.
+#
+# 기준 V0 = 32,652.488 Å³ (relaxed220.data, ρ=2.2000)
+#   -var s <선형 스케일>로 등방 스케일 후 원자만 이완.
+#   etol = 0.0 (S2-1에서 etol=1e-8이 조기 종료를 일으킴)
+#
+# 실행: run_ev220.sh 참조
+
+units           metal
+boundary        p p p
+atom_style      charge
+
+read_data       relaxed220.data
+mass            1 15.9994
+mass            2 28.0855
+
+pair_style      e3gnn
+pair_coeff      * * ../../01_input/pot/deployed_nano_4.5.pt O Si
+
+neighbor        1.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+change_box      all x scale ${s} y scale ${s} z scale ${s} remap
+
+velocity        all set 0.0 0.0 0.0        # Press를 순수 virial로 (S2-2의 교훈)
+
+variable        epa  equal pe/atoms
+variable        dens equal density
+variable        fmag atom sqrt(fx*fx+fy*fy+fz*fz)
+compute         maxf all reduce max v_fmag
+
+thermo          20
+thermo_style    custom step pe v_epa press vol v_dens c_maxf
+
+min_style       cg
+min_modify      dmax 0.05
+minimize        0.0 1.0e-3 150 150
+
+variable        Vf equal vol
+variable        Df equal density
+variable        Ef equal pe
+variable        ef equal pe/atoms
+variable        Pf equal press
+variable        Ff equal c_maxf
+print           "EVPOINT ${s} ${Vf} ${Df} ${Ef} ${ef} ${Pf} ${Ff}"
