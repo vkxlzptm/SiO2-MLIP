@@ -22,6 +22,12 @@ pair_coeff      * * ../../01_input/pot/deployed_nano_4.5.pt O Si
 neighbor        1.0 bin
 neigh_modify    every 1 delay 0 check yes
 
+# ★ 필수. e3gnn의 ghost 범위는 pair cutoff 기준(4.5+1.0=5.5 Å)이라 아래 RDF의 8 Å를
+#   감당하지 못한다 ("ERROR: Compute rdf cutoff exceeds ghost atom range"로 죽음).
+#   BKS 런은 buck cutoff 10+skin 2.0=12 Å이라 우연히 문제가 없었다.
+#   힘 계산에는 영향 없고(e3gnn은 자기 4.5 Å 리스트를 씀) ghost 원자 수만 늘어난다.
+comm_modify     cutoff 9.0
+
 # pair cutoff(4.5 Å)보다 멀리 보려고 compute rdf 자체 이웃리스트를 8 Å로 요청.
 # L/2 ≈ 15.2 Å 이므로 최소이미지 안전. BKS 런과 동일한 200 bin.
 compute         myRDF all rdf 200 1 1 1 2 2 2 cutoff 8.0
