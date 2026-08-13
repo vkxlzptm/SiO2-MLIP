@@ -144,15 +144,19 @@ for lab, v in fit.items():
     b.plot(rho_of(v["V"]), v["P"] / 1e4, "o", ms=5, mfc="w", mec=v["col"],
            mew=1.3, zorder=3)
     K = v["pp"][1] * EV2BAR / 1e4
+    # ± 는 일부러 안 쓴다. LOO 산포(±0.4 / ±0.1)는 **실질 불확도가 아니다** —
+    # BKS 는 E(V)/P(V) 두 경로가 7.2 % 벌어져 계통오차가 통계오차의 20배다.
+    # 그림에 ± 를 박으면 그 정밀도가 실재하는 것처럼 읽힌다. 불확도 논의는 RESULTS.md §2 에.
     b.plot([], [], "o-", c=v["col"], mfc="w", mew=1.3, ms=5,
-           label=rf"{lab}:  $K_0$ = {K:.1f} $\pm$ {v['loo']:.1f} GPa")
-b.plot([], [], " ", label=rf"exp. fused silica: {K_EXP} GPa")
-b.plot([], [], "--", c="k", alpha=0.7, lw=1.2,
-       label=rf"$\rho_{{\rm exp}}$ = {RHO_EXP:.2f}")
+           label=rf"{lab}:  {K:.1f} GPa")
+# rho_exp 는 (a) 범례가 이미 설명한다(같은 figure) → 중복 제거.
+# 대신 (a) 의 rho_exp 와 대칭이 되게 K_exp 를 적는다.
+b.plot([], [], " ", label=rf"$K_{{\rm exp}}$ = {K_EXP} GPa  (fused silica)")
 b.set_xlabel(r"$\rho$ (g/cm$^3$)"); b.set_ylabel(r"$P$ (GPa)")
-b.set_ylim(-4.2, 3.2)
-b.legend(loc="lower right", framealpha=0.9, fontsize=8, handlelength=1.2,
-         borderpad=0.4, labelspacing=0.35)
+b.set_ylim(-4.9, 3.2)   # 범례가 좌측 BKS 점(rho 2.20, -2.15 GPa)을 가리지 않도록 아래 여유
+b.legend(loc="lower right", framealpha=0.92, fontsize=8, handlelength=1.6,
+         borderpad=0.4, labelspacing=0.35,
+         title=r"$K_0 = -V\,dP/dV$  (BM3 fit to $P$)", title_fontsize=7.5)
 
 for k, a_ in enumerate(ax):
     a_.set_xlim(2.05, 2.48)
