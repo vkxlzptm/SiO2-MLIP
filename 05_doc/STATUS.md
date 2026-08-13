@@ -61,6 +61,12 @@ BKS(고전 포텐셜)로 만든 비정질 SiO₂에 범용 MLIP **SevenNet-Nano*
 9. **melt-quench 는 부피고정 NVT 로, NPT 는 300 K 평형에서만.** 그리고 **MSD 로 완전 용융을
    검증할 것.** 1차 실패의 직접 원인 (`02_run/_v1_superseded/README.md`).
 10. conda `mlip` 환경을 지우면 `lmp_7net`이 libtorch를 못 찾아 **LAMMPS 재빌드** 필요.
+11. **잘린 고전 포텐셜의 EOS는 E(V)가 아니라 virial P(V)를 피팅할 것.**
+    BKS의 `−C/r⁶`는 10 Å에서 shift/tail 보정 없이 잘린다. 부피가 변하면 원자쌍이
+    cutoff를 넘나들며 E가 계단처럼 튀는데 virial은 그 계단을 못 봐서
+    **−dE/dV ≠ P_virial** 이 된다(실측 오프셋 −2,100 ~ −2,800 bar, 해석식 A/V²와 일치).
+    MLIP는 매끄러운 cutoff 함수를 쓰므로 해당 없음 — 7net은 두 경로가 0.4 % 일치.
+    확인용: `./run_ev_bks.sh 1` (LAMMPS 해석적 tail 보정 on).
 
 ## 비용 모델 (실측 기반, 2160원자)
 
