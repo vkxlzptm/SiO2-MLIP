@@ -16,14 +16,20 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+from pathlib import Path
+ROOT = Path(__file__).resolve().parents[2]
+DAT, FIG = ROOT / "04_analysis/dat", ROOT / "04_analysis/fig"
+FIG.mkdir(exist_ok=True); DAT.mkdir(exist_ok=True)
+
+
 EV2BAR = 1.602176634e6
 KB = 8.617333262e-5
 N = 2160
-T_DATA = 0.0          # sio2_quenched.data 속도가 대응하는 온도 (S1에서 독립 산출)
+T_DATA = 302.3          # sio2_quenched.data 속도가 대응하는 온도 (S1에서 독립 산출)
 MASS_SUM = 43260.70     # amu, 720 Si + 1440 O
 RHO = lambda V: MASS_SUM * 1.66053907 / V
 
-d = np.loadtxt("../02_run/s2_relax/ev220_scan.txt")
+d = np.loadtxt(f"{ROOT}/02_run/s2_relax/ev_scan.txt")
 V, E, P_lmp = d[:, 1], d[:, 3], d[:, 5]
 
 
@@ -75,8 +81,8 @@ fig, ax = plt.subplots(1, 2, figsize=(11, 4.2))
 ax[0].plot(Vs, (bm3_E(Vs, *pf) - E0) / N * 1e3, "-", lw=1.6, label="BM3 fit")
 ax[0].plot(V, (E - E0) / N * 1e3, "o", ms=6, label="7net-nano-4.5")
 ax[0].axvline(V0, ls="--", c="0.5", lw=1)
-ax[0].axvline(32652.5, ls=":", c="crimson", lw=1.2)
-ax[0].text(32652.5, ax[0].get_ylim()[1]*0.92, " BKS\n 2.607", color="crimson", fontsize=8, va="top")
+ax[0].axvline(27554.3, ls=":", c="crimson", lw=1.2)
+ax[0].text(27554.3, ax[0].get_ylim()[1]*0.92, " BKS\n 2.607", color="crimson", fontsize=8, va="top")
 ax[0].text(V0, ax[0].get_ylim()[1]*0.55, f" $V_0$\n {RHO(V0):.3f}", color="0.3", fontsize=8, va="top")
 ax[0].set_xlabel(r"$V$ ($\rm\AA^3$)"); ax[0].set_ylabel(r"$E-E_0$ (meV/atom)")
 ax[0].set_title("E-V (0 K static relaxation)"); ax[0].legend(fontsize=8)
@@ -92,5 +98,5 @@ for a in ax:
     sec = a.secondary_xaxis("top", functions=(RHO, lambda r_: MASS_SUM * 1.66053907 / r_))
     sec.set_xlabel(r"$\rho$ (g/cm$^3$)", fontsize=9)
 fig.tight_layout()
-fig.savefig("ev220_fit.png", dpi=160)
-print("\n-> ev220_fit.png 저장")
+fig.savefig(f"{FIG}/ev_fit.png", dpi=160)
+print("\n-> ev_fit.png 저장")

@@ -17,6 +17,12 @@ y축 눈금값이 없고, 게다가 LES(녹색)는 세로로 offset 되어 그�
 import numpy as np
 from PIL import Image
 
+from pathlib import Path
+ROOT = Path(__file__).resolve().parents[2]
+DAT, FIG = ROOT / "04_analysis/dat", ROOT / "04_analysis/fig"
+FIG.mkdir(exist_ok=True); DAT.mkdir(exist_ok=True)
+
+
 # 논문 계: 120 atoms (40 SiO2), ρ = 2.20 g/cm3
 MASS = 40 * (28.0855 + 2 * 15.9994)
 V = MASS * 1.66053907 / 2.20
@@ -26,9 +32,9 @@ print(f"논문 계: V = {V:.1f} A^3 (L = {V**(1/3):.2f} A),  L/2 = {V**(1/3)/2:.
 
 # (그림파일, 패널 x범위(전체폭 대비), 쌍, 이론 배위수, 중심원자, 상대원자, 0인 구간, 1피크 적분구간)
 PANELS = [
-    ("../05_doc/dechant_figs/SI_p4_img0.jpeg", (0.00, 0.50), "Si-O", 4.0, "Si", "O", (1.0, 1.30), (1.30, 2.10)),
-    ("../05_doc/dechant_figs/SI_p4_img0.jpeg", (0.50, 1.00), "O-O",  6.0, "O",  "O", (1.0, 2.10), (2.10, 3.30)),
-    ("../05_doc/dechant_figs/p3_img2.png",     (0.00, 0.51), "Si-Si", 4.0, "Si", "Si", (1.0, 2.20), (2.20, 3.80)),
+    (f"{ROOT}/05_doc/dechant_figs/SI_p4_img0.jpeg", (0.00, 0.50), "Si-O", 4.0, "Si", "O", (1.0, 1.30), (1.30, 2.10)),
+    (f"{ROOT}/05_doc/dechant_figs/SI_p4_img0.jpeg", (0.50, 1.00), "O-O",  6.0, "O",  "O", (1.0, 2.10), (2.10, 3.30)),
+    (f"{ROOT}/05_doc/dechant_figs/p3_img2.png",     (0.00, 0.51), "Si-Si", 4.0, "Si", "Si", (1.0, 2.20), (2.20, 3.80)),
 ]
 RMIN, RMAX = 1.0, 9.0          # 세 그림 모두 x축 1~9 Å
 
@@ -120,15 +126,20 @@ for path, (fx0, fx1), pair, cn_ref, ca, cb, zero_rng, peak_rng in PANELS:
     mt = (grid > 3.5) & (grid < 6.1)            # (b) g -> 1 (L/2=6.1 A 안쪽만)
     s_tail = 1.0 / y[mt].mean()
 
-    g = np.clip(y * s_tail, 0, None)            # 본 곡선은 (b) 기준. g(r) 정의에 충실.
-    cn_got = (g[mp] * 4 * np.pi * grid[mp] ** 2 * dr).sum() * RHO[cb]
+    # 규격화는 (a) 배위수 기준을 채택한다.
+    #   Si-O 처럼 1피크가 뾰족하면 그림 해상도가 면적을 잃어 (b) 꼬리 기준으로는
+    #   피크 진폭이 과소평가된다. 배위수는 완전한 corner-sharing 망에서 정확히
+    #   정해지는 물리 구속이므로 이쪽이 더 튼튼하다.
+    #   채택 후 꼬리 값(아래 tail_lv)이 1에서 얼마나 벗어나는지가 digitize 품질 지표.
+    g = np.clip(y * s_cn, 0, None)
+    tail_lv = g[mt].mean()
     pk = grid[mp][np.argmax(g[mp])]
-    print(f"{pair:6s} box=({c0},{c1},{r0},{r1})  1피크 {pk:.3f} A  g_max={g[mp].max():6.2f}"
-          f"  |  배위수 {cn_got:.2f} (이론 {cn_ref:.0f})"
-          f"  두 규격화 비 {s_cn/s_tail:.2f}   군집분리 {nsplit}열, 이상치제거 {nrej}점")
+    print(f"{pair:6s} 1피크 {pk:.3f} A  g_max={g[mp].max():6.2f}  배위수 {cn_ref:.0f} 고정"
+          f"  |  꼬리 g(3.5-6.1 A) = {tail_lv:.2f} (1이면 이상적)"
+          f"   군집분리 {nsplit}열, 이상치제거 {nrej}점")
     out.append(g)
 
-np.savetxt("dechant_pdf_digitized.dat", np.c_[tuple(out)],
+np.savetxt(f"{DAT}/dechant_pdf_digitized.dat", np.c_[tuple(out)],
            header="r(A)  g_SiO  g_OO  g_SiSi   [Dechant JPCC2026 LES, colour-digitized, "
                   "offset=0 below 1st peak, scale set by 1st-shell CN = 4/6/4]")
 print("-> dechant_pdf_digitized.dat")

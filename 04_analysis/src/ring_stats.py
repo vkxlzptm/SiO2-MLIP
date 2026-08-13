@@ -16,6 +16,12 @@ import sys
 from collections import deque, Counter
 import numpy as np
 
+from pathlib import Path
+ROOT = Path(__file__).resolve().parents[2]
+DAT, FIG = ROOT / "04_analysis/dat", ROOT / "04_analysis/fig"
+FIG.mkdir(exist_ok=True); DAT.mkdir(exist_ok=True)
+
+
 RCUT = 2.0
 
 

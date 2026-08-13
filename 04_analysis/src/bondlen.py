@@ -7,10 +7,16 @@
 import numpy as np
 from itertools import product
 
+from pathlib import Path
+ROOT = Path(__file__).resolve().parents[2]
+DAT, FIG = ROOT / "04_analysis/dat", ROOT / "04_analysis/fig"
+FIG.mkdir(exist_ok=True); DAT.mkdir(exist_ok=True)
+
+
 FILES = [
-    ("BKS quench (rho=2.607)",       "../01_input/sio2_quenched.data"),
-    ("7net relax @V_BKS (2.607)",    "../02_run/s2_relax/relaxed_s1_atoms.data"),
-    ("7net relax @V=28552 (2.516)",  "../02_run/s2_relax/relaxed_final.data"),
+    ("BKS quench (rho=2.607)",       f"{ROOT}/01_input/sio2_quenched.data"),
+    ("7net relax @V_BKS (2.607)",    f"{ROOT}/02_run/s2_relax/relaxed_s1_atoms.data"),
+    ("7net relax @V=28552 (2.516)",  f"{ROOT}/02_run/s2_relax/relaxed_final.data"),
 ]
 RCUT_SIO = 2.0   # Si-O 1차 배위 판정 (1피크와 2피크 사이 골)
 

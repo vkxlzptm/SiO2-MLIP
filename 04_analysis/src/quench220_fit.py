@@ -1,9 +1,15 @@
 #!/usr/bin/env python
 """재quench(ρ=2.20 고정 NVT) 결과 요약: PE-T 곡선에서 Tg 추정 + 그림."""
 import numpy as np, matplotlib
+
+from pathlib import Path
+ROOT = Path(__file__).resolve().parents[2]
+DAT, FIG = ROOT / "04_analysis/dat", ROOT / "04_analysis/fig"
+FIG.mkdir(exist_ok=True); DAT.mkdir(exist_ok=True)
+
 matplotlib.use("Agg"); import matplotlib.pyplot as plt
 
-d = np.loadtxt("qt_from_log.dat")          # T, PotEng(eV), Press(bar)
+d = np.loadtxt(f"{DAT}/qt_from_log.dat")          # T, PotEng(eV), Press(bar)
 T, E, P = d[:, 0], d[:, 1] / 2160 * 1000, d[:, 2]   # E → meV/atom
 
 # 고온/저온 두 직선을 각각 피팅해 교점을 Tg로 (표준적인 방법)
@@ -30,5 +36,5 @@ ax[1].plot(T, P / 1e4, "o-", ms=4)
 ax[1].axhline(0, ls="--", c="0.5", lw=1)
 ax[1].set_xlabel("T (K)"); ax[1].set_ylabel("P (GPa)")
 ax[1].set_title(r"Pressure at fixed $\rho$=2.20  (BKS wants to contract)")
-fig.tight_layout(); fig.savefig("quench220_fit.png", dpi=160)
+fig.tight_layout(); fig.savefig(f"{FIG}/quench220_fit.png", dpi=160)
 print("-> quench220_fit.png")
