@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Fig. speed — CPU 처리량과 병렬 확장성 (i5-11600K 6c12t, GPU 없음).
 
-(a) 처리량: BKS vs 7net-nano cutoff 4종. 로그 축.
+(a) 처리량: BKS vs 7net-Nano  cutoff 4종. 로그 축.
 (b) 병렬 확장성: OMP 스레드 / 독립 프로세스(리플리카) 둘 다 조기 포화.
     → 이 워크로드는 연산이 아니라 **메모리 대역폭**에 묶여 있다.
 
@@ -53,7 +53,7 @@ a.plot([5], [NANO_220], "o", ms=7, mfc="w", mec="tab:red", mew=1.6, zorder=5)
 a.set_yscale("log"); a.set_ylim(2e2, 4e6)
 a.set_xticks(xs); a.set_xticklabels(labs, fontsize=8.5)
 a.set_ylabel("throughput (atom-step / s)")
-a.set_xlabel(r"BKS        7net-nano  cutoff ($\rm\AA$)")
+a.set_xlabel(r"BKS        7net-Nano  cutoff ($\rm\AA$)")
 a.text(0.035, 0.91, "(a)", transform=a.transAxes, fontsize=11.5, fontweight="bold")
 # 배수 화살표 + 양 끝 높이를 가로 점선으로 연결해 어느 값끼리 비교하는지 명시
 a.hlines(BKS_220, 0, 5.35, ls=":", lw=0.9, color="0.35", zorder=1)
@@ -64,7 +64,7 @@ a.text(4.90, np.sqrt(NANO_220 * BKS_220)/2, f"×{BKS_220/NANO_220:,.0f}",
        fontsize=10, ha="right", va="center",
        bbox=dict(fc="white", ec="none", alpha=0.75, pad=1.0))
 a.plot([1.7], [7e4*3], "o", ms=7, mfc="w", mec="tab:red", mew=1.6, clip_on=False)
-a.text(1.85, 7e4*3, r"7net-nano-4.5 @ $\rho$2.20", fontsize=8.5, va="center")
+a.text(1.85, 7e4*3, r"7net-Nano-4.5 @ $\rho$2.20", fontsize=8.5, va="center")
 a.text(1.7, 2e4*3, r"bars: @ $\rho$2.607" + "\n" + r"(cutoff sweep)",
        fontsize=8.5, va="center")
 
@@ -79,7 +79,7 @@ b.plot(REPLICA[0], REPLICA[1] / REPLICA[1][0], "^-", ms=6, c="tab:purple",
 b.axvline(6, ls=":", lw=1.0, c="0.5")
 b.text(5.1, 5.8, "6 physical\ncores", fontsize=8, c="0.35", va="top", ha="right")
 b.set_xlim(0.5, 12.5); b.set_ylim(0, 6)
-b.set_xlabel("number of threads / processes"); b.set_ylabel("speedup")
+b.set_xlabel("number of threads or processes"); b.set_ylabel("speedup")
 b.set_xticks([1, 2, 4, 6, 8, 10, 12])
 b.legend(bbox_to_anchor = (1, 0.6), loc="center right", framealpha=0.9)
 b.text(0.035, 0.91, "(b)", transform=b.transAxes, fontsize=11.5, fontweight="bold")
@@ -100,7 +100,7 @@ print(f"  BKS      ρ=2.607  {BKS_261:>12,.0f}   (6 ranks)")
 for c in (6.0, 5.5, 5.0, 4.5):
     print(f"  7net {c}  ρ=2.607  {NANO_261[c]:>12,.1f}   (1 rank x 6 threads)")
 print(f"  7net 4.5  ρ=2.20   {NANO_220:>12,.1f}")
-print(f"\n생산 조건 배수 (둘 다 ρ=2.20): BKS / 7net-nano-4.5 = {BKS_220/NANO_220:,.0f}x")
+print(f"\n생산 조건 배수 (둘 다 ρ=2.20): BKS / 7net-Nano-4.5 = {BKS_220/NANO_220:,.0f}x")
 print(f"초기 조건 배수 (ρ=2.607, cutoff 5.5): {BKS_261/NANO_261[5.5]:,.0f}x")
 print(f"\n병렬 확장: 스레드 1->12 {THREADS[1][-1]/THREADS[1][0]:.2f}x, "
       f"프로세스 1->6 {REPLICA[1][-1]/REPLICA[1][0]:.2f}x  (ideal 12x / 6x)")

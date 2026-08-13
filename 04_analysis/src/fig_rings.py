@@ -95,7 +95,7 @@ ax.yaxis.set_minor_locator(AutoMinorLocator(2))
 # HandlerTuple 의 ndivide 는 스와치를 몇 칸으로 나눌지다.
 # None = 튜플 길이만큼 나눠 **나란히** 그림 → 원하는 건 ndivide=1 (한 칸에 포개기).
 ax.legend([(h_fill, h_edge), h_ai],
-          ["This work \n(BKS = 7net-nano-4.5)",
+          ["This work \n(BKS = 7net-Nano-4.5)",
            "AIMD PBE \n(Dechant 2026, 120 atoms)"],
           handler_map={tuple: HandlerTuple(ndivide=1)},
           loc="upper left", framealpha=0.9, fontsize=8.5, frameon=False)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Fig. PDF — partial pair distribution functions of a-SiO2 at ρ = 2.20 g/cm³, 300 K.
 
-BKS vs 7net-nano-4.5 (본 작업) vs AIMD PBE (Dechant JPCC 2026, 색분리 digitize).
+BKS vs 7net-Nano-4.5 (본 작업) vs AIMD PBE (Dechant JPCC 2026, 색분리 digitize).
 공통 x축을 공유하는 3단 세로 배치. Si-O 는 1피크가 뾰족해 r=[1.5,1.8] inset 확대,
 inset 안에만 **평균 결합길이**(색 점선)와 실험값(검정 파선)을 표기한다.
 """
@@ -30,7 +30,7 @@ plt.rcParams.update({
 ALPHA = 0.8                      # 겹친 곡선 뒤가 비치도록
 
 OURS = [("BKS", "02_run/s0_requench/bks220", "tab:blue"),
-        ("7net-nano-4.5", "02_run/s3_md/7net220", "tab:red")]
+        ("7net-Nano-4.5", "02_run/s3_md/7net220", "tab:red")]
 AI = np.loadtxt(DAT / "dechant_pdf_digitized.dat")     # r, gSiO, gOO, gSiSi
 AILAB = "AIMD PBE (Dechant 2026)"
 EXP = {"Si-O": 1.61, "O-O": 2.63, "Si-Si": 3.08}       # Dechant Table 1, experimental

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Fig. density — 같은 유리 네트워크의 평형밀도와 부피탄성률: BKS vs 7net-nano-4.5.
+"""Fig. density — 같은 유리 네트워크의 평형밀도와 부피탄성률: BKS vs 7net-Nano-4.5.
 
 BKS 가 ρ=2.20 고정 NVT 로 만든 **하나의** 네트워크를 두 포텐셜에 각각 넘겨
 "너는 어느 부피를 원하냐"고 물었다. 각 부피에서 셀은 고정하고 원자만 0 K 이완.
@@ -83,7 +83,7 @@ RUN = ROOT / "02_run/s2_relax"
 # ★ BKS 는 **tail 보정 켠 쪽**(ev_bks_scan_tail.txt)이 보고값이다. 근거는 위 docstring.
 #   tail off 원자료도 남아 있다(ev_bks_scan.txt) — 절단 관례의 계통오차 크기를 재는 용도.
 SET = [("BKS", "tab:blue", RUN / "ev_bks_scan_tail.txt"),
-       ("7net-nano-4.5", "tab:red", RUN / "ev220_scan.txt")]
+       ("7net-Nano-4.5", "tab:red", RUN / "ev220_scan.txt")]
 RHO_BKS_NPT = 2.3401        # 300 K NPT (tail on) 100 ps 시간평균, in.npt_tail
 
 fit = {}
@@ -138,10 +138,10 @@ for lab, v in fit.items():
 a.set_xlabel(r"$\rho$ (g/cm$^3$)"); a.set_ylabel(r"$E-E_0$ (meV/atom)")
 a.set_ylim(-0.5, 13.5)
 # 범례 핸들은 마커가 아니라 **세로선** 이다. 세 선이 무엇인지가 이 패널의 요점이므로.
-a.legend([hx[0], hline["BKS"], hline["7net-nano-4.5"]],
+a.legend([hx[0], hline["BKS"], hline["7net-Nano-4.5"]],
          [rf"Fused silica: $\rho_{{\rm exp}}$ = {RHO_EXP:.2f}",
           rf"BKS:  $\rho_0$ = {RHO0['BKS']:.3f}",
-          rf"7net-nano-4.5:  $\rho_0$ = {RHO0['7net-nano-4.5']:.3f}"],
+          rf"7net-Nano-4.5:  $\rho_0$ = {RHO0['7net-Nano-4.5']:.3f}"],
          loc="upper right", framealpha=0.92, fontsize=8, handlelength=1.6,
          borderpad=0.4, labelspacing=0.35,
          title=r"vertical lines: $\rho$ where $P=0$", title_fontsize=7.5)
@@ -203,11 +203,11 @@ for lab, v in fit.items():
           f"{'   <- 절단 꼬리 artifact' if dK > 2 else '   <- 정합'}\n")
 
 print(f"실험 대비:  rho0  BKS {RHO0['BKS']:.4f} ({100*(RHO0['BKS']/RHO_EXP-1):+.2f} %)"
-      f"   7net {RHO0['7net-nano-4.5']:.4f} ({100*(RHO0['7net-nano-4.5']/RHO_EXP-1):+.2f} %)")
-KB, K7 = fit["BKS"]["pp"][1]*EV2BAR/1e4, fit["7net-nano-4.5"]["pp"][1]*EV2BAR/1e4
+      f"   7net {RHO0['7net-Nano-4.5']:.4f} ({100*(RHO0['7net-Nano-4.5']/RHO_EXP-1):+.2f} %)")
+KB, K7 = fit["BKS"]["pp"][1]*EV2BAR/1e4, fit["7net-Nano-4.5"]["pp"][1]*EV2BAR/1e4
 print(f"            K0    BKS {KB:.2f} ({100*(KB/K_EXP-1):+.1f} %)"
       f"   7net {K7:.2f} ({100*(K7/K_EXP-1):+.1f} %)     exp {K_EXP} GPa")
 print(f"\nMLIP 가 줄인 밀도 오차 배수: "
-      f"{abs(RHO0['BKS']/RHO_EXP-1)/abs(RHO0['7net-nano-4.5']/RHO_EXP-1):.1f}x")
+      f"{abs(RHO0['BKS']/RHO_EXP-1)/abs(RHO0['7net-Nano-4.5']/RHO_EXP-1):.1f}x")
 print(f"정합 확인: BKS 0 K virial {RHO0['BKS']:.4f} vs 300 K NPT {RHO_BKS_NPT:.4f}"
       f"  ({100*abs(RHO_BKS_NPT/RHO0['BKS']-1):.2f} % — 열팽창 무시 가능)")
