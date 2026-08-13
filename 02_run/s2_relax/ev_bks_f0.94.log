@@ -24,7 +24,7 @@ Reading data file ...
   2160 atoms
   reading velocities ...
   2160 velocities
-  read_data CPU = 0.016 seconds
+  read_data CPU = 0.021 seconds
 mass            1 15.9994
 mass            2 28.0855
 # 전하는 data 파일에 포함 (O -1.2, Si +2.4)
@@ -95,9 +95,9 @@ Per MPI rank memory allocation (min/avg/max) = 6.261 | 6.339 | 6.648 Mbytes
          0  -41589.392     -19.254348      105807.71      30693.339      2.3404449      5.5013278    
        100  -41731.362     -19.320075      4420.3561      30693.339      2.3404449      0.037825108  
        101  -41731.362     -19.320075      4420.3561      30693.339      2.3404449      0.037825108  
-Loop time of 0.508868 on 6 procs for 101 steps with 2160 atoms
+Loop time of 0.518268 on 6 procs for 101 steps with 2160 atoms
 
-96.3% CPU use with 6 MPI tasks x 1 OpenMP threads
+95.9% CPU use with 6 MPI tasks x 1 OpenMP threads
 
 Minimization stats:
   Stopping criterion = linesearch alpha is zero
@@ -111,13 +111,13 @@ Minimization stats:
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.35435    | 0.38009    | 0.40748    |   2.9 | 74.69
-Kspace  | 0.08581    | 0.11309    | 0.13893    |   5.3 | 22.22
+Pair    | 0.34957    | 0.38258    | 0.4167     |   3.6 | 73.82
+Kspace  | 0.085725   | 0.11992    | 0.15286    |   6.4 | 23.14
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.011758   | 0.011898   | 0.011956   |   0.1 |  2.34
-Output  | 5.7316e-05 | 5.8466e-05 | 6.387e-05  |   0.0 |  0.01
+Comm    | 0.011947   | 0.012074   | 0.012234   |   0.1 |  2.33
+Output  | 5.8522e-05 | 6.0131e-05 | 6.6245e-05 |   0.0 |  0.01
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.003731   |            |       |  0.73
+Other   |            | 0.003635   |            |       |  0.70
 
 Nlocal:            360 ave         373 max         339 min
 Histogram: 1 0 0 0 1 0 2 0 0 2

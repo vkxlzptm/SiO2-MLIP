@@ -24,7 +24,7 @@ Reading data file ...
   2160 atoms
   reading velocities ...
   2160 velocities
-  read_data CPU = 0.016 seconds
+  read_data CPU = 0.018 seconds
 mass            1 15.9994
 mass            2 28.0855
 # 전하는 data 파일에 포함 (O -1.2, Si +2.4)
@@ -42,13 +42,13 @@ neighbor        2.0 bin
 neigh_modify    every 1 delay 0 check yes
 
 change_box      all x scale ${s} y scale ${s} z scale ${s} remap
-change_box      all x scale 1.00662271 y scale ${s} z scale ${s} remap
-change_box      all x scale 1.00662271 y scale 1.00662271 z scale ${s} remap
-change_box      all x scale 1.00662271 y scale 1.00662271 z scale 1.00662271 remap
+change_box      all x scale 0.96548938 y scale ${s} z scale ${s} remap
+change_box      all x scale 0.96548938 y scale 0.96548938 z scale ${s} remap
+change_box      all x scale 0.96548938 y scale 0.96548938 z scale 0.96548938 remap
 Changing box ...
-  orthogonal box = (-0.23161988 -0.13140962 -0.15165528) to (30.370533 30.375648 35.055481)
-  orthogonal box = (-0.23161988 -0.23242932 -0.15165528) to (30.370533 30.476668 35.055481)
-  orthogonal box = (-0.23161988 -0.23242932 -0.2682386) to (30.370533 30.476668 35.172064)
+  orthogonal box = (0.39362354 -0.13140962 -0.15165528) to (29.74529 30.375648 35.055481)
+  orthogonal box = (0.39362354 0.39499912 -0.15165528) to (29.74529 29.849239 35.055481)
+  orthogonal box = (0.39362354 0.39499912 0.45585477) to (29.74529 29.849239 34.447971)
 
 velocity        all set 0.0 0.0 0.0        # Press 를 순수 virial 로 (규칙 6)
 
@@ -65,11 +65,11 @@ min_modify      dmax 0.05
 minimize        0.0 1.0e-4 5000 5000       # BKS 는 싸므로 넉넉히. etol=0 (규칙 7)
 PPPM initialization ...
   using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
-  G vector (1/distance) = 0.29646162
+  G vector (1/distance) = 0.29959636
   grid = 24 24 27
   stencil order = 5
-  estimated absolute RMS force accuracy = 0.001439292
-  estimated relative force accuracy = 9.9953298e-05
+  estimated absolute RMS force accuracy = 0.0012701884
+  estimated relative force accuracy = 8.8209699e-05
   using double precision FFTW3
   3d grid and FFT values/proc = 9424 2880
 Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
@@ -78,7 +78,7 @@ Neighbor list info ...
   max neighbors/atom: 2000, page size: 100000
   master list distance cutoff = 12
   ghost atom cutoff = 12
-  binsize = 6, bins = 6 6 6
+  binsize = 6, bins = 5 5 6
   2 neighbor lists, perpetual/occasional/extra = 2 0 0
   (1) pair buck/coul/long, perpetual
       attributes: half, newton on
@@ -90,44 +90,46 @@ Neighbor list info ...
       pair build: trim
       stencil: none
       bin: none
-Per MPI rank memory allocation (min/avg/max) = 6.253 | 6.268 | 6.284 Mbytes
+Per MPI rank memory allocation (min/avg/max) = 6.267 | 6.345 | 6.654 Mbytes
    Step         PotEng         v_epa          Press          Volume         v_dens         c_maxf    
-         0  -41615.895     -19.266618     -58767.805      33305.538      2.1568806      4.2941385    
-        77  -41707.372     -19.308969     -31282.7        33305.538      2.1568806      0.019632542  
-Loop time of 0.453516 on 6 procs for 77 steps with 2160 atoms
+         0  -41462.097     -19.195415      214662.79      29387.239      2.4444647      6.2654441    
+       100  -41723.563     -19.316464      19604.578      29387.239      2.4444647      0.18877195   
+       200  -41724.833     -19.317052      17512.865      29387.239      2.4444647      0.17565084   
+       245  -41725.071     -19.317163      17195.8        29387.239      2.4444647      0.044451217  
+Loop time of 1.30213 on 6 procs for 245 steps with 2160 atoms
 
-97.8% CPU use with 6 MPI tasks x 1 OpenMP threads
+97.3% CPU use with 6 MPI tasks x 1 OpenMP threads
 
 Minimization stats:
   Stopping criterion = linesearch alpha is zero
   Energy initial, next-to-last, final = 
-     -41615.8948698232  -41707.3720378059  -41707.3720378059
-  Force two-norm initial, final = 75.840654 0.20201474
-  Force max component initial, final = 4.1116565 0.018930496
-  Final line search alpha, max atom move = 1.5548902e-07 2.9434843e-09
-  Iterations, force evaluations = 77 227
+     -41462.0973131655  -41725.0711617248  -41725.0711617248
+  Force two-norm initial, final = 111.16717 0.35558076
+  Force max component initial, final = 5.4969845 0.03104516
+  Final line search alpha, max atom move = 7.2187644e-08 2.241077e-09
+  Iterations, force evaluations = 245 590
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.29971    | 0.33049    | 0.36021    |   3.6 | 72.87
-Kspace  | 0.079998   | 0.1098     | 0.14052    |   6.2 | 24.21
-Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.010103   | 0.010321   | 0.010522   |   0.1 |  2.28
-Output  | 0          | 0          | 0          |   0.0 |  0.00
+Pair    | 0.90848    | 0.97348    | 1.0424     |   4.8 | 74.76
+Kspace  | 0.21404    | 0.28313    | 0.34818    |   8.9 | 21.74
+Neigh   | 0.0031528  | 0.0033093  | 0.0034525  |   0.2 |  0.25
+Comm    | 0.032317   | 0.03258    | 0.033014   |   0.1 |  2.50
+Output  | 0.00011735 | 0.000124   | 0.00015517 |   0.0 |  0.01
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.002911   |            |       |  0.64
+Other   |            | 0.009503   |            |       |  0.73
 
-Nlocal:            360 ave         373 max         339 min
-Histogram: 1 0 0 0 1 0 2 0 0 2
-Nghost:        4682.67 ave        4710 max        4665 min
-Histogram: 1 0 2 1 1 0 0 0 0 1
-Neighs:          84312 ave       90934 max       77388 min
-Histogram: 1 1 0 0 0 1 1 1 0 1
+Nlocal:            360 ave         373 max         338 min
+Histogram: 1 0 0 0 0 1 1 2 0 1
+Nghost:        5035.33 ave        5070 max        5001 min
+Histogram: 1 1 0 0 1 1 0 1 0 1
+Neighs:          95610 ave      101926 max       89565 min
+Histogram: 2 0 0 0 2 0 0 0 0 2
 
-Total # of neighbors = 505872
-Ave neighs/atom = 234.2
-Neighbor list builds = 0
+Total # of neighbors = 573660
+Ave neighs/atom = 265.58333
+Neighbor list builds = 2
 Dangerous builds = 0
 
 variable        Vf equal vol
@@ -137,5 +139,5 @@ variable        ef equal pe/atoms
 variable        Pf equal press
 variable        Ff equal c_maxf
 print           "EVPOINT ${s} ${Vf} ${Df} ${Ef} ${ef} ${Pf} ${Ff}"
-EVPOINT 1.00662271 33305.5380953362 2.15688061406822 -41707.3720378059 -19.3089685360213 -31282.7004541161 0.0196325417666705
-Total wall time: 0:00:00
+EVPOINT 0.96548938 29387.2390368051 2.44446473413078 -41725.0711617248 -19.3171625748726 17195.8002101954 0.0444512172946624
+Total wall time: 0:00:01
