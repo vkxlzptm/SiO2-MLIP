@@ -1,0 +1,141 @@
+LAMMPS (2 Aug 2023 - Update 3)
+  using 1 OpenMP thread(s) per MPI task
+# S2'-3  E-V 스캔 (BKS) — 7net 과 **완전히 동일한 절차**로 K0 를 뽑아 비교한다.
+#
+# 왜: in.ev220 으로 7net 의 K0 = 43.08 GPa 를 얻었는데 BKS 쪽이 비어 있다.
+#     밀도는 3자 비교(7net 2.219 / BKS 2.312 / exp 2.20)인데 탄성률만 7net 단독이라
+#     비교가 반쪽이다. BKS 는 초 단위라 안 할 이유가 없다.
+#
+# 출발: 02_run/s0_requench/sio2_bks220.data (ρ=2.20, 재quench 산물)
+#   -var s <선형 스케일> 로 등방 스케일 후 원자만 이완. etol=0, velocity 0.
+#   7net 런과 같은 부피점(f = 0.94~1.06)을 쓴다.
+#
+# 실행: run_ev_bks.sh
+
+units           metal
+boundary        p p p
+atom_style      charge
+
+read_data       ../s0_requench/sio2_bks220.data
+Reading data file ...
+  orthogonal box = (-0.13095199 -0.13140962 -0.15165528) to (30.269865 30.375648 35.055481)
+  1 by 2 by 3 MPI processor grid
+  reading atoms ...
+  2160 atoms
+  reading velocities ...
+  2160 velocities
+  read_data CPU = 0.017 seconds
+mass            1 15.9994
+mass            2 28.0855
+# 전하는 data 파일에 포함 (O -1.2, Si +2.4)
+
+pair_style      hybrid/overlay buck/coul/long 10.0 lj/cut 1.5
+pair_coeff      1 1 buck/coul/long 1388.7730 0.362318 175.0000
+pair_coeff      1 2 buck/coul/long 18003.7572 0.205205 133.5381
+pair_coeff      2 2 buck/coul/long 0.0 1.0 0.0
+pair_coeff      1 1 lj/cut 3.0 1.50 1.50
+pair_coeff      1 2 lj/cut 4.0 1.10 1.10
+pair_coeff      2 2 lj/cut 0.0 1.0  1.0
+kspace_style    pppm 1.0e-4
+
+neighbor        2.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+change_box      all x scale ${s} y scale ${s} z scale ${s} remap
+change_box      all x scale 1.00662271 y scale ${s} z scale ${s} remap
+change_box      all x scale 1.00662271 y scale 1.00662271 z scale ${s} remap
+change_box      all x scale 1.00662271 y scale 1.00662271 z scale 1.00662271 remap
+Changing box ...
+  orthogonal box = (-0.23161988 -0.13140962 -0.15165528) to (30.370533 30.375648 35.055481)
+  orthogonal box = (-0.23161988 -0.23242932 -0.15165528) to (30.370533 30.476668 35.055481)
+  orthogonal box = (-0.23161988 -0.23242932 -0.2682386) to (30.370533 30.476668 35.172064)
+
+velocity        all set 0.0 0.0 0.0        # Press 를 순수 virial 로 (규칙 6)
+
+variable        epa  equal pe/atoms
+variable        dens equal density
+variable        fmag atom sqrt(fx*fx+fy*fy+fz*fz)
+compute         maxf all reduce max v_fmag
+
+thermo          100
+thermo_style    custom step pe v_epa press vol v_dens c_maxf
+
+min_style       cg
+min_modify      dmax 0.05
+minimize        0.0 1.0e-4 5000 5000       # BKS 는 싸므로 넉넉히. etol=0 (규칙 7)
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29646162
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.001439292
+  estimated relative force accuracy = 9.9953298e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 12
+  ghost atom cutoff = 12
+  binsize = 6, bins = 6 6 6
+  2 neighbor lists, perpetual/occasional/extra = 2 0 0
+  (1) pair buck/coul/long, perpetual
+      attributes: half, newton on
+      pair build: half/bin/atomonly/newton
+      stencil: half/bin/3d
+      bin: standard
+  (2) pair lj/cut, perpetual, trim from (1)
+      attributes: half, newton on, cut 3.5
+      pair build: trim
+      stencil: none
+      bin: none
+Per MPI rank memory allocation (min/avg/max) = 6.253 | 6.268 | 6.284 Mbytes
+   Step         PotEng         v_epa          Press          Volume         v_dens         c_maxf    
+         0  -41615.895     -19.266618     -58767.805      33305.538      2.1568806      4.2941385    
+        77  -41707.372     -19.308969     -31282.7        33305.538      2.1568806      0.019632542  
+Loop time of 0.451867 on 6 procs for 77 steps with 2160 atoms
+
+97.8% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+Minimization stats:
+  Stopping criterion = linesearch alpha is zero
+  Energy initial, next-to-last, final = 
+     -41615.8948698232  -41707.3720378059  -41707.3720378059
+  Force two-norm initial, final = 75.840654 0.20201474
+  Force max component initial, final = 4.1116565 0.018930496
+  Final line search alpha, max atom move = 1.5548902e-07 2.9434843e-09
+  Iterations, force evaluations = 77 227
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.30106    | 0.33361    | 0.35687    |   3.5 | 73.83
+Kspace  | 0.081424   | 0.10485    | 0.13724    |   6.1 | 23.20
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0.010183   | 0.010449   | 0.010733   |   0.2 |  2.31
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.002964   |            |       |  0.66
+
+Nlocal:            360 ave         373 max         339 min
+Histogram: 1 0 0 0 1 0 2 0 0 2
+Nghost:        4682.67 ave        4710 max        4665 min
+Histogram: 1 0 2 1 1 0 0 0 0 1
+Neighs:          84312 ave       90934 max       77388 min
+Histogram: 1 1 0 0 0 1 1 1 0 1
+
+Total # of neighbors = 505872
+Ave neighs/atom = 234.2
+Neighbor list builds = 0
+Dangerous builds = 0
+
+variable        Vf equal vol
+variable        Df equal density
+variable        Ef equal pe
+variable        ef equal pe/atoms
+variable        Pf equal press
+variable        Ff equal c_maxf
+print           "EVPOINT ${s} ${Vf} ${Df} ${Ef} ${ef} ${Pf} ${Ff}"
+EVPOINT 1.00662271 33305.5380953362 2.15688061406822 -41707.3720378059 -19.3089685360213 -31282.7004541161 0.0196325417666705
+Total wall time: 0:00:00
