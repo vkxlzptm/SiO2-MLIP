@@ -15,7 +15,7 @@ BKS(고전 포텐셜)로 만든 비정질 SiO₂에 범용 MLIP **SevenNet-Nano*
 | S0 환경 구축 | **완료** — LAMMPS + `pair_style e3gnn` 빌드·검증·배포 |
 | S0′ 구조 재생성 | **완료** — 1차 melt-quench 실패 진단 후 ρ=2.20 고정 NVT로 재수행 |
 | S1 sanity + 속도 실측 | **완료** — 단일점, ASE 교차검증, 랭크 비교, 속도, cutoff 스윕, 병렬 확장성 |
-| S2′ 구조 이완 + E–V | **완료** — ρ₀ = 2.2187, K₀ = 43.1 GPa, virial 정합성 검증 |
+| S2′ 구조 이완 + E–V | **완료** — 7net ρ₀ 2.2185 / K₀ 43.2, BKS(tail on) 2.3442 / 34.3 |
 | S3′ RDF + 결합각 | **완료** — 300 K NVT 5 ps, g(r)·BAD·ring 통계, AIMD digitize 비교 |
 | S4 짧은 MD | 생략 (S3′가 대체) |
 | S5 정리 | **진행 중** — 그림 5장·RESULTS.md 완료, 남은 항목은 아래 |
@@ -61,12 +61,14 @@ BKS(고전 포텐셜)로 만든 비정질 SiO₂에 범용 MLIP **SevenNet-Nano*
 9. **melt-quench 는 부피고정 NVT 로, NPT 는 300 K 평형에서만.** 그리고 **MSD 로 완전 용융을
    검증할 것.** 1차 실패의 직접 원인 (`02_run/_v1_superseded/README.md`).
 10. conda `mlip` 환경을 지우면 `lmp_7net`이 libtorch를 못 찾아 **LAMMPS 재빌드** 필요.
-11. **잘린 고전 포텐셜의 EOS는 E(V)가 아니라 virial P(V)를 피팅할 것.**
-    BKS의 `−C/r⁶`는 10 Å에서 shift/tail 보정 없이 잘린다. 부피가 변하면 원자쌍이
-    cutoff를 넘나들며 E가 계단처럼 튀는데 virial은 그 계단을 못 봐서
-    **−dE/dV ≠ P_virial** 이 된다(실측 오프셋 −2,100 ~ −2,800 bar, 해석식 A/V²와 일치).
-    MLIP는 매끄러운 cutoff 함수를 쓰므로 해당 없음 — 7net은 두 경로가 0.4 % 일치.
-    확인용: `./run_ev_bks.sh 1` (LAMMPS 해석적 tail 보정 on).
+11. **잘린 고전 포텐셜로 EOS를 할 땐 (a) tail 보정을 켜고 (b) virial P(V)를 피팅할 것.**
+    BKS의 `−C/r⁶`를 10 Å에서 그냥 자르면 부피가 변할 때 원자쌍이 cutoff를 넘나들며
+    E가 계단처럼 튀는데 virial은 그 계단을 못 봐서 **−dE/dV ≠ P_virial** 이 된다
+    (실측 오프셋 평균 −2,415 bar). `pair_modify pair <style> tail yes` 로 −226 bar 까지 준다.
+    **tail 보정은 힘에 기여하지 않는다**(V만의 함수) — 구조는 그대로고 E·P 장부만 바뀐다.
+    LAMMPS가 더하는 값: E에 A/V, virial P에 **2A/V²** (2배인 게 핵심. 그 덕에 두 경로가 맞는다).
+    MLIP는 매끄러운 cutoff 함수를 써서 해당 없음 — 7net은 보정 없이도 두 경로가 0.4 % 일치.
+    ※ tail on/off로 BKS K₀가 34.3↔38.0 (10 %) 움직인다. 관례를 반드시 명시할 것.
 
 ## 비용 모델 (실측 기반, 2160원자)
 

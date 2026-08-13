@@ -71,8 +71,11 @@ def bm3_P(V, V0, K0, Kp):            # bar 단위로 바로 뱉는다
 
 
 RUN = ROOT / "02_run/s2_relax"
-SET = [("BKS", "tab:blue", RUN / "ev_bks_scan.txt"),
+# ★ BKS 는 **tail 보정 켠 쪽**(ev_bks_scan_tail.txt)이 보고값이다. 근거는 위 docstring.
+#   tail off 원자료도 남아 있다(ev_bks_scan.txt) — 절단 관례의 계통오차 크기를 재는 용도.
+SET = [("BKS", "tab:blue", RUN / "ev_bks_scan_tail.txt"),
        ("7net-nano-4.5", "tab:red", RUN / "ev220_scan.txt")]
+RHO_BKS_NPT = 2.3401        # 300 K NPT (tail on) 100 ps 시간평균, in.npt_tail
 
 fit = {}
 for lab, col, fn in SET:
@@ -124,26 +127,19 @@ for lab, v in fit.items():
     a.plot(rho_of(v["V"]), (v["E"] - E0) / N * 1e3, "o", ms=5, mfc="w",
            mec=v["col"], mew=1.3, zorder=3)
 a.set_xlabel(r"$\rho$ (g/cm$^3$)"); a.set_ylabel(r"$E-E_0$ (meV/atom)")
-a.set_ylim(-0.5, 13)
+a.set_ylim(-0.5, 13.5)
 # 범례 핸들은 마커가 아니라 **세로선** 이다. 세 선이 무엇인지가 이 패널의 요점이므로.
 a.legend([hx[0], hline["BKS"], hline["7net-nano-4.5"]],
-         [rf"$\rho_{{\rm exp}}$ = {RHO_EXP:.2f}  (fused silica)",
+         [rf"Fused silica: $\rho_{{\rm exp}}$ = {RHO_EXP:.2f}",
           rf"BKS:  $\rho_0$ = {RHO0['BKS']:.3f}",
           rf"7net-nano-4.5:  $\rho_0$ = {RHO0['7net-nano-4.5']:.3f}"],
          loc="upper right", framealpha=0.92, fontsize=8, handlelength=1.6,
          borderpad=0.4, labelspacing=0.35,
          title=r"vertical lines: $\rho$ where $P=0$", title_fontsize=7.5)
 
-# ★ BKS 만 E 곡선의 최소(파란 점선의 오른쪽)가 P=0 위치와 어긋난다. 그게 절단 artifact 다.
-#   그림에 그대로 보이므로 오해하지 않도록 화살표로 명시한다. (7net 은 0.008 % 라 안 보인다)
-#   간격이 0.7 % 라 양방향 화살표로는 안 보인다 → 최소점을 지시선으로 가리키고 값을 적는다.
-rE_bks = rho_of(fit["BKS"]["pe"][1])
-a.annotate(f"$E$-min {rE_bks:.3f}\n$P$=0    {RHO0['BKS']:.3f}\n(truncated tail)",
-           xy=(rE_bks, 0.05), xytext=(2.355, 5.2),
-           fontsize=7.5, c="tab:blue", ha="left", va="center",
-           multialignment="left", linespacing=1.25,
-           arrowprops=dict(arrowstyle="-", lw=0.8, color="tab:blue",
-                           connectionstyle="arc3,rad=0.15"))
+# tail 보정 전에는 BKS 의 E 최소가 P=0 위치와 0.67 % 어긋나 눈에 보였고, 그걸 지시선으로
+# 표시했었다. 보정 후 0.087 % 로 줄어 육안 구분이 안 되므로 주석을 뺐다.
+# (절단 artifact 의 정량 논의는 RESULTS.md §2 와 02_run/s2_relax/NOTE.md 에.)
 
 # ---------- (b) P-V ----------
 b.axhline(0, ls="-", lw=0.7, c="0.6")
@@ -156,23 +152,27 @@ for lab, v in fit.items():
     # BKS 는 E(V)/P(V) 두 경로가 7.2 % 벌어져 계통오차가 통계오차의 20배다.
     # 그림에 ± 를 박으면 그 정밀도가 실재하는 것처럼 읽힌다. 불확도 논의는 RESULTS.md §2 에.
     b.plot([], [], "o-", c=v["col"], mfc="w", mew=1.3, ms=5,
-           label=rf"{lab}:  {K:.1f} GPa")
+           label=rf"{lab}: $K_0 =  {K:.1f}$ GPa")
 # rho_exp 는 (a) 범례가 이미 설명한다(같은 figure) → 중복 제거.
 # 대신 (a) 의 rho_exp 와 대칭이 되게 K_exp 를 적는다.
-b.plot([], [], " ", label=rf"$K_{{\rm exp}}$ = {K_EXP} GPa  (fused silica)")
+b.plot([], [], " ", label=rf"Fused silica: $K_{{\rm exp}}$ = {K_EXP} GPa")
 b.set_xlabel(r"$\rho$ (g/cm$^3$)"); b.set_ylabel(r"$P$ (GPa)")
-b.set_ylim(-5.0, 3.0)   # 범례 자리. 폰트를 줄이기보다 축을 넓히는 쪽 (가독성 우선)
+b.set_ylim(-4.6, 2.6)   # 범례 자리. 폰트를 줄이기보다 축을 넓히는 쪽 (가독성 우선)
 b.legend(loc="lower right", framealpha=0.92, fontsize=8, handlelength=1.6,
          borderpad=0.4, labelspacing=0.35,
          title=r"$K_0 = -V\,dP/dV$  (BM3 fit to $P$)", title_fontsize=7.5)
 
 for k, a_ in enumerate(ax):
-    a_.set_xlim(2.05, 2.50)   # 우측 여유 = (b) 범례, (a) 범례 자리
+    a_.set_xlim(2.05, 2.48)   # 우측 여유 = (b) 범례, (a) 범례 자리
     a_.xaxis.set_minor_locator(AutoMinorLocator(2))
     a_.yaxis.set_minor_locator(AutoMinorLocator(2))
     a_.text(0.035, 0.91, "(a)" if k == 0 else "(b)", transform=a_.transAxes,
             fontsize=11.5, fontweight="bold")
 
+# tail 보정 여부는 그림에 적지 않는다 — 결론(밀도·탄성률 3자 비교)에서 시선을 뺏는다.
+# 기록은 이 스크립트 docstring, RESULTS.md §2, s2_relax/NOTE.md 세 곳에 있다.
+# ※ 이 그림만 따로 슬라이드에 쓸 땐 구두로라도 "tail 보정 적용"을 언급할 것.
+#   문헌의 BKS 값과 비교할 때 관례가 다르면 K0 가 10 % 어긋난다.
 fig.suptitle(r"a-SiO$_2$ network formed at $\rho$ = 2.20 g/cm$^3$   "
              r"(0 K static relaxation at each volume)", fontsize=10.5, y=1.0)
 fig.tight_layout(rect=[0, 0, 1, 1.05])
@@ -198,3 +198,7 @@ print(f"실험 대비:  rho0  BKS {RHO0['BKS']:.4f} ({100*(RHO0['BKS']/RHO_EXP-1
 KB, K7 = fit["BKS"]["pp"][1]*EV2BAR/1e4, fit["7net-nano-4.5"]["pp"][1]*EV2BAR/1e4
 print(f"            K0    BKS {KB:.2f} ({100*(KB/K_EXP-1):+.1f} %)"
       f"   7net {K7:.2f} ({100*(K7/K_EXP-1):+.1f} %)     exp {K_EXP} GPa")
+print(f"\nMLIP 가 줄인 밀도 오차 배수: "
+      f"{abs(RHO0['BKS']/RHO_EXP-1)/abs(RHO0['7net-nano-4.5']/RHO_EXP-1):.1f}x")
+print(f"정합 확인: BKS 0 K virial {RHO0['BKS']:.4f} vs 300 K NPT {RHO_BKS_NPT:.4f}"
+      f"  ({100*abs(RHO_BKS_NPT/RHO0['BKS']-1):.2f} % — 열팽창 무시 가능)")
