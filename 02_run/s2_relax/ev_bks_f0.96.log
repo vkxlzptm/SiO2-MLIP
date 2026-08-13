@@ -24,7 +24,7 @@ Reading data file ...
   2160 atoms
   reading velocities ...
   2160 velocities
-  read_data CPU = 0.020 seconds
+  read_data CPU = 0.017 seconds
 mass            1 15.9994
 mass            2 28.0855
 # 전하는 data 파일에 포함 (O -1.2, Si +2.4)
@@ -36,7 +36,14 @@ pair_coeff      2 2 buck/coul/long 0.0 1.0 0.0
 pair_coeff      1 1 lj/cut 3.0 1.50 1.50
 pair_coeff      1 2 lj/cut 4.0 1.10 1.10
 pair_coeff      2 2 lj/cut 0.0 1.0  1.0
-kspace_style    pppm 1.0e-4
+# ★ EOS 용은 1.0e-4 로 부족하다. 2차 스캔에서 모든 최소화가
+#   "linesearch alpha is zero" 로 멈췄고 force two-norm 이 0.18~0.36 에서 정체했는데,
+#   PPPM 이 보고한 추정 force 오차가 0.0013 eV/A (성분당 RMS 0.0044 와 같은 자릿수)였다.
+#   즉 최소화기가 k-space 수치잡음 바닥과 싸우다 멈춘 것. 그 잡음이 E(V) 를 흔들어
+#   BM3 잔차 86 meV, BM3 vs virial 0.70 % 불일치를 만들었다 (7net 은 3.1 meV / 0.007 %).
+#   → 1.0e-6 으로 조인다. BKS 는 초 단위라 비용 부담 없음.
+#   ※ MD 런들은 1.0e-4 그대로 두었다(구조 생성과의 일관성). EOS 전용 설정이다.
+kspace_style    pppm 1.0e-6
 
 neighbor        2.0 bin
 neigh_modify    every 1 delay 0 check yes
@@ -62,16 +69,16 @@ thermo_style    custom step pe v_epa press vol v_dens c_maxf
 
 min_style       cg
 min_modify      dmax 0.05
-minimize        0.0 1.0e-4 5000 5000       # BKS 는 싸므로 넉넉히. etol=0 (규칙 7)
+minimize        0.0 1.0e-5 20000 20000     # 잡음 바닥을 낮췄으니 ftol 도 함께 조인다
 PPPM initialization ...
   using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
-  G vector (1/distance) = 0.2979866
-  grid = 24 24 27
+  G vector (1/distance) = 0.36358454
+  grid = 64 64 72
   stencil order = 5
-  estimated absolute RMS force accuracy = 0.0013546556
-  estimated relative force accuracy = 9.4075628e-05
+  estimated absolute RMS force accuracy = 1.8598249e-05
+  estimated relative force accuracy = 1.2915769e-06
   using double precision FFTW3
-  3d grid and FFT values/proc = 9424 2880
+  3d grid and FFT values/proc = 98769 49152
 Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
 Neighbor list info ...
   update: every = 1 steps, delay = 0 steps, check = yes
@@ -90,33 +97,33 @@ Neighbor list info ...
       pair build: trim
       stencil: none
       bin: none
-Per MPI rank memory allocation (min/avg/max) = 6.258 | 6.274 | 6.29 Mbytes
+Per MPI rank memory allocation (min/avg/max) = 13.82 | 13.83 | 13.83 Mbytes
    Step         PotEng         v_epa          Press          Volume         v_dens         c_maxf    
-         0  -41621.843     -19.269372      58610.182      31346.389      2.2916857      5.1596397    
-        72  -41730.607     -19.319726     -3662.567       31346.389      2.2916857      0.087130198  
-Loop time of 0.392834 on 6 procs for 72 steps with 2160 atoms
+         0  -41621.958     -19.269425      58568.494      31346.389      2.2916857      5.1595459    
+        89  -41730.741     -19.319788     -3735.3007      31346.389      2.2916857      0.03161381   
+Loop time of 4.18112 on 6 procs for 89 steps with 2160 atoms
 
-97.4% CPU use with 6 MPI tasks x 1 OpenMP threads
+96.2% CPU use with 6 MPI tasks x 1 OpenMP threads
 
 Minimization stats:
   Stopping criterion = linesearch alpha is zero
   Energy initial, next-to-last, final = 
-     -41621.8425099817  -41730.6071050357  -41730.6071050357
-  Force two-norm initial, final = 86.116932 0.47203203
-  Force max component initial, final = 4.7310361 0.070696591
-  Final line search alpha, max atom move = 3.3929612e-08 2.3987079e-09
-  Iterations, force evaluations = 72 185
+     -41621.9577101523  -41730.7413906583  -41730.7413906583
+  Force two-norm initial, final = 86.116378 0.27816252
+  Force max component initial, final = 4.7310154 0.024792843
+  Final line search alpha, max atom move = 1.2250526e-07 3.0372538e-09
+  Iterations, force evaluations = 89 217
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.26007    | 0.2891     | 0.31438    |   3.3 | 73.59
-Kspace  | 0.066957   | 0.092284   | 0.12137    |   5.8 | 23.49
+Pair    | 0.32089    | 0.35594    | 0.38694    |   3.7 |  8.51
+Kspace  | 3.7551     | 3.786      | 3.8211     |   1.1 | 90.55
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.0089181  | 0.0090354  | 0.0091391  |   0.1 |  2.30
+Comm    | 0.032252   | 0.032506   | 0.0327     |   0.1 |  0.78
 Output  | 0          | 0          | 0          |   0.0 |  0.00
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.002419   |            |       |  0.62
+Other   |            | 0.006636   |            |       |  0.16
 
 Nlocal:            360 ave         373 max         339 min
 Histogram: 1 0 0 0 1 0 2 0 0 2
@@ -137,5 +144,5 @@ variable        ef equal pe/atoms
 variable        Pf equal press
 variable        Ff equal c_maxf
 print           "EVPOINT ${s} ${Vf} ${Df} ${Ef} ${ef} ${Pf} ${Ff}"
-EVPOINT 0.98648483 31346.388780046 2.29168565358539 -41730.6071050357 -19.3197255115906 -3662.56697870166 0.087130198084555
-Total wall time: 0:00:00
+EVPOINT 0.98648483 31346.388780046 2.29168565358539 -41730.7413906583 -19.3197876808603 -3735.30067806207 0.0316138102691159
+Total wall time: 0:00:04

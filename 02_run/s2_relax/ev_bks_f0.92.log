@@ -24,7 +24,7 @@ Reading data file ...
   2160 atoms
   reading velocities ...
   2160 velocities
-  read_data CPU = 0.017 seconds
+  read_data CPU = 0.021 seconds
 mass            1 15.9994
 mass            2 28.0855
 # 전하는 data 파일에 포함 (O -1.2, Si +2.4)
@@ -36,7 +36,14 @@ pair_coeff      2 2 buck/coul/long 0.0 1.0 0.0
 pair_coeff      1 1 lj/cut 3.0 1.50 1.50
 pair_coeff      1 2 lj/cut 4.0 1.10 1.10
 pair_coeff      2 2 lj/cut 0.0 1.0  1.0
-kspace_style    pppm 1.0e-4
+# ★ EOS 용은 1.0e-4 로 부족하다. 2차 스캔에서 모든 최소화가
+#   "linesearch alpha is zero" 로 멈췄고 force two-norm 이 0.18~0.36 에서 정체했는데,
+#   PPPM 이 보고한 추정 force 오차가 0.0013 eV/A (성분당 RMS 0.0044 와 같은 자릿수)였다.
+#   즉 최소화기가 k-space 수치잡음 바닥과 싸우다 멈춘 것. 그 잡음이 E(V) 를 흔들어
+#   BM3 잔차 86 meV, BM3 vs virial 0.70 % 불일치를 만들었다 (7net 은 3.1 meV / 0.007 %).
+#   → 1.0e-6 으로 조인다. BKS 는 초 단위라 비용 부담 없음.
+#   ※ MD 런들은 1.0e-4 그대로 두었다(구조 생성과의 일관성). EOS 전용 설정이다.
+kspace_style    pppm 1.0e-6
 
 neighbor        2.0 bin
 neigh_modify    every 1 delay 0 check yes
@@ -62,16 +69,16 @@ thermo_style    custom step pe v_epa press vol v_dens c_maxf
 
 min_style       cg
 min_modify      dmax 0.05
-minimize        0.0 1.0e-4 5000 5000       # BKS 는 싸므로 넉넉히. etol=0 (규칙 7)
+minimize        0.0 1.0e-5 20000 20000     # 잡음 바닥을 낮췄으니 ftol 도 함께 조인다
 PPPM initialization ...
   using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
-  G vector (1/distance) = 0.29904981
-  grid = 24 24 27
+  G vector (1/distance) = 0.3643656
+  grid = 64 64 72
   stencil order = 5
-  estimated absolute RMS force accuracy = 0.0012983226
-  estimated relative force accuracy = 9.0163518e-05
+  estimated absolute RMS force accuracy = 1.8013438e-05
+  estimated relative force accuracy = 1.250964e-06
   using double precision FFTW3
-  3d grid and FFT values/proc = 9424 2880
+  3d grid and FFT values/proc = 98769 49152
 Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
 Neighbor list info ...
   update: every = 1 steps, delay = 0 steps, check = yes
@@ -90,45 +97,45 @@ Neighbor list info ...
       pair build: trim
       stencil: none
       bin: none
-Per MPI rank memory allocation (min/avg/max) = 6.264 | 6.342 | 6.65 Mbytes
+Per MPI rank memory allocation (min/avg/max) = 13.83 | 13.9 | 14.22 Mbytes
    Step         PotEng         v_epa          Press          Volume         v_dens         c_maxf    
-         0  -41536.802     -19.230001      157681.25      30040.29       2.3913241      5.8703242    
-       100  -41728.845     -19.31891       12168.402      30040.29       2.3913241      0.1122938    
-       200  -41729.48      -19.319203      10308.865      30040.29       2.3913241      0.15267448   
-       242  -41729.658     -19.319286      10991.54       30040.29       2.3913241      0.11164518   
-Loop time of 1.37074 on 6 procs for 242 steps with 2160 atoms
+         0  -41536.951     -19.23007       157626.25      30040.29       2.3913241      5.8704941    
+       100  -41728.966     -19.318966      12136.792      30040.29       2.3913241      0.11603978   
+       200  -41729.592     -19.319256      10293.04       30040.29       2.3913241      0.14990816   
+       242  -41729.778     -19.319342      10968.84       30040.29       2.3913241      0.11085416   
+Loop time of 10.568 on 6 procs for 242 steps with 2160 atoms
 
-97.5% CPU use with 6 MPI tasks x 1 OpenMP threads
+96.3% CPU use with 6 MPI tasks x 1 OpenMP threads
 
 Minimization stats:
   Stopping criterion = linesearch alpha is zero
   Energy initial, next-to-last, final = 
-     -41536.8019455393  -41729.6584609556  -41729.6584609556
-  Force two-norm initial, final = 101.19669 0.40603858
-  Force max component initial, final = 5.1592338 0.097975492
-  Final line search alpha, max atom move = 5.38431e-08 5.2753042e-09
-  Iterations, force evaluations = 242 630
+     -41536.9509852631  -41729.7784741382  -41729.7784741382
+  Force two-norm initial, final = 101.19595 0.39970056
+  Force max component initial, final = 5.1590109 0.098132941
+  Final line search alpha, max atom move = 5.2628088e-08 5.1645491e-09
+  Iterations, force evaluations = 242 552
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.93134    | 1.0191     | 1.1029     |   5.6 | 74.35
-Kspace  | 0.22267    | 0.30654    | 0.39444    |  10.2 | 22.36
-Neigh   | 0.0031247  | 0.0033127  | 0.0034518  |   0.2 |  0.24
-Comm    | 0.031893   | 0.03232    | 0.032996   |   0.3 |  2.36
-Output  | 0.00012169 | 0.00012912 | 0.00016508 |   0.0 |  0.01
+Pair    | 0.85997    | 0.94265    | 1.0294     |   5.6 |  8.92
+Kspace  | 9.4336     | 9.5206     | 9.6038     |   1.8 | 90.09
+Neigh   | 0.0030846  | 0.003274   | 0.0033981  |   0.2 |  0.03
+Comm    | 0.083797   | 0.084675   | 0.085447   |   0.2 |  0.80
+Output  | 0.00012636 | 0.00013    | 0.0001467  |   0.0 |  0.00
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.009348   |            |       |  0.68
+Other   |            | 0.01665    |            |       |  0.16
 
-Nlocal:            360 ave         372 max         335 min
+Nlocal:            360 ave         372 max         334 min
 Histogram: 1 0 0 0 0 0 0 3 1 1
-Nghost:        4966.33 ave        4987 max        4947 min
-Histogram: 1 0 0 2 0 1 0 1 0 1
-Neighs:        93515.8 ave       98979 max       86502 min
-Histogram: 1 0 0 1 1 0 1 0 0 2
+Nghost:        4966.33 ave        4988 max        4947 min
+Histogram: 1 0 1 1 0 1 1 0 0 1
+Neighs:        93521.2 ave       99221 max       86271 min
+Histogram: 1 0 0 1 1 1 0 0 0 2
 
-Total # of neighbors = 561095
-Ave neighs/atom = 259.7662
+Total # of neighbors = 561127
+Ave neighs/atom = 259.78102
 Neighbor list builds = 2
 Dangerous builds = 0
 
@@ -139,5 +146,5 @@ variable        ef equal pe/atoms
 variable        Pf equal press
 variable        Ff equal c_maxf
 print           "EVPOINT ${s} ${Vf} ${Df} ${Ef} ${ef} ${Pf} ${Ff}"
-EVPOINT 0.97258883 30040.2895734418 2.39132413432029 -41729.6584609556 -19.3192863245165 10991.5402966869 0.111645175741523
-Total wall time: 0:00:01
+EVPOINT 0.97258883 30040.2895734418 2.39132413432029 -41729.7784741382 -19.3193418861751 10968.84014233 0.110854155758658
+Total wall time: 0:00:10
