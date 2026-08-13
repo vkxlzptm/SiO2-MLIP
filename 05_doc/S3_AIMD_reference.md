@@ -1,5 +1,14 @@
 # AIMD 참고문헌 검토 — Farnesi Camellone et al., arXiv:1109.2852
 
+> ## ⚠ 이 문서는 **기록**이다. 결론으로 인용하지 말 것.
+> 최종 AIMD 참조는 **Dechant, Muralidhar, Ma, J. Phys. Chem. C 130, 7148 (2026)** 이다.
+> 교체 사유: Camellone 은 arXiv 전용에 인용도 적고 범함수가 PW91 이다.
+> Dechant 는 출판됐고 **PBE** 라 7net-nano 의 학습 계보(7net-Omni `mpa`)와 맞는다.
+> 또한 이 문서가 "가치가 낮다"고 판단한 **그림 digitize 는 결국 수행했다**
+> (`04_analysis/src/digitize_dechant_*.py`). ρ=2.20 구조를 새로 만들어 밀도를 맞췄기 때문이다.
+> → **후보 탈락 사유(범함수 불일치) 정리로만 유효하다.** 현행 결과는 `RESULTS.md`.
+
+
 > *Efficient generation of realistic model systems of amorphous silica*
 > M. Farnesi Camellone, J. Reiner, U. Sennhauser, L. Schlapbach (EMPA / EPFL)
 > 원문: https://arxiv.org/abs/1109.2852

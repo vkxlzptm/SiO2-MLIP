@@ -96,15 +96,20 @@ BKS       :  1.35 Matom-step/s @ρ=2.20 (6랭크)  → 배수 1,244×
 04_analysis/
   src/             분석·작도 스크립트 (경로는 __file__ 기준, 어디서든 실행 가능)
   dat/             digitize 결과, ring 통계
-  fig/             fig_pdf / fig_bad / fig_density / fig_speed / fig_rings (PNG 300dpi + PDF)
-  src/old_delete/  폐기 스크립트 — **로컬에서 삭제 필요** (샌드박스는 삭제 권한 없음)
-05_doc/            RESULTS.md(결과 요약), 문헌 검토, Dechant 논문·그림
+  fig/             fig_pdf / fig_bad / fig_density / fig_speed / fig_rings (PNG 300dpi)
+  src/old_delete/  폐기 스크립트 — `./cleanup.sh --yes` 로 정리 (샌드박스는 삭제 권한 없음)
+05_doc/            README.md(색인) / RESULTS.md(결과) / STATUS.md(이 문서) + 문헌·그림
+
+sync.sh            git 동기화 (양쪽 다 이거 한 줄)
+cleanup.sh         폐기 파일 정리 (드라이런 기본, --yes 로 실삭제)
 ```
 
 ## 남은 일
 
-1. `04_analysis/src/old_delete/`, `04_analysis/fig/old_delete/` 삭제 (노트북에서 `rm -rf`)
-   그리고 `02_run/s2_relax/ev_bks_f1.04.log`, `ev_bks_f1.06.log` (1차 스캔 잔재)
+1. **`./cleanup.sh` 실행** — 폐기 파일 정리 (드라이런이 기본, 실삭제는 `--yes`).
+   대상: `init_struct/`(01_input 과 비트 동일), `04_analysis/*/old_delete/`, `03_result/`,
+   1차 BKS 스캔 잔재, `.DS_Store`. 약 1.3 MB.
+   **남기는 것과 이유**도 스크립트 하단에 적어뒀다 (`_v1_superseded/`, tail 대조군 로그 등).
 2. 그림 라벨 최종 점검 — `7net-nano-4.5` 로 통일 완료, 렌더 확인 필요
 3. **§3(b) 밀도-결합길이 논증 재검토** — ρ ∝ d⁻³ 휴리스틱이 입력(평균 vs 피크 Si–O)에
    따라 −4.0 ~ −5.4 % 를 오간다. 이전 판의 "0.03 %p 일치" 는 재현 불가라 삭제했다.
@@ -117,9 +122,9 @@ BKS       :  1.35 Matom-step/s @ρ=2.20 (6랭크)  → 배수 1,244×
 
 ## 참고 문서
 
+**`05_doc/README.md` 가 색인이다** — 어느 문서가 현행이고 어느 게 기록인지 거기 정리돼 있다.
+(파일명의 S0/S0c/S3 번호는 착수 당시 계획 기준이라 실제 진행과 어긋난다. 순서를 믿지 말 것.)
+
 - `05_doc/RESULTS.md` — **결과 요약 (여기부터 읽을 것)**
-- `05_doc/S3_MLIP_benchmark_practice.md` — 이 분야가 실제로 무엇을 어떻게 비교하는가
-- `05_doc/S3_AIMD_reference.md` — Camellone(arXiv) 검토. **참조는 Dechant JPCC 2026 으로 교체됨**
-- `05_doc/S0_sevennet_nano_overview.md` — 논문 정리
 - `00_env/SETUP_FROM_SCRATCH.md` — 새 머신 재현 절차
 - `02_run/*/NOTE.md` — 각 단계의 조건·이유·결과 한 줄 기록

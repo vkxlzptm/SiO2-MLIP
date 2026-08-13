@@ -1,8 +1,9 @@
 # S0-1. SevenNet-Nano 논문 정리 (근거 기반)
 
-> rev.2 메모: 연구 질문이 **밀도 → RDF 3자 비교**로 재정의됨. 아래 4절(논문의 비정질 SiO2 취급)은
-> 여전히 유효하며 특히 "논문은 NVT로 밀도를 고정했다"는 점이 새 계획에서 더 중요해졌다.
-> 비교 설계는 `S0c_RDF_comparison_plan.md` 참조.
+> **상태: 유효.** 모델 계보(7net-Omni `mpa` 채널 = PBE(+U), D3 없음)와 논문의 a-SiO₂ 취급은
+> 그대로 쓴다. 특히 **"논문은 NVT로 밀도를 고정했다"** 는 우리 melt-quench 설계의 직접 근거다
+> (`STATUS.md` 규칙 9). 현행 결과는 `RESULTS.md`.
+> ※ 본문의 `S0c_RDF_comparison_plan.md` 참조는 **착수 전 계획서**를 가리킨다(현행 아님).
 
 출처
 - Oh, You, Kim, Lee, An, Han, Kang, *A Lightweight Universal Machine-Learning Interatomic Potential
