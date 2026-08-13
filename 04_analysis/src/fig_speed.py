@@ -77,11 +77,11 @@ b.plot(THREADS[0], THREADS[1] / THREADS[1][0], "s-", ms=5.5, c="tab:red",
 b.plot(REPLICA[0], REPLICA[1] / REPLICA[1][0], "^-", ms=6, c="tab:purple",
        mfc="w", mew=1.3, label="independent processes")
 b.axvline(6, ls=":", lw=1.0, c="0.5")
-b.text(5.85, 6.9, "6 physical\ncores", fontsize=8, c="0.35", va="top", ha="right")
-b.set_xlim(0.5, 12.5); b.set_ylim(0, 7.2)
+b.text(5.1, 5.8, "6 physical\ncores", fontsize=8, c="0.35", va="top", ha="right")
+b.set_xlim(0.5, 12.5); b.set_ylim(0, 6)
 b.set_xlabel("number of threads / processes"); b.set_ylabel("speedup")
 b.set_xticks([1, 2, 4, 6, 8, 10, 12])
-b.legend(loc="center right", framealpha=0.9)
+b.legend(bbox_to_anchor = (1, 0.6), loc="center right", framealpha=0.9)
 b.text(0.035, 0.91, "(b)", transform=b.transAxes, fontsize=11.5, fontweight="bold")
 
 for a_ in ax:
