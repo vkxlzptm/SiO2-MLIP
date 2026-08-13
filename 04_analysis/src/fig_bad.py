@@ -45,7 +45,7 @@ AILAB = "AIMD PBE\n(Dechant 2026)"
 PAN = [("O-Si-O", 2, 1, (85, 135), ((109.4, 109.7), "exp\n109.4-109.7"), "(a)"),
        # xlim 하한을 102 로 (100 이면 x축 첫 라벨이 y축 첫 라벨과 겹친다).
        # 세 곡선 모두 105° 아래에서는 사실상 0 이라 잘리는 정보 없음.
-       ("Si-O-Si", 1, 3, (104, 180), ((140.0, 150.0), "exp 140-150"), "(b)")]
+       ("Si-O-Si", 1, 3, (105, 180), ((140.0, 150.0), "exp 140-150"), "(b)")]
 
 fig, ax = plt.subplots(1, 2, figsize=(7.8, 3.4))
 
@@ -83,7 +83,7 @@ for k, (name, ocol, acol, xlim, expspec, tag) in enumerate(PAN):
 
     # 실험 라벨
     xa = 0.5 * (val[0] + val[1])
-    xtx = xlim[0] + (0.44 if name == "O-Si-O" else 0.74) * (xlim[1] - xlim[0])
+    xtx = xlim[0] + (0.45 if name == "O-Si-O" else 0.74) * (xlim[1] - xlim[0])
     a.annotate(elab, xy=(xa, ymax * 0.02), xytext=(xtx, ymax * (0.22 if name == "O-Si-O" else 0.15)),
                fontsize=8.5, ha="center", va="center",
                bbox=dict(fc="white", ec="none", alpha=0.5, pad=1.0),
@@ -94,8 +94,7 @@ fig.suptitle(r"a-SiO$_2$,  $\rho$ = 2.20 g/cm$^3$,  300 K   "
              r"(dotted: mean;  shaded: experimental range)", fontsize=10.5, y=0.94)
 fig.tight_layout(rect=[0, 0, 1, 1])
 fig.savefig(FIG / "fig_bad.png", dpi=300)
-fig.savefig(FIG / "fig_bad.pdf")
-print(f"-> {FIG}/fig_bad.png, .pdf\n")
+print(f"-> {FIG}/fig_bad.png\n")
 
 for name, ent in rows:
     print(f"[{name}]{'평균':>10s}{'표준편차':>12s}")

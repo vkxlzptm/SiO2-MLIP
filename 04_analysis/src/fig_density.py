@@ -67,8 +67,9 @@ a.plot(rho_of(Vs), (bm3_E(Vs, *pf) - E0) / N * 1e3, "-", c="tab:red",
 a.plot(rho_of(V), (E - E0) / N * 1e3, "o", ms=5, mfc="w", mec="tab:red", mew=1.3,
        label="7net-nano-4.5")
 a.set_xlabel(r"$\rho$ (g/cm$^3$)"); a.set_ylabel(r"$E-E_0$ (meV/atom)")
-a.set_ylim(-0.5, 12)
-a.legend(loc="upper center", framealpha=0.9)
+# ymax 13: (a) 태그가 왼쪽 팔(빨간 곡선)과 겹치지 않도록 위쪽 여유 확보
+a.set_ylim(-0.5, 13)
+a.legend(loc="upper right", framealpha=0.9)
 
 # ---------- (b) P-V ----------
 b = ax[1]
@@ -81,7 +82,8 @@ b.plot(rho_of(Vs), bm3_P(Vs, *pf) * EV2BAR / 1e4, "-", c="tab:red",
 b.plot(rho_of(V), P / 1e4, "o", ms=5, mfc="w", mec="k", mew=1.3,
        label="LAMMPS virial")
 b.set_xlabel(r"$\rho$ (g/cm$^3$)"); b.set_ylabel(r"$P$ (GPa)")
-b.legend(loc="lower right", framealpha=0.9)
+# 좌상단은 (b) 태그 자리 → bbox 로 태그 아래에 고정
+b.legend(loc="upper left", bbox_to_anchor=(0.015, 0.87), framealpha=0.9)
 
 for k, a_ in enumerate(ax):
     a_.set_xlim(2.05, 2.38)
@@ -90,23 +92,28 @@ for k, a_ in enumerate(ax):
     a_.text(0.035, 0.91, "(a)" if k == 0 else "(b)", transform=a_.transAxes,
             fontsize=11.5, fontweight="bold")
 
-# 밀도 라벨 (b 패널 아래쪽 빈 공간)
-# 2.20 과 2.219 는 0.019 밖에 안 떨어져 라벨이 겹친다 → 좌/우 정렬과 높이를 엇갈리게
+# 밀도 라벨: 곡선이 좌하→우상 이므로 **곡선 아래쪽**이 비어 있다. 거기에 배치.
+# 2.20 과 2.219 는 0.019 밖에 안 떨어지므로 좌/우 정렬과 높이를 엇갈리게 준다.
 y0, y1 = ax[1].get_ylim()
-lab = [(RHO_EXP, "exp 2.20", "k", "right", 0.06),
-       (RHO0, "7net 2.219", "tab:red", "left", 0.20),
-       (RHO_BKS, "BKS 2.312", "tab:blue", "right", 0.06)]
-for x, t, c, ha, fy in lab:
-    dx = -0.004 if ha == "right" else 0.004
-    ax[1].text(x + dx, y0 + fy * (y1 - y0), t, fontsize=8.5, c=c, ha=ha,
-               va="center", bbox=dict(fc="white", ec="none", alpha=0.6, pad=0.8))
+# 유효숫자: 실험값은 **인용값 그대로** 2.20 (fused silica 는 시료마다 3번째 소수에서
+# 흔들려 자릿수를 늘리면 없는 정밀도를 만드는 셈). 계산값은 피팅 정밀도가 받쳐주므로
+# 소수 3자리까지 쓴다 (V0 = 32377.9 ± 0.5 A^3 → rho0 불확도 ~3e-5).
+# 두 줄짜리 라벨은 중앙 정렬(ha="center", multialignment="center")이 보기 좋다.
+# 대신 x 를 선에서 살짝 밀고 높이를 엇갈리게 해 2.20 / 2.219 겹침을 피한다.
+lab = [(RHO_EXP, "exp\n2.20", "k", -0.022, 0.10),
+       (RHO0, "7net\n2.219", "tab:red", +0.022, 0.32),
+       (RHO_BKS, "BKS\n2.312", "tab:blue", -0.022, 0.10)]
+for x, t, c, dx, fy in lab:
+    ax[1].text(x + dx, y0 + fy * (y1 - y0), t, fontsize=8.5, c=c,
+               ha="center", va="center", multialignment="center",
+               bbox=dict(fc="white", ec="none", alpha=0.6, pad=0.8))
 
+# suptitle 과 axes 간격: rect 상단과 y 를 가깝게 두면 붙는다 (fig_speed 와 동일).
 fig.suptitle(r"a-SiO$_2$ network formed at $\rho$ = 2.20 g/cm$^3$   "
-             r"(0 K static relaxation at each volume)", fontsize=10.5, y=0.965)
-fig.tight_layout(rect=[0, 0, 1, 0.93])
+             r"(0 K static relaxation at each volume)", fontsize=10.5, y=1.0)
+fig.tight_layout(rect=[0, 0, 1, 1.05])
 fig.savefig(FIG / "fig_density.png", dpi=300)
-fig.savefig(FIG / "fig_density.pdf")
-print(f"-> {FIG}/fig_density.png, .pdf\n")
+print(f"-> {FIG}/fig_density.png\n")
 
 print("Birch-Murnaghan 3차 (E-V 만 사용, virial 미사용)")
 print(f"  V0  = {V0:9.2f} ± {err[1]:.2f} A^3   ->  rho0 = {RHO0:.4f} g/cm^3")

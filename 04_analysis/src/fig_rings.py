@@ -18,6 +18,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import AutoMinorLocator
+from matplotlib.legend_handler import HandlerTuple
 
 ROOT = Path(__file__).resolve().parents[2]
 DAT, FIG = ROOT / "04_analysis/dat", ROOT / "04_analysis/fig"
@@ -30,7 +31,10 @@ plt.rcParams.update({
     "xtick.top": True, "ytick.right": True,
     "xtick.major.size": 5, "ytick.major.size": 5,
     "xtick.minor.size": 2.8, "ytick.minor.size": 2.8,
-    "axes.linewidth": 0.9,
+    # 해칭 색은 edgecolor 를 따라간다 (edgecolor 를 주면 rcParams["hatch.color"] 는 무시됨).
+    # → 막대를 두 겹으로 그린다: 아래는 해칭용(edgecolor=빨강, 테두리 없음),
+    #   위는 테두리용(면 없음, edgecolor=검정).
+    "axes.linewidth": 0.9, "hatch.linewidth": 4,
 })
 
 # ---------- Dechant Fig. S4(a) LES digitize ----------
@@ -74,22 +78,33 @@ for n, _c, f in ours:
 # ---------- 그림 ----------
 fig, ax = plt.subplots(figsize=(5.0, 3.5))
 w = 0.38
-ax.bar(nring - w / 2, frac, width=w, color="tab:red", alpha=0.85, edgecolor="k", lw=0.6,
-       label="this work  (BKS network,\n identical after 7net relaxation)")
-ax.bar(nring + w / 2, ai, width=w, color="tab:green", alpha=0.85, edgecolor="k", lw=0.6,
-       label="AIMD PBE (Dechant 2026,\n digitized, 120 atoms)")
-ax.set_xlabel("ring size  (number of Si)")
-ax.set_ylabel("fraction")
-ax.set_xticks(nring); ax.set_xlim(1.4, 9.6)
+# BKS 와 7net 의 ring 분포는 완전히 동일하므로 한 막대로 그리되,
+# 파랑 바탕(BKS) + 빨강 사선(7net) 으로 **두 색이 번갈아 나오는 줄무늬**를 만들어
+# "둘이 같은 값"임을 색으로 드러낸다. 다른 그림의 색 약속(BKS 파랑 / 7net 빨강)과 일치.
+# AIMD 는 무늬 없이 초록 단색 → 대비가 충분해 별도 패턴이 필요 없다.
+h_fill = ax.bar(nring - w / 2, frac, width=w, color="tab:blue", alpha=0.8,
+                edgecolor="tab:red", lw=0.0, hatch="//")
+h_edge = ax.bar(nring - w / 2, frac, width=w, facecolor="none", edgecolor="k", lw=0.7)
+h_ai = ax.bar(nring + w / 2, ai, width=w, color="tab:green", alpha=0.8,
+              edgecolor="k", lw=0.7)
+ax.set_xlabel("Ring size  (number of Si)")
+ax.set_ylabel("Fraction")
+ax.set_xticks(nring); ax.set_xlim(1.4, 9.6); ax.set_ylim(0, 0.4)
 ax.yaxis.set_minor_locator(AutoMinorLocator(2))
-ax.legend(loc="upper right", framealpha=0.9, fontsize=8)
+# 막대를 두 겹으로 그리므로 범례 스와치도 두 겹으로 겹쳐 그린다.
+# HandlerTuple 의 ndivide 는 스와치를 몇 칸으로 나눌지다.
+# None = 튜플 길이만큼 나눠 **나란히** 그림 → 원하는 건 ndivide=1 (한 칸에 포개기).
+ax.legend([(h_fill, h_edge), h_ai],
+          ["This work \n(BKS = 7net-nano-4.5)",
+           "AIMD PBE \n(Dechant 2026, 120 atoms)"],
+          handler_map={tuple: HandlerTuple(ndivide=1)},
+          loc="upper left", framealpha=0.9, fontsize=8.5, frameon=False)
 ax.set_title("Ring size distribution  (King criterion)", fontsize=11)
 fig.tight_layout()
 fig.savefig(FIG / "fig_rings.png", dpi=300)
-fig.savefig(FIG / "fig_rings.pdf")
-print(f"-> {FIG}/fig_rings.png, .pdf\n")
+print(f"-> {FIG}/fig_rings.png\n")
 
-print(f"{'n':>3s}{'this work':>12s}{'AIMD (dig.)':>13s}")
+print(f"{'n':>3s}{'This work':>12s}{'AIMD (dig.)':>13s}")
 for i, n in enumerate(nring):
     print(f"{n:3d}{100*frac[i]:11.2f}%{100*ai[i]:12.2f}%")
 mo = (nring * frac).sum() / frac.sum()

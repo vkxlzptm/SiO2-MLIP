@@ -83,8 +83,8 @@ for k, (pair, col, pk, ymax, tag) in enumerate(PAN):
     ins.axvline(ai_mean, ls=":", lw=1.1, c="tab:green", alpha=0.9)
     ins.axvline(EXP[pair], ls="--", lw=1.2, c="k")
     # 실험값 라벨은 점선 밀집 구간을 피해 오른쪽으로 빼고 가는 선으로 연결
-    ins.annotate(f"exp {EXP[pair]:.2f}", xy=(EXP[pair], INS_YMAX * 0.50),
-                 xytext=(1.530, INS_YMAX * 0.80), fontsize=8.5,
+    ins.annotate(f"exp {EXP[pair]:.2f}", xy=(EXP[pair], INS_YMAX * 0.74),
+                 xytext=(1.550, INS_YMAX * 0.85), fontsize=8.5,
                  ha="center", va="center",
                  bbox=dict(fc="white", ec="none", alpha=0.5, pad=1.0),
                  arrowprops=dict(arrowstyle="-", lw=0.7, color="0.3",
@@ -102,8 +102,7 @@ ax[0].set_title(r"a-SiO$_2$,  $\rho$ = 2.20 g/cm$^3$,  300 K", fontsize=11, pad=
 
 fig.tight_layout()
 fig.savefig(FIG / "fig_pdf.png", dpi=300)
-fig.savefig(FIG / "fig_pdf.pdf")
-print(f"-> {FIG}/fig_pdf.png, .pdf\n")
+print(f"-> {FIG}/fig_pdf.png\n")
 
 # ---------------- 수치 표 ----------------
 hdr = f"{'':20s}{'Si-O':>9s}{'O-O':>9s}{'Si-Si':>9s}"

@@ -55,15 +55,17 @@ a.set_xticks(xs); a.set_xticklabels(labs, fontsize=8.5)
 a.set_ylabel("throughput (atom-step / s)")
 a.set_xlabel(r"BKS        7net-nano  cutoff ($\rm\AA$)")
 a.text(0.035, 0.91, "(a)", transform=a.transAxes, fontsize=11.5, fontweight="bold")
-# 배수 화살표
+# 배수 화살표 + 양 끝 높이를 가로 점선으로 연결해 어느 값끼리 비교하는지 명시
+a.hlines(BKS_220, 0, 5.35, ls=":", lw=0.9, color="0.35", zorder=1)
+a.hlines(NANO_220, 4.65, 5.35, ls=":", lw=0.9, color="0.35", zorder=1)
 a.annotate("", xy=(5, NANO_220), xytext=(5, BKS_220),
            arrowprops=dict(arrowstyle="<->", lw=1.0, color="0.25"))
-a.text(4.70, np.sqrt(NANO_220 * BKS_220), f"×{BKS_220/NANO_220:,.0f}",
+a.text(4.90, np.sqrt(NANO_220 * BKS_220)/2, f"×{BKS_220/NANO_220:,.0f}",
        fontsize=10, ha="right", va="center",
        bbox=dict(fc="white", ec="none", alpha=0.75, pad=1.0))
-a.plot([1.35], [7e4], "o", ms=7, mfc="w", mec="tab:red", mew=1.6, clip_on=False)
-a.text(1.60, 7e4, r"7net-nano-4.5 @ $\rho$2.20", fontsize=8.5, va="center")
-a.text(1.35, 2.2e4, r"bars: @ $\rho$2.607" + "\n" + r"(cutoff sweep)",
+a.plot([1.7], [7e4*3], "o", ms=7, mfc="w", mec="tab:red", mew=1.6, clip_on=False)
+a.text(1.85, 7e4*3, r"7net-nano-4.5 @ $\rho$2.20", fontsize=8.5, va="center")
+a.text(1.7, 2e4*3, r"bars: @ $\rho$2.607" + "\n" + r"(cutoff sweep)",
        fontsize=8.5, va="center")
 
 # ================= (b) =================
@@ -86,11 +88,11 @@ for a_ in ax:
     a_.xaxis.set_minor_locator(AutoMinorLocator(2))
 ax[1].yaxis.set_minor_locator(AutoMinorLocator(2))
 
-fig.suptitle("2160-atom a-SiO$_2$,  i5-11600K (6c12t), no GPU", fontsize=10.5, y=0.965)
-fig.tight_layout(rect=[0, 0, 1, 0.93])
+# suptitle 과 axes 간격: rect 상단(=axes 가 쓸 수 있는 최대 높이)과 y 를 가깝게 두면 붙는다.
+fig.suptitle("2160-atom a-SiO$_2$,  i5-11600K (6c12t), no GPU", fontsize=10.5, y=1)
+fig.tight_layout(rect=[0, 0, 1, 1.05])
 fig.savefig(FIG / "fig_speed.png", dpi=300)
-fig.savefig(FIG / "fig_speed.pdf")
-print(f"-> {FIG}/fig_speed.png, .pdf\n")
+print(f"-> {FIG}/fig_speed.png\n")
 
 print("처리량 (atom-step/s)")
 print(f"  BKS      ρ=2.20   {BKS_220:>12,.0f}   (6 ranks)")

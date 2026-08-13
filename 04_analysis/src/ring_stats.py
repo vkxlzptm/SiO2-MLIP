@@ -110,13 +110,19 @@ if __name__ == "__main__":
     print(f"  Si {nSi}개, O {nO}개, 다리 O {nbr}개 ({100*nbr/nO:.2f}%)")
     print(f"  Si-Si 연결도 <k> = {deg.mean():.4f}   " +
           "  ".join(f"{k}:{(deg==k).sum()}" for k in sorted(set(deg))))
-    print(f"  King ring 통계 (총 {tot}개 탐색)")
-    for n in sorted(hist):
-        print(f"    {n:2d}-ring  {hist[n]:6d}   {100*hist[n]/tot:6.2f}%   "
-              f"{'#'*int(60*hist[n]/max(hist.values()))}")
+    ns = sorted(hist)
+    tri = np.array([hist[n] for n in ns], float); tri /= tri.sum()
+    dis = np.array([hist[n] / n for n in ns], float); dis /= dis.sum()
+    print(f"  King ring 통계 (삼중항 {tot}개 탐색)")
+    print(f"    {'n':>2s}{'count':>8s}{'triplet':>10s}{'distinct':>10s}")
+    for i, n in enumerate(ns):
+        print(f"    {n:2d}{hist[n]:8d}{100*tri[i]:9.2f}%{100*dis[i]:9.2f}%   "
+              f"{'#'*int(45*tri[i]/tri.max())}")
+    print(f"    평균 고리 크기:  triplet {(np.array(ns)*tri).sum():.2f}   "
+          f"distinct {(np.array(ns)*dis).sum():.2f}")
     out = f"{label}_rings.dat"
     with open(out, "w") as f:
-        f.write("# n_ring  count  fraction\n")
-        for n in sorted(hist):
-            f.write(f"{n} {hist[n]} {hist[n]/tot:.6f}\n")
+        f.write("# n_ring  count  fraction_triplet  fraction_distinct\n")
+        for i, n in enumerate(ns):
+            f.write(f"{n} {hist[n]} {tri[i]:.6f} {dis[i]:.6f}\n")
     print(f"  -> {out}")
