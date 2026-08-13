@@ -1,0 +1,72 @@
+# S0-requench-b  300 K NPT 재수행 — **tail 보정 on**
+#
+# 왜: EOS 보고값을 tail OFF -> ON 으로 바꾸기로 했다 (근거는 아래).
+#     NPT 는 압력으로 barostat 을 구동하므로 tail 유무에 **실제로 반응한다.**
+#     기존 sio2_bks_npt300 의 rho=2.3119 는 tail-off 값이라 그대로 두면 EOS 와 따로 논다.
+#
+# tail ON 으로 바꾼 근거 (2026-08-13):
+#   1. tail 보정은 V 만의 함수라 **힘에 기여하지 않는다.** 실제로 E-V 스캔 7점의 maxf 가
+#      tail on/off 에서 비트 단위로 동일했다 → 최소화된 구조가 문자 그대로 같다.
+#      "구조를 만든 MD 가 tail off 였다"는 E-V 스캔에 아무 의미가 없다.
+#   2. 앞서 근거로 삼은 "0 K virial 2.3151 이 300 K NPT 2.3119 와 0.14 % 일치" 는
+#      **순환논법이었다.** 둘 다 tail-off 장부라 당연히 맞는다. 정당성의 증거가 아니다.
+#   3. BKS 원논문(van Beest 1990)에 cutoff 는 없다. 10 A 절단은 구현 편의지 포텐셜 정의가
+#      아니며, tail 보정은 잘라낸 항을 되돌리는 것이지 포텐셜을 바꾸는 게 아니다.
+#   4. 우리가 가진 유일한 **객관적** 품질 지표(E(V)/P(V) 두 경로 일치)가 tail on 을 지지한다:
+#      rho0 0.673 % -> 0.087 %,  K0 7.2 % -> 3.0 %.
+#   ※ 주의: tail on 은 BKS 밀도를 **더 나쁘게** 만든다(+5.2 % -> +6.6 %). 즉 "MLIP 가 밀도에서
+#     이긴다"는 서사에 유리한 방향이다. 위 1~4 가 독립적으로 서 있어서 택한 것이지
+#     결과가 좋아서 택한 게 아님을 명시해 둔다.
+#
+# 출발: sio2_bks220.data (300 K NVT 평형 산물, in.quench220 4단계 끝)
+# 비용: 100,000 step / 624 step/s ≈ 3 분 (6랭크)
+# 실행: export OMP_NUM_THREADS=1 && mpirun -np 6 lmp_7net -in in.npt_tail > npt_tail.log 2>&1
+
+units           metal
+boundary        p p p
+atom_style      charge
+
+read_data       sio2_bks220.data
+mass            1 15.9994
+mass            2 28.0855
+
+pair_style      hybrid/overlay buck/coul/long 10.0 lj/cut 1.5
+pair_coeff      1 1 buck/coul/long 1388.7730 0.362318 175.0000
+pair_coeff      1 2 buck/coul/long 18003.7572 0.205205 133.5381
+pair_coeff      2 2 buck/coul/long 0.0 1.0 0.0
+pair_coeff      1 1 lj/cut 3.0 1.50 1.50
+pair_coeff      1 2 lj/cut 4.0 1.10 1.10
+pair_coeff      2 2 lj/cut 0.0 1.0  1.0
+kspace_style    pppm 1.0e-4          # 원 런과 동일 (MD 에는 1e-4 로 충분)
+
+# ★ 이 한 줄이 이번 런의 전부다. E 에 A/V, virial P 에 2A/V^2 이 더해진다.
+pair_modify     pair buck/coul/long tail yes
+
+neighbor        2.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+timestep        0.001
+variable        Tdamp equal 0.1
+
+# data 파일 속도를 그대로 쓰지 않고 새로 뽑는다 (규칙 6 의 MD 판). seed 는 원 런과 무관.
+velocity        all create 300.0 20260813 mom yes rot yes dist gaussian
+
+variable        epa  equal pe/atoms
+variable        dens equal density
+variable        vv   equal vol
+thermo          1000
+thermo_style    custom step temp press vol density pe v_epa
+
+# 20 ps 평형 (tail 을 켜면 목표 부피가 바뀌므로 새로 잡을 시간을 준다) + 100 ps 생산
+fix             1 all npt temp 300.0 300.0 ${Tdamp} iso 0.0 0.0 1.0
+run             20000
+
+reset_timestep  0
+# 생산 100 ps 의 밀도 시간평균. 마지막 스냅샷 하나가 아니라 평균을 보고값으로 쓴다.
+fix             davg all ave/time 10 10000 100000 v_dens v_vv v_epa &
+                mode scalar file npt_tail_avg.dat
+run             100000
+unfix           1
+
+write_data      sio2_bks_npt300_tail.data
+print           "NPT_TAIL_DONE  final density = $(density) g/cc   V = $(vol) A^3"

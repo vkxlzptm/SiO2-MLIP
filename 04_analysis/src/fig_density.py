@@ -17,11 +17,19 @@ BKS 가 ρ=2.20 고정 NVT 로 만든 **하나의** 네트워크를 두 포텐�
 ★ 왜 (b) 에서 E 가 아니라 P 를 피팅하나 (2026-08 수정)
   BKS 의 Buckingham -C/r^6 는 10 A 에서 뚝 잘린다(shift/tail 보정 없음).
   부피가 변하면 원자쌍이 cutoff 를 넘나들며 E 가 계단처럼 튀는데 virial 은 그 계단을
-  못 보므로 -dE/dV != P_virial 이 된다. 해석적 tail 압력 A/V^2 (A=-1.34e6 eV A^3) 로
-  -2014 bar @V=32652 가 예측되고 실측 오프셋 -2071 bar 와 일치했다 → 원인 확정.
-  7net 은 MLIP 라 **매끄러운 cutoff 함수**를 쓰므로 계단이 없다.
+  못 보므로 -dE/dV != P_virial 이 된다.
+  대조군(`./run_ev_bks.sh 1`, tail 보정 on)으로 확정: LAMMPS 가 더한 값이 7개 부피 전부
+  E_tail = A/V, P_tail = **2A/V^2** (A = -1,339,962 eV A^3) 예측과 소수점까지 일치했고,
+  어긋남이 평균 -2415 -> -226 bar 로 10.7 배 줄었다.
+  (P 가 2배인 이유: pairwise virial tail 은 -(2 pi rho^2/3)∫(du/dr) r^3 dr 이고
+   u ~ r^-6 이면 정확히 E_tail/V 의 2배. 그 2배 덕에 두 경로 차이 A/V^2 가 상쇄된다.)
+  7net 은 MLIP 라 **매끄러운 cutoff 함수**를 쓰므로 계단 자체가 없다.
   실험이 재는 것도 탄성률이므로 P(V) 피팅이 원래 더 직접적인 경로다.
   검증: 7net 은 두 경로가 43.08 vs 43.23 GPa (0.4 %) 로 일치한다.
+
+★ 보고값은 tail OFF 다 (구조를 만든 MD 와 같은 포텐셜, 300 K NPT 2.3119 와 0.14 % 일치).
+  단 tail on/off 로 K0 가 34.3 <-> 38.0 움직이므로 **BKS K0 실질 불확도는 ±2 GPa**.
+  LOO 산포 ±0.4 는 통계오차일 뿐이라 그림에 ± 를 적지 않았다.
 """
 from pathlib import Path
 
@@ -153,13 +161,13 @@ for lab, v in fit.items():
 # 대신 (a) 의 rho_exp 와 대칭이 되게 K_exp 를 적는다.
 b.plot([], [], " ", label=rf"$K_{{\rm exp}}$ = {K_EXP} GPa  (fused silica)")
 b.set_xlabel(r"$\rho$ (g/cm$^3$)"); b.set_ylabel(r"$P$ (GPa)")
-b.set_ylim(-4.9, 3.2)   # 범례가 좌측 BKS 점(rho 2.20, -2.15 GPa)을 가리지 않도록 아래 여유
+b.set_ylim(-5.0, 3.0)   # 범례 자리. 폰트를 줄이기보다 축을 넓히는 쪽 (가독성 우선)
 b.legend(loc="lower right", framealpha=0.92, fontsize=8, handlelength=1.6,
          borderpad=0.4, labelspacing=0.35,
          title=r"$K_0 = -V\,dP/dV$  (BM3 fit to $P$)", title_fontsize=7.5)
 
 for k, a_ in enumerate(ax):
-    a_.set_xlim(2.05, 2.48)
+    a_.set_xlim(2.05, 2.50)   # 우측 여유 = (b) 범례, (a) 범례 자리
     a_.xaxis.set_minor_locator(AutoMinorLocator(2))
     a_.yaxis.set_minor_locator(AutoMinorLocator(2))
     a_.text(0.035, 0.91, "(a)" if k == 0 else "(b)", transform=a_.transAxes,
