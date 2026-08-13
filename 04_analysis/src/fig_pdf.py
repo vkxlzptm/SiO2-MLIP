@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Fig. PDF — partial pair distribution functions of a-SiO2 at ρ = 2.20 g/cm³, 300 K.
 
-BKS vs SevenNet-nano-4.5 (본 작업) vs AIMD PBE (Dechant JPCC 2026, 색분리 digitize).
+BKS vs 7net-nano-4.5 (본 작업) vs AIMD PBE (Dechant JPCC 2026, 색분리 digitize).
 공통 x축을 공유하는 3단 세로 배치. Si-O 는 1피크가 뾰족해 r=[1.5,1.8] inset 확대,
 inset 안에만 **평균 결합길이**(색 점선)와 실험값(검정 파선)을 표기한다.
 """
@@ -30,7 +30,7 @@ plt.rcParams.update({
 ALPHA = 0.8                      # 겹친 곡선 뒤가 비치도록
 
 OURS = [("BKS", "02_run/s0_requench/bks220", "tab:blue"),
-        ("SevenNet-nano-4.5", "02_run/s3_md/7net220", "tab:red")]
+        ("7net-nano-4.5", "02_run/s3_md/7net220", "tab:red")]
 AI = np.loadtxt(DAT / "dechant_pdf_digitized.dat")     # r, gSiO, gOO, gSiSi
 AILAB = "AIMD PBE (Dechant 2026)"
 EXP = {"Si-O": 1.61, "O-O": 2.63, "Si-Si": 3.08}       # Dechant Table 1, experimental
@@ -84,7 +84,7 @@ for k, (pair, col, pk, ymax, tag) in enumerate(PAN):
     ins.axvline(EXP[pair], ls="--", lw=1.2, c="k")
     # 실험값 라벨은 점선 밀집 구간을 피해 오른쪽으로 빼고 가는 선으로 연결
     ins.annotate(f"exp {EXP[pair]:.2f}", xy=(EXP[pair], INS_YMAX * 0.50),
-                 xytext=(1.700, INS_YMAX * 0.80), fontsize=8.5,
+                 xytext=(1.530, INS_YMAX * 0.80), fontsize=8.5,
                  ha="center", va="center",
                  bbox=dict(fc="white", ec="none", alpha=0.5, pad=1.0),
                  arrowprops=dict(arrowstyle="-", lw=0.7, color="0.3",

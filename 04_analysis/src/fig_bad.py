@@ -32,8 +32,8 @@ plt.rcParams.update({
 ALPHA = 0.8
 
 OURS = [("BKS", "02_run/s0_requench/bks220_angles.dat", "tab:blue"),
-        ("7Net-nano-4.5", "02_run/s3_md/7net220_angles.dat", "tab:red")]
-        #("SevenNet-nano-4.5", "02_run/s3_md/7net220_angles.dat", "tab:red")]
+        ("7net-nano-4.5", "02_run/s3_md/7net220_angles.dat", "tab:red")]
+        #("7net-nano-4.5", "02_run/s3_md/7net220_angles.dat", "tab:red")]
 AI = np.loadtxt(DAT / "dechant_bad_digitized.dat")   # angle, OSiO_LES, OSiO_HES, SiOSi_LES, SiOSi_HES
 AILAB = "AIMD PBE\n(Dechant 2026)"
 #AILAB = "AIMD PBE (Dechant 2026)"
