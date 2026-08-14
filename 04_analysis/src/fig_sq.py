@@ -95,7 +95,7 @@ def peak(q, s, lo=FIT_LO, hi=FIT_HI):
     return p[1], float(np.sqrt(np.diag(cov))[1]), float(gmodel(p[1], *p)), p, res
 
 
-def bandlimit(q, s, rmax=15.2, rlim=60.0, nr=6000):
+def bandlimit(q, s, qout=None, rmax=15.2, rlim=60.0, nr=6000):
     """S(q) 잡음 제거 — **박스 크기가 정하는 물리적 대역 제한**. 조정 파라미터가 없다.
 
     원리
@@ -126,23 +126,38 @@ def bandlimit(q, s, rmax=15.2, rlim=60.0, nr=6000):
         다만 매듭 30 개(간격 0.41 = 하필 박스가 정하는 한계값)면 S=1.25 로 14 % 뭉개지는데
         **방법 안에 그게 틀렸다는 신호가 없다.** 답을 이미 알아야 매듭을 고를 수 있다.
         rmax 는 박스가 정해주므로 이쪽을 쓴다.
+
+    ★ qout 을 주면 **임의의 촘촘한 격자에서 평가**한다. 이게 중요하다 —
+      대역제한 결과는 이산점이 아니라 **연속함수**다. 그래서 그림을 그릴 때 보간이
+      아예 필요 없다. PCHIP 로 이으면 단조성 보존 때문에 데이터 점을 못 넘어서
+      0.1 격자 사이에 떨어진 피크 꼭짓점이 눌린다 (7net 진폭 1.36 → 1.33).
+      그래서 (a) 와 (b) 의 피크 높이가 어긋나 보였다. 직접 평가하면 그 문제가 없다.
     """
     r = np.linspace(1e-6, rlim, nr)
     dr = r[1] - r[0]
     h = (np.sin(np.outer(r, q)) @ (q * (s - 1.0) * np.gradient(q))) / r
     h[r > rmax] = 0.0
-    return 1.0 + 2.0 / np.pi / q * (np.sin(np.outer(q, r)) @ (r * h * dr))
+    qo = q if qout is None else qout
+    return 1.0 + 2.0 / np.pi / qo * (np.sin(np.outer(qo, r)) @ (r * h * dr))
 
 
-SET = [("Neutron diffraction (exp.)", "k", exp[:, 0], exp[:, 1], None, 1.9),
-       ("BKS", "tab:blue", bks[:, 0], bks[:, 1], bks[:, 2], 1.3),
-       ("7net-Nano-4.5", "tab:red", net[:, 0], net[:, 1], net[:, 2], 1.3)]
-pk = {lab: peak(q, s) for lab, _, q, s, _, _ in SET}
-qe = pk["Neutron diffraction (exp.)"][0]
+# 저q 표시 하한 = **실험 데이터가 시작하는 q** (0.8 Å⁻¹). 비교 대상이 없는 구간은 안 그린다.
+#   마침 우리 쪽 통계 한계와도 맞는다. 박스가 30.4 Å 이라 최소 q = 2π/L = 0.207 인데
+#   q<0.5 껍질에는 q벡터가 1·8·5·26·19 개뿐이다 (q=0.8 에서 59 개, FSDP 구간은 175~393 개).
+#   그 구간의 널뛰기는 물리가 아니라 **표본 부족**이다. S(q→0) = ρk_BT·κ_T ≈ 0.09 로
+#   수렴하는 모습을 보려면 박스를 훨씬 키워야 한다.
+QMIN_PLOT = float(exp[:, 0].min())
+
+
+SET = [("Neutron diff. (exp.)", "k", exp[:, 0], exp[:, 1], None, 1.9, None),
+       ("BKS", "tab:blue", bks[:, 0], bks[:, 1], bks[:, 2], 1.3, bks[:, 3]),
+       ("7net-Nano-4.5", "tab:red", net[:, 0], net[:, 1], net[:, 2], 1.3, net[:, 3])]
+pk = {lab: peak(q, s) for lab, _, q, s, *_ in SET}
+qe = pk[SET[0][0]][0]
 QFIT = np.linspace(FIT_LO, FIT_HI, 400)
 
-fig, ax = plt.subplots(1, 2, figsize=(7.8, 3.5),
-                       gridspec_kw={"width_ratios": [1.6, 1]})
+fig, ax = plt.subplots(1, 2, figsize=(7.0, 3.2),
+                       gridspec_kw={"width_ratios": [2.1, 1]})
 a, b = ax
 
 
@@ -161,28 +176,30 @@ def draw(axis, mode="raw"):
       면역이므로, 날 데이터 점을 그대로 보여주는 편이 정직하다.
       (필터를 걸어도 q 1.593→1.590, S 1.462→1.457 로 인용 불확도 안에서 안 움직인다.)
     """
-    for lab, c, q, s, e, lw in SET:
+    for lab, c, q, s, e, lw, nq in SET:
         z = 4 if c == "k" else 3
-        sd = bandlimit(q, s) if (e is not None and mode == "raw") else s
+        if mode == "raw" and e is not None:
+            # ★ 대역제한 필터를 **촘촘한 격자에서 직접 평가**한다 — 보간이 아예 없다.
+            #   PCHIP 는 단조성 보존이라 데이터 점을 못 넘어서, 꼭짓점이 0.1 격자 사이에
+            #   떨어지면 봉우리를 누른다 (7net 1.36 → 1.33). (a)·(b) 높이가 어긋난 원인이었다.
+            #   실험이 없는 저q 는 **표시만** 자른다. 변환 입력에선 빼지 않는다 —
+            #   푸리에 변환은 전 q 정보를 쓰기 때문이다.
+            m = q >= QMIN_PLOT
+            qf = np.linspace(q[m][0], q[m][-1], 1500)
+            sf = bandlimit(q, s, qf)
+            se = PchipInterpolator(q[m], e[m])(qf)   # 밴드 폭은 그대로 — 불확도는 안 줄인다
+            axis.fill_between(qf, sf - se, sf + se, color=c, alpha=0.2, lw=0, zorder=z - 1)
+            axis.plot(qf, sf, "-", c=c, lw=lw, label=lab, zorder=z)
+            continue
         if e is not None:
-            # 밴드 = 대역제한 곡선 ± SEM. 불확도는 줄이지 않는다 — 표시만 매끄럽게 한다.
-            #   껍질 간격이 0.1 이라 직선으로 이으면 모서리가 보인다. 이건 통계 문제가
-            #   아니라 렌더링 문제이고, 데이터 점을 정확히 지나는 **보간**으로 해결된다.
-            #   PCHIP 를 쓰는 이유: 일반 3차 스플라인은 잡음 있는 점 사이에서 overshoot 이
-            #   나서 없는 봉우리를 만든다. PCHIP 는 단조성을 보존해 그 일이 없다.
             ok = np.isfinite(e) & np.isfinite(s)
             qf = np.linspace(q[ok][0], q[ok][-1], 1200)
-            lo = PchipInterpolator(q[ok], (sd - e)[ok])(qf)
-            hi = PchipInterpolator(q[ok], (sd + e)[ok])(qf)
-            axis.fill_between(qf, lo, hi, color=c, alpha=0.38, lw=0, zorder=z - 1)
+            lo = PchipInterpolator(q[ok], (s - e)[ok])(qf)
+            hi = PchipInterpolator(q[ok], (s + e)[ok])(qf)
+            axis.fill_between(qf, lo, hi, color=c, alpha=0.2, lw=0, zorder=z - 1)
         if mode == "raw" or c == "k":
-            if e is None:
-                axis.plot(q, s, "-", c=c, lw=lw, label=lab, zorder=z)
-            else:
-                ok = np.isfinite(sd)
-                qf = np.linspace(q[ok][0], q[ok][-1], 1200)
-                axis.plot(qf, PchipInterpolator(q[ok], sd[ok])(qf), "-",
-                          c=c, lw=lw, label=lab, zorder=z)
+            # 여기 오는 건 실험 곡선뿐 (이미 매끈하고 SEM 이 없다)
+            axis.plot(q, s, "-", c=c, lw=lw, label=lab, zorder=z)
         else:
             m = (q > FIT_LO - 0.15) & (q < FIT_HI + 0.15)
             # 데이터 점: 테두리 없이 면색만 (곡선과 같은 색) — 피팅 곡선을 덜 가린다
@@ -194,13 +211,13 @@ def draw(axis, mode="raw"):
 # ---------- (a) 전 구간 ----------
 draw(a, "raw")
 a.axhline(1, ls=":", lw=0.8, c="0.6", zorder=1)
-a.set_xlim(0, QMAX_PLOT); a.set_ylim(0.0, 2)
+a.set_xlim(QMIN_PLOT - 0.6, QMAX_PLOT); a.set_ylim(0.0, 2)
 a.set_xlabel(r"$q$ ($\rm\AA^{-1}$)"); a.set_ylabel(r"$S_{\rm N}(q)$")
-a.legend(loc="upper right", framealpha=0.92, fontsize=8.5,
-         handlelength=1.6, borderpad=0.4, labelspacing=0.35)
+a.legend(loc="lower right", framealpha=0.92, fontsize=8.5,
+         handlelength=1.4, borderpad=0.4, labelspacing=0.35)
 a.text(0.025, 0.955, "(a)", transform=a.transAxes, fontsize=11.5, fontweight="bold", ha='left', va='top')
 # FSDP 를 화살표로 지시
-a.annotate("FSDP", xy=(qe+0.1, 1.44), xytext=(qe+0.4, 1.7),
+a.annotate("FSDP", xy=(qe+0.1, 1.44), xytext=(qe+0.6, 1.7),
            fontsize=9, ha="center", va="bottom", color="0.15",
            arrowprops=dict(arrowstyle="->", lw=1.1, color="0.15"))
 
@@ -216,16 +233,19 @@ b.set_title("FSDP", fontsize=10)
 b.text(0.955, 0.955, "(b)", transform=b.transAxes, fontsize=11.5,
        fontweight="bold", ha="right", va="top")
 
-b.text(0.05, 0.955, r"$q_{\rm FSDP}$ ($\rm\AA^{-1}$)", transform=b.transAxes,
+b.text(0.07, 0.955, r"$q_{\rm FSDP}$ ($\rm\AA^{-1}$)", transform=b.transAxes,
        fontsize=7.5, ha="left", va="top", color="0.15")
 for j, (nm, c, lab) in enumerate([("exp.", "k", SET[0][0]),
                                   ("BKS", "tab:blue", "BKS"),
                                   ("7net-Nano-4.5", "tab:red", "7net-Nano-4.5")]):
     qp = pk[lab][0]
-    txt = f"{nm}: {qp:.2f}" + ("" if j == 0 else f"   ({100*(qp/qe-1):+.0f} %)")
+    # % 는 붙여 쓴다. SI/ISO 31-0 은 띄우라고 하지만 PRL·PRB 등 대부분의 저널 관행은 붙임.
+    txt = f"{nm}: {qp:.2f}" + ("" if j == 0 else f" ({100*(qp/qe-1):+.0f}%)")
     b.text(0.05, 0.955 - 0.082 * (j + 1), txt, transform=b.transAxes,
            fontsize=7.5, ha="left", va="top", color=c,
-           fontweight="bold" if j else "normal")
+           fontweight="bold" if j else "normal", zorder=8,
+           # 세로 점선이 글자를 가로질러 읽기 나쁘다 → 흰 배경을 깔되 테두리는 없앤다
+           bbox=dict(fc="w", ec="none", alpha=0.8, pad=1.2))
 
 for a_ in ax:
     a_.xaxis.set_minor_locator(AutoMinorLocator(2))
@@ -234,13 +254,13 @@ for a_ in ax:
 fig.suptitle("Neutron structure factor of a-SiO$_2$ at 300 K  "
              "(exp.: Zeidler $et\\ al.$, PRL $\\bf 113$, 135501 (2014))",
              fontsize=10, y=0.995)
-fig.tight_layout(rect=[0, 0, 1, 1.05])
+fig.tight_layout(rect=[0, 0, 1, 1.06])
 fig.savefig(FIG / "fig_sq.png", dpi=300)
 print(f"-> {FIG}/fig_sq.png\n")
 
 print(f"{'':28s}{'q_FSDP':>9s}{'±':>7s}{'vs exp':>9s}{'S_peak':>9s}{'vs exp':>9s}")
 se = pk[SET[0][0]][2]
-for lab, _, q, s, e, _ in SET:
+for lab, _, q, s, e, *_ in SET:
     q0, e0, s0, _, res = pk[lab]
     sem = np.nanmedian(e) if e is not None else np.nan
     extra = f"   잔차 {res:.4f} vs SEM {sem:.4f}" if e is not None else f"   잔차 {res:.4f}"
