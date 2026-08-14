@@ -15,7 +15,7 @@ BKS(고전 포텐셜)로 만든 비정질 SiO₂에 범용 MLIP **SevenNet-Nano*
 | S0 환경 구축 | **완료** — LAMMPS + `pair_style e3gnn` 빌드·검증·배포 |
 | S0′ 구조 재생성 | **완료** — 1차 melt-quench 실패 진단 후 ρ=2.20 고정 NVT로 재수행 |
 | S1 sanity + 속도 실측 | **완료** — 단일점, ASE 교차검증, 랭크 비교, 속도, cutoff 스윕, 병렬 확장성 |
-| S2′ 구조 이완 + E–V | **완료** — 7net ρ₀ 2.2185 / K₀ 43.2, BKS(tail on) 2.3442 / 34.3 |
+| S2′ 구조 이완 + E–V | **완료** — 7net ρ₀ 2.2185, BKS 2.3442. **K는 같은 밀도에서 3 % 이내 일치** |
 | S3′ RDF + 결합각 | **완료** — 300 K NVT 5 ps, g(r)·BAD·ring 통계, AIMD digitize 비교 |
 | S4 짧은 MD | 생략 (S3′가 대체) |
 | S5 정리 | **진행 중** — 그림 5장·RESULTS.md 완료, 남은 항목은 아래 |
@@ -96,7 +96,7 @@ BKS       :  1.35 Matom-step/s @ρ=2.20 (6랭크)  → 배수 1,244×
 04_analysis/
   src/             분석·작도 스크립트 (경로는 __file__ 기준, 어디서든 실행 가능)
   dat/             digitize 결과, ring 통계
-  fig/             fig_pdf / fig_bad / fig_density / fig_speed / fig_rings (PNG 300dpi)
+  fig/             fig_pdf / fig_bad / fig_density / fig_bulkmod / fig_speed / fig_rings
   src/old_delete/  폐기 스크립트 — `./cleanup.sh --yes` 로 정리 (샌드박스는 삭제 권한 없음)
 05_doc/            README.md(색인) / RESULTS.md(결과) / STATUS.md(이 문서) + 문헌·그림
 
