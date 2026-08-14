@@ -32,8 +32,12 @@ import numpy as np
 
 TYPE_O, TYPE_SI = 1, 2
 B = {TYPE_O: 5.803, TYPE_SI: 4.1491}     # fm (Sears 1992 로 알려진 표)
-DQ_SHELL = 0.05                          # 껍질 폭
-NMAX_PER_SHELL = 300                     # 껍질당 q벡터 상한 — 큰 q 에서 비용 폭증 방지
+# 껍질 폭 0.10 — **좁힐수록 좋아지는 게 아니다.**
+#   q 는 원리적으로 2π/L = 0.207 Å⁻¹ 간격으로만 존재한다. 그보다 훨씬 좁은 bin 은
+#   있지도 않은 해상도를 흉내 내면서 껍질당 표본만 줄여 **잡음만 키운다.**
+#   0.05 로 뽑았더니 FSDP 위치가 추정법에 따라 ±0.02 흔들렸다. 0.10 으로 넓힌다.
+DQ_SHELL = 0.10
+NMAX_PER_SHELL = 400                     # 껍질당 q벡터 상한 — 큰 q 에서 비용 폭증 방지
 CHUNK = 20000
 
 
@@ -110,16 +114,19 @@ def main(path, prefix, stride=5, qmax=10.0):
     F = acc / (nframe * N)                                   # <|sum b e^{iqr}|^2>/N
     Sq_vec = 1.0 + (F - b2) / b1**2
 
-    # 껍질 평균
+    # 껍질 평균 + **표준오차**. 밴드로 그려서 "이만큼이 통계 요동"임을 보이려면 필요하다.
+    #   껍질 안 q 벡터들의 S 값 흩어짐 / sqrt(n).  프레임 간 상관 때문에 실제 불확도는
+    #   이보다 다소 크지만, 하한으로는 정직한 값이다.
     out = []
     for s in np.unique(shell):
         m = shell == s
-        out.append((qm[m].mean(), Sq_vec[m].mean(), m.sum()))
+        v = Sq_vec[m]
+        out.append((qm[m].mean(), v.mean(), v.std(ddof=1) / np.sqrt(m.sum()), m.sum()))
     out = np.array(out)
 
     np.savetxt(f"{prefix}_sqd.dat", out,
-               header=f"frames {nframe} (stride {stride})  N {N}  L {L}\n"
-                      f"직접 계산 (절단·창 없음). q(1/A)  S_N(q)  n_qvec")
+               header=f"frames {nframe} (stride {stride})  N {N}  L {L}  dq_shell {DQ_SHELL}\n"
+                      f"직접 계산 (절단·창 없음). q(1/A)  S_N(q)  SEM  n_qvec")
 
     sel = (out[:, 0] > 1.0) & (out[:, 0] < 2.2)
     qq, ss = out[sel, 0], out[sel, 1]
@@ -130,7 +137,10 @@ def main(path, prefix, stride=5, qmax=10.0):
         qpk = qq[i] + d * (qq[i+1] - qq[i-1]) / 2
     else:
         qpk = qq[i]
-    print(f"{prefix}: {nframe} frames, S(q) 고q 평균 {out[out[:,0]>8, 1].mean():.4f} (1 이어야 정상)")
+    wide = (out[:, 0] >= 2) & (out[:, 0] <= 10)
+    # ※ "q>8 이면 S=1" 은 틀린 기준이다. 실리카 S(q) 는 22 A^-1 까지 진동한다.
+    #   제대로 된 검사는 (a) 넓은 구간 평균이 1 인가, (b) g(r) 경로와 일치하는가 두 가지다.
+    print(f"{prefix}: {nframe} frames, S(q) 평균(q 2-10) {out[wide, 1].mean():.4f} (1 이어야 정상)")
     print(f"  FSDP: q = {qpk:.3f} A^-1,  S = {ss[i]:.3f}   (실험 ~1.52)")
     print(f"  -> {prefix}_sqd.dat")
 

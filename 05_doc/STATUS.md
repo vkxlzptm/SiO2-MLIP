@@ -17,8 +17,9 @@ BKS(고전 포텐셜)로 만든 비정질 SiO₂에 범용 MLIP **SevenNet-Nano*
 | S1 sanity + 속도 실측 | **완료** — 단일점, ASE 교차검증, 랭크 비교, 속도, cutoff 스윕, 병렬 확장성 |
 | S2′ 구조 이완 + E–V | **완료** — 7net ρ₀ 2.2185, BKS 2.3442. **K는 같은 밀도에서 3 % 이내 일치** |
 | S3′ RDF + 결합각 | **완료** — 300 K NVT 5 ps, g(r)·BAD·ring 통계, AIMD digitize 비교 |
+| S3″ S(q) | **완료** — 궤적에서 직접 계산, 중성자 회절 실험(Zeidler PRL 2014)과 비교 |
 | S4 짧은 MD | 생략 (S3′가 대체) |
-| S5 정리 | **진행 중** — 그림 5장·RESULTS.md 완료, 남은 항목은 아래 |
+| S5 정리 | **진행 중** — 그림 7장·RESULTS.md 완료, 남은 항목은 아래 |
 
 ## 확정된 환경
 
@@ -96,9 +97,11 @@ BKS       :  1.35 Matom-step/s @ρ=2.20 (6랭크)  → 배수 1,244×
 04_analysis/
   src/             분석·작도 스크립트 (경로는 __file__ 기준, 어디서든 실행 가능)
   dat/             digitize 결과, ring 통계
-  fig/             fig_pdf / fig_bad / fig_density / fig_bulkmod / fig_speed / fig_rings
+  fig/             fig_pdf / fig_bad / fig_density / fig_bulkmod / fig_sq / fig_speed / fig_rings
   src/old_delete/  폐기 스크립트 — `./cleanup.sh --yes` 로 정리 (샌드박스는 삭제 권한 없음)
 05_doc/            README.md(색인) / RESULTS.md(결과) / STATUS.md(이 문서) + 문헌·그림
+  dechant_figs/    AIMD 참조 그림 (digitize 입력)
+  zeidler_figs/    중성자 S(q) 실험 그림 (digitize 입력)
 
 sync.sh            git 동기화 (양쪽 다 이거 한 줄)
 cleanup.sh         폐기 파일 정리 (드라이런 기본, --yes 로 실삭제)
@@ -117,10 +120,9 @@ cleanup.sh         폐기 파일 정리 (드라이런 기본, --yes 로 실삭�
    따라 −4.0 ~ −5.4 % 를 오간다. 이전 판의 "0.03 %p 일치" 는 재현 불가라 삭제했다.
    제대로 하려면 각 부피에서의 결합길이·각도 변화를 직접 재야 한다 (E–V 스캔 구조에서
    추출 가능, 추가 MD 불필요). 안 할 거면 지금의 정성 서술로 두면 된다.
-4. (선택) **S(q) 계산** — g(r) 푸리에 변환으로 FSDP를 실험 1.52 Å⁻¹ 과 비교. 추가 계산 불필요
-5. (선택) **excess energy** — Erhard et al.의 주요 지표(실험 78–131 meV/SiO₂).
+4. (선택) **excess energy** — Erhard et al.의 주요 지표(실험 78–131 meV/SiO₂).
    α-quartz 단일점 하나만 추가하면 됨 (7net 으로 1분)
-6. (선택) **7net 어닐링** — 중거리 구조를 마저 고치려면 필요. 20 ps에 11시간
+5. (선택) **7net 어닐링** — 중거리 구조를 마저 고치려면 필요. 20 ps에 11시간
 
 ## 참고 문서
 

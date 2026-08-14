@@ -33,6 +33,8 @@ echo "── B. 폐기된 실행의 잔재 ────────────�
 # 남아 있으면 "왜 이것만 있지?" 하고 헷갈린다. 정의는 같지만 쓸 데가 없다.
 kill_it 02_run/s2_relax/ev_bks_f1.04.log  "1차 BKS 스캔 잔재 (현 목록 밖)"
 kill_it 02_run/s2_relax/ev_bks_f1.06.log  "1차 BKS 스캔 잔재 (현 목록 밖)"
+kill_it 04_analysis/fig/fig_bulkmod1.png  "fig_bulkmod 중간 버전"
+kill_it 04_analysis/fig/fig_bulkmod2.png  "fig_bulkmod 중간 버전"
 
 echo
 echo "── C. OS 쓰레기 ──────────────────────────────────────────────"
@@ -65,6 +67,10 @@ cat <<'EOF'
     RESULTS.md 가 참조하지 않지만 melt-quench 진단 그림이다.
     quench_VT.png 는 v1 실패(4500 K 에서 밀도 붕괴)를 보여주는 그림일 가능성이 높다.
     → 확인 후 _v1_superseded/ 로 옮기든지 RESULTS 에 인용하든지 결정할 것.
+
+02_run/s3_md/*_sq.dat,  *_gr15.dat   (g(r)→FT 경로 산물)
+    보고값은 sq_direct 쪽이지만, **두 경로가 일치한다는 검증의 근거**다.
+    "Lorch 창이 진폭을 얼마나 눌렀나"도 이 파일들로만 보일 수 있다.
 
 04_analysis/src/ev_fit.py,  ev220_fit.py,  quench220_fit.py
     문서 참조 0~1. ev_fit.py 는 v1 전용, ev220_fit.py 는 fig_density.py 가 흡수했다.
