@@ -56,7 +56,7 @@ from matplotlib.ticker import AutoMinorLocator
 ROOT = Path(__file__).resolve().parents[2]
 FIG = ROOT / "04_analysis/fig"; FIG.mkdir(exist_ok=True)
 
-QMAX_PLOT = 10.0        # sq_direct.py 의 qmax 와 맞출 것 (그 이상은 데이터가 없다)
+QMAX_PLOT = 12.0        # sq_direct.py 의 qmax 와 맞출 것 (그 이상은 데이터가 없다)
 
 plt.rcParams.update({
     "font.size": 10, "axes.labelsize": 11, "xtick.labelsize": 10, "ytick.labelsize": 10,
@@ -122,13 +122,14 @@ def draw(axis, mode="raw"):
         if e is not None:
             ok = np.isfinite(e)
             axis.fill_between(q[ok], (s - e)[ok], (s + e)[ok],
-                              color=c, alpha=0.28, lw=0, zorder=z - 1)
+                              color=c, alpha=0.38, lw=0, zorder=z - 1)
         if mode == "raw" or c == "k":
             axis.plot(q, s, "-", c=c, lw=lw, label=lab, zorder=z)
         else:
             m = (q > FIT_LO - 0.15) & (q < FIT_HI + 0.15)
-            axis.plot(q[m], s[m], "o", ms=3.2, mfc="w", mec=c, mew=0.9,
-                      alpha=0.9, zorder=z)
+            # 데이터 점: 테두리 없이 면색만 (곡선과 같은 색) — 피팅 곡선을 덜 가린다
+            axis.plot(q[m], s[m], "o", ms=3.6, mfc=c, mec="none",
+                      alpha=0.95, zorder=z)
             axis.plot(QFIT, gmodel(QFIT, *pk[lab][3]), "-", c=c, lw=1.9, zorder=z + 1)
 
 
@@ -151,7 +152,7 @@ for lab, c, *_ in SET:
     qp, _, sp = pk[lab][:3]
     b.plot([qp], [sp], "o", ms=7, mfc=c, mec="w", mew=1.5, zorder=6)
     b.axvline(qp, ls=":", lw=1.0, c=c, alpha=0.85, zorder=1)
-b.set_xlim(1.05, 2.15); b.set_ylim(0.80, 2.02)
+b.set_xlim(1.05, 2.15); b.set_ylim(0.80, 2.0)
 b.set_xlabel(r"$q$ ($\rm\AA^{-1}$)")
 b.set_title("FSDP", fontsize=10)
 b.text(0.955, 0.955, "(b)", transform=b.transAxes, fontsize=11.5,
@@ -175,7 +176,7 @@ for a_ in ax:
 fig.suptitle("Neutron structure factor of a-SiO$_2$ at 300 K  "
              "(exp.: Zeidler $et\\ al.$, PRL $\\bf 113$, 135501 (2014))",
              fontsize=10, y=0.995)
-fig.tight_layout(rect=[0, 0, 1, 0.965])
+fig.tight_layout(rect=[0, 0, 1, 1.05])
 fig.savefig(FIG / "fig_sq.png", dpi=300)
 print(f"-> {FIG}/fig_sq.png\n")
 
