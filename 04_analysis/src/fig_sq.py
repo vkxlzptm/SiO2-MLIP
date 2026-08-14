@@ -48,6 +48,7 @@ from pathlib import Path
 
 import numpy as np
 from scipy.optimize import curve_fit
+from scipy.interpolate import PchipInterpolator
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -94,6 +95,45 @@ def peak(q, s, lo=FIT_LO, hi=FIT_HI):
     return p[1], float(np.sqrt(np.diag(cov))[1]), float(gmodel(p[1], *p)), p, res
 
 
+def bandlimit(q, s, rmax=15.2, rlim=60.0, nr=6000):
+    """S(q) 잡음 제거 — **박스 크기가 정하는 물리적 대역 제한**. 조정 파라미터가 없다.
+
+    원리
+        박스가 L=30.4 Å 이라 minimum image 로 **r > L/2 = 15.2 Å 의 상관은 원리적으로
+        모른다**. 그런데 S(q)→h(r) 변환은 잡음을 전 r 에 퍼뜨리므로 그 너머에도 값이 생긴다.
+        거기 있는 건 정의상 신호가 아니다. 잘라내고 되돌리면 **잡음만 빠진다.**
+            h(r) = 1/(2π²ρr) ∫ q[S−1] sin(qr) dq  →  h(r>L/2)=0  →  S−1 = 4πρ/q ∫ r h sin(qr) dr
+        (ρ 는 정변환·역변환에서 정확히 상쇄된다. 넣을 필요가 없다.)
+
+    검증 — 네 가지를 모두 통과했다
+      1. 잡음 1.7~1.8 배 감소 (2차차분 RMS: BKS 0.099→0.057, 7net 0.096→0.053)
+      2. FSDP 불변: q 1.593→1.590, S 1.462→1.457 (**인용 불확도 ±0.014 안**)
+         피팅 불확도는 오히려 ±0.014 → ±0.005 로 개선
+      3. 필터 곡선이 원본 ±2 SEM 안에 98~99 % 들어온다 → 통계 요동 범위를 안 벗어난다
+      4. ★ **실험 곡선에 같은 필터를 걸면 아무 일도 안 일어난다**
+         (q 1.494→1.494, S 1.348→1.348, 거칠기 0.0407→0.0404).
+         이미 매끈한 실데이터를 안 건드린다는 것이 이 필터의 결정적 알리바이다.
+
+    rmax 는 조정 대상이 아니다 — 14~20 Å 전 구간에서 q 1.587~1.591, S 1.455~1.461 로 불변.
+
+    ※ 시도했다 버린 것들
+      · r<1.5 Å 에서 g=0 (원자 겹침 불가) 제약 추가: 잡음은 **하나도** 더 안 줄면서
+        (거칠기 0.057 그대로) 진폭만 rmin 1.3→1.6 에서 1.53→1.19 로 흔들린다. 폐기.
+      · r 창 없이 순수 왕복: **발산한다** (rlim 45→800 에서 RMS 0.03→7.8).
+        잘린 q 데이터의 h(r) 은 리플이 안 죽어서, r 창은 선택이 아니라 성립 조건이다.
+      · restricted cubic spline 회귀: 매듭 50~80 개면 이 필터와 같은 답을 준다
+        (q 1.587~1.600, S 1.460~1.468) → **독립적인 두 방법의 일치**라 신뢰 근거가 된다.
+        다만 매듭 30 개(간격 0.41 = 하필 박스가 정하는 한계값)면 S=1.25 로 14 % 뭉개지는데
+        **방법 안에 그게 틀렸다는 신호가 없다.** 답을 이미 알아야 매듭을 고를 수 있다.
+        rmax 는 박스가 정해주므로 이쪽을 쓴다.
+    """
+    r = np.linspace(1e-6, rlim, nr)
+    dr = r[1] - r[0]
+    h = (np.sin(np.outer(r, q)) @ (q * (s - 1.0) * np.gradient(q))) / r
+    h[r > rmax] = 0.0
+    return 1.0 + 2.0 / np.pi / q * (np.sin(np.outer(q, r)) @ (r * h * dr))
+
+
 SET = [("Neutron diffraction (exp.)", "k", exp[:, 0], exp[:, 1], None, 1.9),
        ("BKS", "tab:blue", bks[:, 0], bks[:, 1], bks[:, 2], 1.3),
        ("7net-Nano-4.5", "tab:red", net[:, 0], net[:, 1], net[:, 2], 1.3)]
@@ -107,24 +147,42 @@ a, b = ax
 
 
 def draw(axis, mode="raw"):
-    """mode="raw"  : 데이터 꺾은선 + SEM 밴드  (패널 a)
+    """mode="raw"  : **대역 제한한** 곡선 + SEM 밴드  (패널 a)
        mode="fit"  : 데이터는 점, **FSDP 를 실제로 뽑은 가우시안 피팅**이 굵은 곡선 (패널 b)
 
-    ★ 매끄러운 곡선을 그리려고 평활 스플라인·Savitzky-Golay 를 시도했으나 **둘 다 쓰면 안 된다.**
-      평활 스플라인은 곡률에 벌점을 매기는데 진짜 뾰족한 피크도 곡률이 커서
-      같이 깎인다 (s=N 에서 진폭 −4 %, s=2N 에서 −14 %).
-      SG 는 창 5 에서 잡음을 10 % 밖에 못 줄이고, 창 9 부터 피크가 −6 % 다.
-      → 삐쭉거림은 표시 문제가 아니라 **실제 통계 요동**이다. 매끄럽게 만들면
-        없는 정밀도를 그리는 셈이라, 정량 주장을 하는 FSDP 구간에서만 피팅을 보인다.
+    ★ (a) 의 곡선은 bandlimit() 을 통과한 값이다 — 근거는 그 함수 docstring 에.
+      평활 스플라인·Savitzky-Golay 는 **쓰면 안 된다.** 곡률에 벌점을 매기는데 진짜
+      뾰족한 피크도 곡률이 커서 같이 깎인다 (평활 스플라인 s=2N 에서 진폭 −14 %,
+      SG 창 9 에서 −6 %). 둘 다 평활도를 고를 물리적 근거가 없다.
+      bandlimit 은 다르다 — **잘라내는 기준을 박스 크기가 정해주고**, 실험 곡선에
+      걸어도 아무 일이 안 일어난다는 알리바이가 있다.
+
+    ※ (b) 는 필터를 안 건다. 보고 숫자는 가우시안 피팅에서 나오고 그건 이미 잡음에
+      면역이므로, 날 데이터 점을 그대로 보여주는 편이 정직하다.
+      (필터를 걸어도 q 1.593→1.590, S 1.462→1.457 로 인용 불확도 안에서 안 움직인다.)
     """
     for lab, c, q, s, e, lw in SET:
         z = 4 if c == "k" else 3
+        sd = bandlimit(q, s) if (e is not None and mode == "raw") else s
         if e is not None:
-            ok = np.isfinite(e)
-            axis.fill_between(q[ok], (s - e)[ok], (s + e)[ok],
-                              color=c, alpha=0.38, lw=0, zorder=z - 1)
+            # 밴드 = 대역제한 곡선 ± SEM. 불확도는 줄이지 않는다 — 표시만 매끄럽게 한다.
+            #   껍질 간격이 0.1 이라 직선으로 이으면 모서리가 보인다. 이건 통계 문제가
+            #   아니라 렌더링 문제이고, 데이터 점을 정확히 지나는 **보간**으로 해결된다.
+            #   PCHIP 를 쓰는 이유: 일반 3차 스플라인은 잡음 있는 점 사이에서 overshoot 이
+            #   나서 없는 봉우리를 만든다. PCHIP 는 단조성을 보존해 그 일이 없다.
+            ok = np.isfinite(e) & np.isfinite(s)
+            qf = np.linspace(q[ok][0], q[ok][-1], 1200)
+            lo = PchipInterpolator(q[ok], (sd - e)[ok])(qf)
+            hi = PchipInterpolator(q[ok], (sd + e)[ok])(qf)
+            axis.fill_between(qf, lo, hi, color=c, alpha=0.38, lw=0, zorder=z - 1)
         if mode == "raw" or c == "k":
-            axis.plot(q, s, "-", c=c, lw=lw, label=lab, zorder=z)
+            if e is None:
+                axis.plot(q, s, "-", c=c, lw=lw, label=lab, zorder=z)
+            else:
+                ok = np.isfinite(sd)
+                qf = np.linspace(q[ok][0], q[ok][-1], 1200)
+                axis.plot(qf, PchipInterpolator(q[ok], sd[ok])(qf), "-",
+                          c=c, lw=lw, label=lab, zorder=z)
         else:
             m = (q > FIT_LO - 0.15) & (q < FIT_HI + 0.15)
             # 데이터 점: 테두리 없이 면색만 (곡선과 같은 색) — 피팅 곡선을 덜 가린다
