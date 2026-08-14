@@ -77,7 +77,7 @@ for lab, col, fn in SET:
 b, s = fit["BKS"], fit["7net-Nano-4.5"]
 kb, ks = K_of(V_of(RHO_EXP), b["pf"]), K_of(V_of(RHO_EXP), s["pf"])
 
-fig, ax = plt.subplots(figsize=(5.4, 4.15))
+fig, ax = plt.subplots(figsize=(5.0, 4.1))
 
 # ---- 세로 기준선 3개: 실험 밀도 + 각 방법의 평형밀도 ----
 ax.axvline(RHO_EXP, ls="--", lw=1.2, c="0.35", alpha=0.9, zorder=1)
@@ -102,11 +102,11 @@ ax.plot(RHO_EXP, K_EXP, "*", ms=18, mfc="k", mec="w", mew=1.0, zorder=7)
 # ---- 세로선 위의 rho0 라벨 (선 색과 맞추고 흰 배경 alpha 0.8) ----
 #   BKS 는 평형 마커(34.3)와 범례 상자(y~47) 사이 빈 띠로 올린다. 마커 아래로는
 #   회전 라벨 높이(약 6.7 단위)가 안 들어가 마커를 가린다.
-for v, yy in ((s, 36.5), (b, 41.5)):
+for v, yy in ((s, 37.4), (b, 29.9)):
     ax.text(v["rho0"], yy, rf"$\rho_0$ = {v['rho0']:.3f}",
             fontsize=8.5, c=v["col"], ha="center", va="center", rotation=90,
             bbox=dict(fc="white", ec="none", alpha=0.8, pad=1.0), zorder=8)
-ax.text(RHO_EXP, 50.0, rf"$\rho_{{\rm exp}}$ = {RHO_EXP:.2f}",
+ax.text(RHO_EXP, 31.0, rf"$\rho_{{\rm exp}}$ = {RHO_EXP:.2f}",
         fontsize=8.5, c="0.25", ha="center", va="center", rotation=90,
         bbox=dict(fc="white", ec="none", alpha=0.8, pad=1.0), zorder=8)
 
@@ -117,10 +117,10 @@ ax.text(RHO_EXP, 50.0, rf"$\rho_{{\rm exp}}$ = {RHO_EXP:.2f}",
 # ---- 실험값과의 간격: rho_exp 에서만 재는 게 정당한 비교다 ----
 #   두 곡선이 1.4 GPa 밖에 안 떨어져 있어 화살표를 색깔별로 두 개 그리면 겹쳐서 지저분하다.
 #   "실험과의 간격"은 하나의 개념이므로 **검정 화살표 하나**로 그리고 값은 옆에 적는다.
-ax.annotate("", xy=(RHO_EXP, K_EXP + 0.8), xytext=(RHO_EXP, (kb + ks) / 2),
+ax.annotate("", xy=(RHO_EXP, K_EXP + 0.7), xytext=(RHO_EXP, (kb + ks) / 2 - 1),
             arrowprops=dict(arrowstyle="<->", lw=1.2, color="0.15"), zorder=7)
-ax.text(RHO_EXP - 0.009, (K_EXP + (kb + ks) / 2) / 2 + 0.3,
-        "both $\\approx$ +20 %\nvs $K_{\\rm exp}$",
+ax.text(RHO_EXP - 0.005, (K_EXP + (kb + ks) / 2) / 2 + 0.0,
+        "both$\\approx$+20 %\nvs $K_{\\rm exp}$",
         fontsize=8.5, ha="right", va="center", multialignment="right",
         color="0.15", linespacing=1.4,
         bbox=dict(fc="white", ec="none", alpha=0.8, pad=1.5), zorder=8)
@@ -149,7 +149,7 @@ ax.set_xlabel(r"$\rho$ (g/cm$^3$)")
 ax.set_ylabel(r"$K = -V\,\mathrm{d}P/\mathrm{d}V$  (GPa)")
 ax.set_xlim(2.06, 2.46)
 # ymin 20: BKS 최우측 스캔점(rho 2.4445, K 22.4)까지 보이게. ymax 55: rho0 라벨 자리만 확보.
-ax.set_ylim(20, 55)
+ax.set_ylim(21, 50)
 ax.xaxis.set_minor_locator(AutoMinorLocator(2))
 ax.yaxis.set_minor_locator(AutoMinorLocator(2))
 
@@ -160,11 +160,13 @@ h = [plt.Line2D([], [], ls="-", lw=1.6, c=v["col"],
      for v in fit.values()]
 l = list(fit.keys())
 h.append(plt.Line2D([], [], ls="", marker="o", ms=9, mfc="0.5", mec="w", mew=1.5))
-l.append(r"$K_0$ at equilibrium ($P=0$)")
+# 범례와 아래 상자의 표현을 **일치**시킨다. "equilibrium" / "own rho_0" 로 갈리면
+# 읽는 사람이 둘을 매칭하는 단계를 한 번 더 거친다.
+l.append(r"$K_0$ at own $\rho_0$ ($P=0$)")
 h.append(plt.Line2D([], [], ls="", marker="*", ms=14, mfc="k", mec="w"))
 l.append(rf"Fused silica: $K_{{\rm exp}}$ = {K_EXP} GPa")
 ax.legend(h, l, loc="upper right", framealpha=0.93, fontsize=8.5,
-          handlelength=1.8, borderpad=0.45, labelspacing=0.4)
+          handlelength=1.6, borderpad=0.45, labelspacing=0.4)
 
 ax.set_title("Bulk modulus of the same a-SiO$_2$ network", fontsize=11)
 fig.tight_layout()
