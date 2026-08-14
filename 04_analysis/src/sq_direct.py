@@ -121,7 +121,10 @@ def main(path, prefix, stride=5, qmax=10.0):
     for s in np.unique(shell):
         m = shell == s
         v = Sq_vec[m]
-        out.append((qm[m].mean(), v.mean(), v.std(ddof=1) / np.sqrt(m.sum()), m.sum()))
+        n = m.sum()
+        # n=1 인 껍질(아주 낮은 q)은 SEM 정의 불가 → nan. ddof=1 경고의 원인이었다.
+        sem = v.std(ddof=1) / np.sqrt(n) if n > 1 else np.nan
+        out.append((qm[m].mean(), v.mean(), sem, n))
     out = np.array(out)
 
     np.savetxt(f"{prefix}_sqd.dat", out,
