@@ -48,7 +48,7 @@ EV2BAR = 1.602176634e6
 MASS = 43260.70
 rho_of = lambda V: MASS * 1.66053907 / V
 V_of = lambda r: MASS * 1.66053907 / r
-RHO_EXP, K_EXP = 2.20, 36.7
+RHO_EXP, K_EXP = 2.20, 37   # Deschamps 2014 / Yokoyama 2010 (05_doc/SOURCES.md)
 
 
 def bm3_P(V, V0, K0, Kp):

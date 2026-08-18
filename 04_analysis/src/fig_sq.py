@@ -156,7 +156,7 @@ pk = {lab: peak(q, s) for lab, _, q, s, *_ in SET}
 qe = pk[SET[0][0]][0]
 QFIT = np.linspace(FIT_LO, FIT_HI, 400)
 
-fig, ax = plt.subplots(1, 2, figsize=(7.0, 3.2),
+fig, ax = plt.subplots(1, 2, figsize=(7.0, 2.9),
                        gridspec_kw={"width_ratios": [2.1, 1]})
 a, b = ax
 
@@ -213,13 +213,15 @@ draw(a, "raw")
 a.axhline(1, ls=":", lw=0.8, c="0.6", zorder=1)
 a.set_xlim(QMIN_PLOT - 0.6, QMAX_PLOT); a.set_ylim(0.0, 2)
 a.set_xlabel(r"$q$ ($\rm\AA^{-1}$)"); a.set_ylabel(r"$S_{\rm N}(q)$")
-a.legend(loc="lower right", framealpha=0.92, fontsize=8.5,
+a.legend(loc="upper right", framealpha=0.92, fontsize=8.5,
          handlelength=1.4, borderpad=0.4, labelspacing=0.35)
 a.text(0.025, 0.955, "(a)", transform=a.transAxes, fontsize=11.5, fontweight="bold", ha='left', va='top')
 # FSDP 를 화살표로 지시
 a.annotate("FSDP", xy=(qe+0.1, 1.44), xytext=(qe+0.6, 1.7),
            fontsize=9, ha="center", va="bottom", color="0.15",
            arrowprops=dict(arrowstyle="->", lw=1.1, color="0.15"))
+# exp 출처를 표기 .
+a.text(1-0.02, 0.045,"exp.: Zeidler $et\\ al.$, PRL 113, 135501 (2014)", transform=a.transAxes, fontsize=8.5, ha='right', va='bottom')
 
 # ---------- (b) FSDP 확대 ----------
 draw(b, "fit")
@@ -251,10 +253,12 @@ for a_ in ax:
     a_.xaxis.set_minor_locator(AutoMinorLocator(2))
     a_.yaxis.set_minor_locator(AutoMinorLocator(2))
 
-fig.suptitle("Neutron structure factor of a-SiO$_2$ at 300 K  "
-             "(exp.: Zeidler $et\\ al.$, PRL $\\bf 113$, 135501 (2014))",
-             fontsize=10, y=0.995)
-fig.tight_layout(rect=[0, 0, 1, 1.06])
+#fig.suptitle("Neutron structure factor of a-SiO$_2$ at 300 K  "
+#             '\n'"(exp.: Zeidler $et\\ al.$, PRL 113, 135501 (2014))",
+#             fontsize=10, y=0.995, x=0.5)
+fig.suptitle("Neutron structure factor of a-SiO$_2$ at 300 K", 
+             fontsize=11, y=0.995, x=0.5)
+fig.tight_layout(rect=[0, 0, 1, 1.10])
 fig.savefig(FIG / "fig_sq.png", dpi=300)
 print(f"-> {FIG}/fig_sq.png\n")
 

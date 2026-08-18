@@ -76,8 +76,8 @@ for n, _c, f in ours:
         frac[int(n) - 2] = f
 
 # ---------- 그림 ----------
-fig, ax = plt.subplots(figsize=(5.0, 3.5))
-w = 0.38
+fig, ax = plt.subplots(figsize=(3.7, 2.9))
+w = 0.40
 # BKS 와 7net 의 ring 분포는 완전히 동일하므로 한 막대로 그리되,
 # 파랑 바탕(BKS) + 빨강 사선(7net) 으로 **두 색이 번갈아 나오는 줄무늬**를 만들어
 # "둘이 같은 값"임을 색으로 드러낸다. 다른 그림의 색 약속(BKS 파랑 / 7net 빨강)과 일치.
@@ -89,15 +89,16 @@ h_ai = ax.bar(nring + w / 2, ai, width=w, color="tab:green", alpha=0.8,
               edgecolor="k", lw=0.7)
 ax.set_xlabel("Ring size  (number of Si)")
 ax.set_ylabel("Fraction")
-ax.set_xticks(nring); ax.set_xlim(1.4, 9.6); ax.set_ylim(0, 0.4)
+ax.set_xticks(nring); ax.set_xlim(1.4, 9.6); ax.set_ylim(0, 0.5)
 ax.yaxis.set_minor_locator(AutoMinorLocator(2))
 # 막대를 두 겹으로 그리므로 범례 스와치도 두 겹으로 겹쳐 그린다.
 # HandlerTuple 의 ndivide 는 스와치를 몇 칸으로 나눌지다.
 # None = 튜플 길이만큼 나눠 **나란히** 그림 → 원하는 건 ndivide=1 (한 칸에 포개기).
 ax.legend([(h_fill, h_edge), h_ai],
-          ["This work \n(BKS = 7net-Nano-4.5)",
-           "AIMD PBE \n(Dechant 2026, 120 atoms)"],
+          ["This work (BKS = 7net-Nano-4.5)",
+           "AIMD PBE (Dechant 2026, 120 atoms)"],
           handler_map={tuple: HandlerTuple(ndivide=1)},
+          ncols=1, 
           loc="upper left", framealpha=0.9, fontsize=8.5, frameon=False)
 ax.set_title("Ring size distribution  (King criterion)", fontsize=11)
 fig.tight_layout()

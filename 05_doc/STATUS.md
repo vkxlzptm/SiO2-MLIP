@@ -1,4 +1,4 @@
-# STATUS — 인수인계 (갱신 2026-08-13)
+# STATUS — 인수인계 (갱신 2026-08-18)
 
 ## 프로젝트 한 줄
 
@@ -15,11 +15,12 @@ BKS(고전 포텐셜)로 만든 비정질 SiO₂에 범용 MLIP **SevenNet-Nano*
 | S0 환경 구축 | **완료** — LAMMPS + `pair_style e3gnn` 빌드·검증·배포 |
 | S0′ 구조 재생성 | **완료** — 1차 melt-quench 실패 진단 후 ρ=2.20 고정 NVT로 재수행 |
 | S1 sanity + 속도 실측 | **완료** — 단일점, ASE 교차검증, 랭크 비교, 속도, cutoff 스윕, 병렬 확장성 |
-| S2′ 구조 이완 + E–V | **완료** — 7net ρ₀ 2.2185, BKS 2.3442. **K는 같은 밀도에서 3 % 이내 일치** |
+| S2′ 구조 이완 + E–V | **완료** — 7net ρ₀ 2.2185, BKS 2.3442. **K는 같은 밀도에서 최대 3.2 % 차** |
 | S3′ RDF + 결합각 | **완료** — 300 K NVT 5 ps, g(r)·BAD·ring 통계, AIMD digitize 비교 |
 | S3″ S(q) | **완료** — 궤적에서 직접 계산, 중성자 회절 실험(Zeidler PRL 2014)과 비교 |
 | S4 짧은 MD | 생략 (S3′가 대체) |
-| S5 정리 | **진행 중** — 그림 7장·RESULTS.md 완료, 남은 항목은 아래 |
+| S5 정리 | **완료** — 그림 8장·RESULTS.md 완료 |
+| S6 발표자료 | **완료** — `06_ppt/SiO2_MLIP_SevenNet_pilot_v10.pptx` (7장). 2026-08-18 코닝 분자모델링 파트 리더에게 PDF로 송부. 작성 규칙은 `PPT_BRIEF.md` §10 |
 
 ## 확정된 환경
 
@@ -97,7 +98,8 @@ BKS       :  1.35 Matom-step/s @ρ=2.20 (6랭크)  → 배수 1,244×
 04_analysis/
   src/             분석·작도 스크립트 (경로는 __file__ 기준, 어디서든 실행 가능)
   dat/             digitize 결과, ring 통계
-  fig/             fig_pdf / fig_bad / fig_density / fig_bulkmod / fig_sq / fig_speed / fig_rings
+  fig/             fig_pdf / fig_bad(_vert) / fig_density / fig_bulkmod / fig_sq / fig_speed(_vert)
+                   / fig_rings / fig_alpha_schematic(개념도, 6p용)
   src/old_delete/  폐기 스크립트 — `./cleanup.sh --yes` 로 정리 (샌드박스는 삭제 권한 없음)
 05_doc/            README.md(색인) / RESULTS.md(결과) / STATUS.md(이 문서) + 문헌·그림
   dechant_figs/    AIMD 참조 그림 (digitize 입력)
@@ -109,9 +111,9 @@ cleanup.sh         폐기 파일 정리 (드라이런 기본, --yes 로 실삭�
 
 ## 남은 일
 
-> **0. PPT 제작 — 이게 현재 유일한 실질 과제다. → `05_doc/PPT_BRIEF.md` 를 읽을 것.**
-> 계산·분석·그림은 전부 끝났다. 브리프에 구성·톤·함정·출처 조사 목록이 다 들어 있다.
-> 아래 1~5는 PPT 없이도 되는 정리·선택 항목이다.
+> **0. ~~PPT 제작~~ 완료 (2026-08-18).** `06_ppt/SiO2_MLIP_SevenNet_pilot_v10.pptx`,
+> 코닝 분자모델링 파트 리더에게 PDF로 송부했다. 제작 맥락·규칙은 `05_doc/PPT_BRIEF.md`.
+> **계산·분석·그림·발표자료가 전부 끝났다.** 아래 1~5는 선택 항목이다.
 
 1. **`./cleanup.sh` 실행** — 폐기 파일 정리 (드라이런이 기본, 실삭제는 `--yes`).
    대상: `init_struct/`(01_input 과 비트 동일), `04_analysis/*/old_delete/`, `03_result/`,

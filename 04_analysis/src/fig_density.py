@@ -66,7 +66,7 @@ EV2BAR = 1.602176634e6
 N = 2160
 MASS = 43260.70                      # amu
 rho_of = lambda V: MASS * 1.66053907 / V
-RHO_EXP, K_EXP = 2.20, 36.7          # fused silica 실험값 (문헌 인용)
+RHO_EXP, K_EXP = 2.20, 37            # fused silica 실험값 (Deschamps 2014 Brillouin / Yokoyama 2010 초음파; 05_doc/SOURCES.md)
 
 
 def bm3_E(V, E0, V0, K0, Kp):
