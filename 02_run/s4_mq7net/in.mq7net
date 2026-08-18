@@ -1,0 +1,126 @@
+# S4  SevenNet-nano-4.5 자체 melt-quench @ ρ = 2.20 고정 NVT
+#
+# 목적: 덱 6p 'Next step' — 망 위상(ring 분포)을 7net이 직접 결정하게 한다.
+#       기존 결과는 BKS가 만든 구조를 7net으로 relax만 한 것이라 위상이 BKS 것이었다.
+#
+# 설계 근거
+#   - 셀 2,160원자·V = 32,652.95 Å³ 유지. 바꾸면 ring 잘림 길이·S(q)의 q_min·g(r) r_max가
+#     전부 달라져 기존 7net/BKS 결과와 직접 비교가 불가능해진다.
+#   - 전 과정 NVT 부피 고정 (Dechant, J. Phys. Chem. C 130, 7148 (2026)):
+#     용융 중 NPT는 unphysical bond → 비정상 셀 변형. NPT는 300 K 평형에서만.
+#   - 용융은 BKS 4,000 K 액체(melt4000.data)를 인계받아 7net으로 재평형한다.
+#     classical로 액체를 만들고 MLIP로 재평형하는 것은 MLIP 문헌 표준 절차다.
+#     ★ 성립 조건은 단 하나: 7net 액체에서 MSD가 선형으로 수십 Å² 쌓일 것.
+#       그래야 BKS 액체 구조의 기억이 지워지고 "초기구조 무관"이 성립한다.
+#   - 급랭률 2×10¹³ K/s (100 K × 5 ps). 기존 BKS 런(5×10¹²)의 4배 빠름 →
+#     BKS를 동일 급랭률로 재실행(in.mqbks)해서 통제한다. 통제런 비용은 5분.
+#   - 융점은 추정하지 않는다. 4,000 K에서 MSD를 보고 판정하고, 실패 시 4,500 K로 재시도.
+#
+# 비용: 215 ps × 1.96 s/step ≈ 117 시간 (2,160원자, OMP=6 실측 1,100 atom-step/s)
+#   - MELT   20 ps  ≈ 10.9 h
+#   - QUENCH 185 ps ≈ 100.7 h
+#   - EQUIL  10 ps  ≈  5.4 h
+#
+# 실행:
+#   ulimit -s 262144
+#   export OMP_NUM_THREADS=6 MKL_NUM_THREADS=6
+#   nohup lmp_7net -in in.mq7net > mq7net.log 2>&1 &
+#   ※ mpirun 금지 (CPU 빌드에 e3gnn/parallel 없음)
+#   ※ BKS 통제런을 동시에 돌리지 말 것 — 메모리 대역폭 포화로 양쪽이 느려진다
+#
+# 재개: 매 100 K마다 RESUME.txt에 정확한 명령이 갱신된다. 그대로 복사해 실행.
+#   예) lmp_7net -in in.mq7net -var domelt 0 -var dfile ckpt_T2600.data -var Tstart 2500
+
+# ---------------- 재개용 인자 (기본값 = 처음부터) ----------------
+variable        dfile   index ../s0_requench/melt4000.data
+variable        Tstart  index 4000
+variable        domelt  index 1
+
+units           metal
+boundary        p p p
+atom_style      charge
+
+read_data       ${dfile}
+mass            1 15.9994
+mass            2 28.0855
+
+pair_style      e3gnn
+pair_coeff      * * ../../01_input/pot/deployed_nano_4.5.pt O Si
+
+neighbor        1.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+# ★ 필수. e3gnn ghost 범위는 4.5+1.0 = 5.5 Å이라 아래 RDF 8 Å를 감당 못 한다
+#   ("ERROR: Compute rdf cutoff exceeds ghost atom range"). 힘 계산에는 영향 없다.
+comm_modify     cutoff 9.0
+
+timestep        0.001
+variable        Tdamp equal 0.1
+
+compute         myRDF all rdf 200 1 1 1 2 2 2 cutoff 8.0
+compute         msd0  all msd
+variable        epa   equal pe/atoms
+variable        fmag  atom  sqrt(fx*fx+fy*fy+fz*fz)
+compute         maxf  all reduce max v_fmag
+
+thermo          100
+thermo_style    custom step temp press vol density pe v_epa c_msd0[4] c_maxf
+
+if "${domelt} == 0" then "jump SELF QUENCH"
+
+# ================= 1. 7net 4,000 K 액체 재평형 20 ps =================
+#  ★ 검증 게이트. 여기가 이 계산 전체의 성패를 가른다.
+#    통과: c_msd0[4]가 시간에 선형 + 20 ps에 수십 Å² 이상
+#    실패: 평평하거나 5 ps에 < 5 Å²  → 죽이고 4,500 K로 재시작 (손실 ~3 h)
+#    ~5 ps(step 5000, 약 3시간) 지점에서 이미 판정 가능하다. 그때 한 번 로그를 볼 것.
+print "=========== 7net MELT EQUIL 4000 K (NVT, 20 ps) — MSD 게이트 ==========="
+velocity        all set 0.0 0.0 0.0        # data 속도(BKS 산물) 승계 차단
+velocity        all create 4000.0 90210 dist gaussian mom yes
+
+reset_timestep  0
+fix             1 all nvt temp 4000.0 4000.0 ${Tdamp}
+run             20000
+unfix           1
+write_data      equil4000_7net.data
+
+print "# T_set(K)  epa(eV/atom)  Press(bar)  MSD(A^2)" file mq7net_profile.dat screen no
+
+# ================= 2. quench 4,000 -> 300 K, 100 K x 5 ps =================
+#  2×10¹³ K/s. 문헌 표준 범위(10¹¹~10¹³) 상한의 2배 — BKS 통제런으로 상쇄한다.
+label QUENCH
+print "=========== 7net QUENCH -> 300 K (NVT, 100 K x 5 ps, 2e13 K/s) ==========="
+variable        Tset equal ${Tstart}
+
+label QLOOP
+  reset_timestep 0
+  fix           q  all nvt temp ${Tset} ${Tset} ${Tdamp}
+  fix           qa all ave/time 100 50 5000 v_epa c_thermo_press c_msd0[4]
+  run           5000
+  # $(...) 즉시평가 — 변수 간접참조는 프로파일에 중복 라인을 만든다 (과거 사고)
+  print         "${Tset} $(f_qa[1]) $(f_qa[2]) $(f_qa[3])" append mq7net_profile.dat screen no
+  unfix         qa
+  unfix         q
+  write_data    ckpt_T${Tset}.data
+  print         "lmp_7net -in in.mq7net -var domelt 0 -var dfile ckpt_T${Tset}.data -var Tstart $(v_Tset-100)" file RESUME.txt screen no
+  variable      Tset equal ${Tset}-100
+if "${Tset} >= 300" then "jump SELF QLOOP"
+
+# ================= 3. 300 K 평형 5 ps + 생산 5 ps (RDF·궤적) =================
+print "=========== 7net EQUIL 300 K (NVT, 5 ps) ==========="
+reset_timestep  0
+fix             1 all nvt temp 300.0 300.0 ${Tdamp}
+run             5000
+write_data      equil300_7net_mq.data
+
+print "=========== 7net PROD 300 K (NVT, 5 ps, RDF + traj) ==========="
+reset_timestep  0
+fix             rdfavg all ave/time 10 500 5000 c_myRDF[*] file rdf_7net_mq.dat mode vector
+dump            trj all custom 20 traj_7net_mq.lammpstrj id type xs ys zs
+dump_modify     trj sort id
+run             5000
+undump          trj
+unfix           rdfavg
+unfix           1
+
+write_data      prod_7net_mq.data
+print "=========== DONE ==========="
