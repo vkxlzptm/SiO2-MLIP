@@ -1,0 +1,28 @@
+# S4 E-V summary — BM3 fits (bm3.py, scipy-free; scipy 대조 검증됨)
+# experiment: rho = 2.2 g/cc, K = 37.0 GPa
+#
+# structure                   rho0   vs exp      K0   vs exp   K@2.20   vs exp    K0p  Pres(bar)
+BKS  / BKS net 5e12         2.3442   +6.55%   34.33    -7.2%    45.33   +22.5%  -6.87        292
+7net / BKS net 5e12         2.2185   +0.84%   43.23   +16.8%    43.92   +18.7%  -2.02         44
+7net / OWN net 2e13         2.1595   -1.84%   39.28    +6.2%    38.11    +3.0%  -1.36         99
+#
+# K(rho) — same-density comparison (the only fair one)
+#     rho     BKS  / BKS net 5e12     7net / BKS net 5e12     7net / OWN net 2e13
+   2.0762                   49.74                   46.50                   40.67
+   2.1595                   47.24                   45.14                   39.28
+   2.2000                   45.33                   43.92                   38.11
+   2.2185                   44.29                   43.23                   37.46
+   2.2500                   42.28                   41.87                   36.18
+   2.3000                   38.44                   39.18                   33.68
+   2.3442                   34.33                   36.23                   30.97
+#
+# [A] QUENCH-RATE EFFECT  (BKS 가 만든 망, 5e12 -> 2e13, 읽는 건 7net): 자료 부족 (7net / BKS net 5e12 또는 7net / BKS net 2e13 미실행)
+# [B] TOPOLOGY-FORMATION EFFECT  (냉각률 2e13 고정, 망 생성자 BKS -> 7net): 자료 부족 (7net / BKS net 2e13 또는 7net / OWN net 2e13 미실행)
+# [B'] (임시) 냉각률 미매칭 위상 효과 — [A] 가 나오기 전까지의 근사
+#   냉각률 4배 차이가 섞여 있다. [B] 가 나오면 폐기할 것.
+#   7net / BKS net 5e12  ->  7net / OWN net 2e13
+#   rho0   : 2.2185 -> 2.1595  (-0.0590 g/cc, -2.66 %)   |  vs exp +0.84 % -> -1.84 %
+#   K@2.20 : 43.92 -> 38.11 GPa (-5.81, -13.2 %)   |  vs exp +18.7 % -> +3.0 %
+#   K 간극 중 사라진 비율: 84 %
+#
+# 미실행: BKS  / BKS net 2e13, 7net / BKS net 2e13
