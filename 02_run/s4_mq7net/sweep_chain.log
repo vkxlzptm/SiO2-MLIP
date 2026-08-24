@@ -23,3 +23,17 @@ Dangerous builds = 0
 =========== DONE 2e13_r2 (profile-only) ===========
 Total wall time: 0:06:05
 === BKS sweep: 2e13_r3  (ns=5000, seed=90212, rate=2.00e+13 K/s) ===
+Dangerous builds = 0
+=========== DONE 2e13_r3 (profile-only) ===========
+Total wall time: 0:05:55
+=== SWEEP DONE ===
+-rw-rw-r-- 1 dhl dhl 2796  8월 24 19:11 profiles/mqbks_1e12_profile.dat
+-rw-rw-r-- 1 dhl dhl 2802  8월 24 20:18 profiles/mqbks_1e13_profile.dat
+-rw-rw-r-- 1 dhl dhl 2803  8월 24 20:20 profiles/mqbks_1e14_profile.dat
+-rw-rw-r-- 1 dhl dhl 2802  8월 24 20:06 profiles/mqbks_2e12_profile.dat
+-rw-rw-r-- 1 dhl dhl 2803  8월 24 15:19 profiles/mqbks_2e13_profile.dat
+-rw-rw-r-- 1 dhl dhl 2808  8월 24 20:27 profiles/mqbks_2e13_r2_profile.dat
+-rw-rw-r-- 1 dhl dhl 2801  8월 24 20:33 profiles/mqbks_2e13_r3_profile.dat
+-rw-rw-r-- 1 dhl dhl 2801  8월 24 20:21 profiles/mqbks_2e14_profile.dat
+-rw-rw-r-- 1 dhl dhl 2805  8월 24 15:19 profiles/mqbks_5e12_profile.dat
+-rw-rw-r-- 1 dhl dhl 2801  8월 24 15:19 profiles/mqbks_5e13_profile.dat
