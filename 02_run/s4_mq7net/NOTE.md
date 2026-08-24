@@ -96,6 +96,15 @@ cat RESUME.txt
 `-var domelt 0`이 MELT 단계를 건너뛰고, 체크포인트의 속도를 그대로 이어받는다.
 `mq7net_profile.dat`는 append이므로 중복 라인이 생기면 재개 지점 기준으로 손으로 정리할 것.
 
+## 폴더 구조 (2026-08-24 정리)
+
+완주 후 파일이 많아 하위 폴더로 정리했다. 분석 스크립트는 모두 최상위 결과 파일을
+직접 참조하므로(기존 프로젝트 관례) `rdf_*`, `prod_*`, `equil*.data`는 최상위 유지.
+
+- `ckpt/`     — 100 K 구간별 체크포인트 38개. 재개용, 런 완주 후엔 참고용
+- `logs/`     — `mq7net.log`, `mqbks_*.log`, `bks_controls.log`
+- `profiles/` — `mq7net_profile.dat`, `mqbks_*_profile.dat` (`analyze_tg.py`가 여기서 읽음)
+
 ## 산출물
 
 | 파일 | 내용 |
