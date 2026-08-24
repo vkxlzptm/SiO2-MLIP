@@ -1,0 +1,5 @@
+# run         rate(K/s)  Tg_arrest(K)  Tg_caloric(K)  P300(GPa)
+7net          2.0e+13          2700           2683       0.80
+BKS 2e13      2.0e+13          3300           2353      -3.07
+BKS 5e12      5.0e+12          3100           2783      -2.79
+BKS 5e13      5.0e+13          3600              -      -3.19

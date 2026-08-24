@@ -1,0 +1,71 @@
+# S4 BKS 통제런 (profile-only, no RDF/traj) — Tg(rate) 곡선 확장/반복용
+# in.mqbks 에서 300K 평형+생산(RDF/traj) 단계를 뺐다. 목적이 mqbks_<tag>_profile.dat
+# 뿐이라 궤적(18 MB/런)을 만들 이유가 없다. 초기구조·셀·NVT 앙상블은 in.mqbks와 동일.
+#
+# 인자: -var ns <100K당 스텝수>  -var tag <출력태그>  -var seed <속도시드, 기본 90210>
+#   냉각률(K/s) = 1e17 / ns   (예: ns=100000 -> 1e12,  ns=5000 -> 2e13)
+#
+# 실행 (s4_mq7net/ 에서):
+#   mpirun -np 6 lmp_7net -in in.mqbks_fast -var ns 100000 -var tag 1e12 -var seed 90210 \
+#       > logs/mqbks_1e12.log 2>&1
+
+variable        ns    index 5000
+variable        tag   index 2e13
+variable        seed  index 90210
+
+units           metal
+boundary        p p p
+atom_style      charge
+
+read_data       ../s0_requench/melt4000.data
+mass            1 15.9994
+mass            2 28.0855
+
+pair_style      hybrid/overlay buck/coul/long 10.0 lj/cut 1.5
+pair_coeff      1 1 buck/coul/long 1388.7730 0.362318 175.0000
+pair_coeff      1 2 buck/coul/long 18003.7572 0.205205 133.5381
+pair_coeff      2 2 buck/coul/long 0.0 1.0 0.0
+pair_coeff      1 1 lj/cut 3.0 1.50 1.50
+pair_coeff      1 2 lj/cut 4.0 1.10 1.10
+pair_coeff      2 2 lj/cut 0.0 1.0  1.0
+kspace_style    pppm 1.0e-4
+
+neighbor        2.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+timestep        0.001
+variable        Tdamp equal 0.1
+
+compute         msd0  all msd
+variable        epa   equal pe/atoms
+
+thermo          1000
+thermo_style    custom step temp press vol density pe v_epa c_msd0[4]
+
+print "=========== BKS MELT EQUIL 4000 K (NVT, 20 ps) ==========="
+velocity        all set 0.0 0.0 0.0
+velocity        all create 4000.0 ${seed} dist gaussian mom yes
+
+reset_timestep  0
+fix             1 all nvt temp 4000.0 4000.0 ${Tdamp}
+run             20000
+unfix           1
+
+print "# T_set(K)  epa(eV/atom)  Press(bar)  MSD(A^2)" file profiles/mqbks_${tag}_profile.dat screen no
+
+print "=========== BKS QUENCH -> 300 K (NVT, 100 K x ${ns} step) ==========="
+variable        Tset equal 4000
+variable        nr   equal ${ns}/100
+
+label QLOOP
+  reset_timestep 0
+  fix           q  all nvt temp ${Tset} ${Tset} ${Tdamp}
+  fix           qa all ave/time 100 ${nr} ${ns} v_epa c_thermo_press c_msd0[4]
+  run           ${ns}
+  print         "${Tset} $(f_qa[1]) $(f_qa[2]) $(f_qa[3])" append profiles/mqbks_${tag}_profile.dat screen no
+  unfix         qa
+  unfix         q
+  variable      Tset equal ${Tset}-100
+if "${Tset} >= 300" then "jump SELF QLOOP"
+
+print "=========== DONE ${tag} (profile-only) ==========="
