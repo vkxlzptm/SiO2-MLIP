@@ -1,0 +1,25 @@
+=== BKS sweep: 1e12  (ns=100000, seed=90210, rate=1.00e+12 K/s) ===
+Dangerous builds = 0
+=========== DONE 1e12 (profile-only) ===========
+Total wall time: 1:48:36
+=== BKS sweep: 2e12  (ns=50000, seed=90210, rate=2.00e+12 K/s) ===
+Dangerous builds = 0
+=========== DONE 2e12 (profile-only) ===========
+Total wall time: 0:55:25
+=== BKS sweep: 1e13  (ns=10000, seed=90210, rate=1.00e+13 K/s) ===
+Dangerous builds = 0
+=========== DONE 1e13 (profile-only) ===========
+Total wall time: 0:12:00
+=== BKS sweep: 1e14  (ns=1000, seed=90210, rate=1.00e+14 K/s) ===
+Dangerous builds = 0
+=========== DONE 1e14 (profile-only) ===========
+Total wall time: 0:01:40
+=== BKS sweep: 2e14  (ns=500, seed=90210, rate=2.00e+14 K/s) ===
+Dangerous builds = 0
+=========== DONE 2e14 (profile-only) ===========
+Total wall time: 0:01:08
+=== BKS sweep: 2e13_r2  (ns=5000, seed=90211, rate=2.00e+13 K/s) ===
+Dangerous builds = 0
+=========== DONE 2e13_r2 (profile-only) ===========
+Total wall time: 0:06:05
+=== BKS sweep: 2e13_r3  (ns=5000, seed=90212, rate=2.00e+13 K/s) ===

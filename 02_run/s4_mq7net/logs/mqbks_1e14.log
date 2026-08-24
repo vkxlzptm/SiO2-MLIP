@@ -1,0 +1,1805 @@
+LAMMPS (2 Aug 2023 - Update 3)
+  using 1 OpenMP thread(s) per MPI task
+Reading data file ...
+  orthogonal box = (-0.13095199 -0.13140962 -0.15165528) to (30.269865 30.375648 35.055481)
+  1 by 2 by 3 MPI processor grid
+  reading atoms ...
+  2160 atoms
+  reading velocities ...
+  2160 velocities
+  read_data CPU = 0.019 seconds
+=========== BKS MELT EQUIL 4000 K (NVT, 20 ps) ===========
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 12
+  ghost atom cutoff = 12
+  binsize = 6, bins = 6 6 6
+  2 neighbor lists, perpetual/occasional/extra = 2 0 0
+  (1) pair buck/coul/long, perpetual
+      attributes: half, newton on
+      pair build: half/bin/atomonly/newton
+      stencil: half/bin/3d
+      bin: standard
+  (2) pair lj/cut, perpetual, trim from (1)
+      attributes: half, newton on, cut 3.5
+      pair build: trim
+      stencil: none
+      bin: none
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.502 | 5.516 | 5.531 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   4000          -26847.887      32652.488      2.2000182     -40315.191     -18.66444       0            
+      1000   4064.2731     -21712.176      32652.488      2.2000182     -40289.007     -18.652318      1.2909471    
+      2000   3936.429      -12838.005      32652.488      2.2000182     -40358.263     -18.684381      1.6847529    
+      3000   4051.6194     -20380.965      32652.488      2.2000182     -40314.388     -18.664068      1.9921783    
+      4000   4066.0688     -33768.527      32652.488      2.2000182     -40329.426     -18.671031      2.3113029    
+      5000   3959.6336     -27355.484      32652.488      2.2000182     -40318.325     -18.665891      2.7699165    
+      6000   4124.7151     -13999.937      32652.488      2.2000182     -40362.887     -18.686522      3.0759356    
+      7000   4042.9068     -22947.755      32652.488      2.2000182     -40283.851     -18.649931      3.2073973    
+      8000   3906.5618     -18853.557      32652.488      2.2000182     -40274.709     -18.645699      3.5215273    
+      9000   4013.5707     -25075.499      32652.488      2.2000182     -40295.704     -18.655418      3.8869265    
+     10000   3944.0958     -23448.43       32652.488      2.2000182     -40309.427     -18.661772      4.2485145    
+     11000   3841.1669     -25323.228      32652.488      2.2000182     -40299.25      -18.65706       4.9510014    
+     12000   4013.0049     -24011.16       32652.488      2.2000182     -40359.262     -18.684843      5.114178     
+     13000   4014.0231     -24079.926      32652.488      2.2000182     -40329.197     -18.670925      5.4086937    
+     14000   3982.2696     -14883.99       32652.488      2.2000182     -40312.069     -18.662995      5.8119576    
+     15000   4037.2566     -20620.306      32652.488      2.2000182     -40275.165     -18.64591       6.1475592    
+     16000   4077.1151     -18275.403      32652.488      2.2000182     -40326.868     -18.669846      6.6266896    
+     17000   4003.8055     -16596.994      32652.488      2.2000182     -40291.519     -18.653481      7.1419485    
+     18000   4058.4903     -20639.952      32652.488      2.2000182     -40285.734     -18.650803      7.4047431    
+     19000   3937.9048     -30226.86       32652.488      2.2000182     -40336.22      -18.674176      7.8498922    
+     20000   4069.0662     -31772.69       32652.488      2.2000182     -40361.283     -18.685779      8.263109     
+Loop time of 35.1751 on 6 procs for 20000 steps with 2160 atoms
+
+Performance: 49.126 ns/day, 0.489 hours/ns, 568.585 timesteps/s, 1.228 Matom-step/s
+97.3% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 21.526     | 23.051     | 24.968     |  24.0 | 65.53
+Kspace  | 7.2968     | 9.3002     | 10.854     |  39.2 | 26.44
+Neigh   | 1.3609     | 1.4241     | 1.497      |   3.9 |  4.05
+Comm    | 1.0623     | 1.0881     | 1.1097     |   1.7 |  3.09
+Output  | 0.00077737 | 0.00082343 | 0.0010445  |   0.0 |  0.00
+Modify  | 0.16432    | 0.19011    | 0.20427    |   3.1 |  0.54
+Other   |            | 0.1209     |            |       |  0.34
+
+Nlocal:            360 ave         382 max         336 min
+Histogram: 2 0 0 0 0 0 1 2 0 1
+Nghost:        4717.67 ave        4759 max        4693 min
+Histogram: 3 0 0 1 0 0 0 1 0 1
+Neighs:          86127 ave       95322 max       76631 min
+Histogram: 1 0 0 0 2 1 1 0 0 1
+
+Total # of neighbors = 516762
+Ave neighs/atom = 239.24167
+Neighbor list builds = 1011
+Dangerous builds = 0
+=========== BKS QUENCH -> 300 K (NVT, 100 K x 1000 step) ===========
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.58 | 5.913 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   4069.0662     -31772.69       32652.488      2.2000182     -40361.283     -18.685779      8.263109     
+      1000   3930.5153     -26469.228      32652.488      2.2000182     -40350.561     -18.680815      8.3259006    
+Loop time of 1.7794 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 48.556 ns/day, 0.494 hours/ns, 561.987 timesteps/s, 1.214 Matom-step/s
+97.2% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0306     | 1.1534     | 1.2719     |   6.8 | 64.82
+Kspace  | 0.36341    | 0.48578    | 0.61018    |  10.8 | 27.30
+Neigh   | 0.063896   | 0.068977   | 0.074172   |   1.2 |  3.88
+Comm    | 0.053655   | 0.055352   | 0.058055   |   0.8 |  3.11
+Output  | 2.0761e-05 | 2.2609e-05 | 3.1532e-05 |   0.0 |  0.00
+Modify  | 0.0088239  | 0.010065   | 0.010608   |   0.6 |  0.57
+Other   |            | 0.005851   |            |       |  0.33
+
+Nlocal:            360 ave         380 max         334 min
+Histogram: 1 0 1 0 0 1 1 0 0 2
+Nghost:        4716.33 ave        4746 max        4695 min
+Histogram: 2 0 1 0 0 1 1 0 0 1
+Neighs:        86058.5 ave       93626 max       76772 min
+Histogram: 1 0 0 0 1 2 1 0 0 1
+
+Total # of neighbors = 516351
+Ave neighs/atom = 239.05139
+Neighbor list builds = 49
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.58 | 5.913 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   3930.5153     -26469.228      32652.488      2.2000182     -40350.561     -18.680815      8.3259006    
+      1000   3977.017      -17763.798      32652.488      2.2000182     -40385.164     -18.696835      8.7357703    
+Loop time of 1.78048 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 48.526 ns/day, 0.495 hours/ns, 561.647 timesteps/s, 1.213 Matom-step/s
+96.8% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0329     | 1.1576     | 1.2726     |   6.5 | 65.02
+Kspace  | 0.36578    | 0.48487    | 0.61068    |  10.3 | 27.23
+Neigh   | 0.062268   | 0.067454   | 0.07237    |   1.2 |  3.79
+Comm    | 0.053081   | 0.055192   | 0.058531   |   0.8 |  3.10
+Output  | 1.9755e-05 | 2.1785e-05 | 3.1862e-05 |   0.0 |  0.00
+Modify  | 0.0083912  | 0.0095069  | 0.010079   |   0.6 |  0.53
+Other   |            | 0.005844   |            |       |  0.33
+
+Nlocal:            360 ave         377 max         342 min
+Histogram: 1 1 0 0 0 2 0 0 1 1
+Nghost:        4710.33 ave        4740 max        4683 min
+Histogram: 1 0 2 0 0 1 0 1 0 1
+Neighs:        85994.8 ave       91699 max       79228 min
+Histogram: 1 0 0 0 1 1 2 0 0 1
+
+Total # of neighbors = 515969
+Ave neighs/atom = 238.87454
+Neighbor list builds = 48
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.58 | 5.913 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   3977.017      -17763.798      32652.488      2.2000182     -40385.164     -18.696835      8.7357703    
+      1000   3849.0166     -25227.133      32652.488      2.2000182     -40402.359     -18.704796      8.9242874    
+Loop time of 1.77584 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 48.653 ns/day, 0.493 hours/ns, 563.114 timesteps/s, 1.216 Matom-step/s
+96.2% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0434     | 1.1541     | 1.2663     |   6.2 | 64.99
+Kspace  | 0.36646    | 0.48214    | 0.59471    |   9.8 | 27.15
+Neigh   | 0.062884   | 0.067742   | 0.072739   |   1.1 |  3.81
+Comm    | 0.054346   | 0.056085   | 0.058284   |   0.6 |  3.16
+Output  | 1.9466e-05 | 2.1325e-05 | 3.0335e-05 |   0.0 |  0.00
+Modify  | 0.0089806  | 0.0099485  | 0.010562   |   0.6 |  0.56
+Other   |            | 0.005841   |            |       |  0.33
+
+Nlocal:            360 ave         374 max         341 min
+Histogram: 1 0 1 0 1 0 0 0 1 2
+Nghost:        4722.83 ave        4755 max        4671 min
+Histogram: 1 0 0 0 1 0 2 0 0 2
+Neighs:          86076 ave       93875 max       81173 min
+Histogram: 1 0 1 2 1 0 0 0 0 1
+
+Total # of neighbors = 516456
+Ave neighs/atom = 239.1
+Neighbor list builds = 48
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.913 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   3849.0166     -25227.133      32652.488      2.2000182     -40402.359     -18.704796      8.9242874    
+      1000   3628.5239     -20927.964      32652.488      2.2000182     -40438.018     -18.721305      9.1775957    
+Loop time of 1.77574 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 48.656 ns/day, 0.493 hours/ns, 563.146 timesteps/s, 1.216 Matom-step/s
+97.0% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0567     | 1.1611     | 1.2653     |   5.6 | 65.39
+Kspace  | 0.36628    | 0.47363    | 0.57925    |   9.0 | 26.67
+Neigh   | 0.064394   | 0.069105   | 0.073792   |   1.0 |  3.89
+Comm    | 0.053766   | 0.055771   | 0.058559   |   0.8 |  3.14
+Output  | 2.0003e-05 | 2.2543e-05 | 3.2309e-05 |   0.0 |  0.00
+Modify  | 0.0089087  | 0.010083   | 0.010779   |   0.7 |  0.57
+Other   |            | 0.00603    |            |       |  0.34
+
+Nlocal:            360 ave         375 max         339 min
+Histogram: 1 0 0 1 0 0 2 0 1 1
+Nghost:        4732.33 ave        4775 max        4705 min
+Histogram: 2 0 0 1 2 0 0 0 0 1
+Neighs:        86065.2 ave       91456 max       78714 min
+Histogram: 1 0 0 0 1 0 2 1 0 1
+
+Total # of neighbors = 516391
+Ave neighs/atom = 239.06991
+Neighbor list builds = 49
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   3628.5239     -20927.964      32652.488      2.2000182     -40438.018     -18.721305      9.1775957    
+      1000   3682.335      -19757.291      32652.488      2.2000182     -40483.875     -18.742535      9.4220991    
+Loop time of 1.75179 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 49.321 ns/day, 0.487 hours/ns, 570.845 timesteps/s, 1.233 Matom-step/s
+97.3% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0672     | 1.1596     | 1.2476     |   5.3 | 66.19
+Kspace  | 0.36584    | 0.45642    | 0.54953    |   8.6 | 26.05
+Neigh   | 0.061203   | 0.064948   | 0.068718   |   0.9 |  3.71
+Comm    | 0.052699   | 0.05504    | 0.057579   |   0.8 |  3.14
+Output  | 2.0179e-05 | 2.2588e-05 | 3.3215e-05 |   0.0 |  0.00
+Modify  | 0.0086393  | 0.0098387  | 0.010573   |   0.7 |  0.56
+Other   |            | 0.005951   |            |       |  0.34
+
+Nlocal:            360 ave         375 max         332 min
+Histogram: 1 0 0 0 0 1 1 0 1 2
+Nghost:        4750.83 ave        4766 max        4736 min
+Histogram: 1 0 0 1 1 1 0 1 0 1
+Neighs:          86081 ave       96278 max       77229 min
+Histogram: 1 0 0 2 1 1 0 0 0 1
+
+Total # of neighbors = 516486
+Ave neighs/atom = 239.11389
+Neighbor list builds = 46
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   3682.335      -19757.291      32652.488      2.2000182     -40483.875     -18.742535      9.4220991    
+      1000   3559.1283     -25085.39       32652.488      2.2000182     -40578.407     -18.7863        9.4986461    
+Loop time of 1.76968 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 48.822 ns/day, 0.492 hours/ns, 565.074 timesteps/s, 1.221 Matom-step/s
+95.6% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0624     | 1.1564     | 1.2655     |   5.9 | 65.35
+Kspace  | 0.36534    | 0.47688    | 0.57141    |   9.4 | 26.95
+Neigh   | 0.061148   | 0.064962   | 0.069464   |   1.1 |  3.67
+Comm    | 0.052845   | 0.055191   | 0.057771   |   0.8 |  3.12
+Output  | 1.9502e-05 | 2.146e-05  | 3.0862e-05 |   0.0 |  0.00
+Modify  | 0.0089265  | 0.010127   | 0.010806   |   0.6 |  0.57
+Other   |            | 0.006061   |            |       |  0.34
+
+Nlocal:            360 ave         377 max         341 min
+Histogram: 1 1 0 0 0 1 1 0 1 1
+Nghost:        4706.83 ave        4732 max        4693 min
+Histogram: 3 1 0 0 0 0 0 0 1 1
+Neighs:        86123.7 ave       96275 max       79055 min
+Histogram: 1 0 1 2 1 0 0 0 0 1
+
+Total # of neighbors = 516742
+Ave neighs/atom = 239.23241
+Neighbor list builds = 46
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   3559.1283     -25085.39       32652.488      2.2000182     -40578.407     -18.7863        9.4986461    
+      1000   3362.6907     -16873.286      32652.488      2.2000182     -40596.04      -18.794463      9.5109183    
+Loop time of 1.7665 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 48.910 ns/day, 0.491 hours/ns, 566.091 timesteps/s, 1.223 Matom-step/s
+96.8% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0708     | 1.1532     | 1.2669     |   5.9 | 65.28
+Kspace  | 0.36492    | 0.48071    | 0.56286    |   9.3 | 27.21
+Neigh   | 0.059132   | 0.062001   | 0.066363   |   1.0 |  3.51
+Comm    | 0.05248    | 0.055096   | 0.057533   |   0.7 |  3.12
+Output  | 2.0104e-05 | 2.1943e-05 | 3.0501e-05 |   0.0 |  0.00
+Modify  | 0.0084484  | 0.0097428  | 0.01035    |   0.7 |  0.55
+Other   |            | 0.005755   |            |       |  0.33
+
+Nlocal:            360 ave         375 max         340 min
+Histogram: 1 0 1 0 0 0 2 0 0 2
+Nghost:         4722.5 ave        4748 max        4685 min
+Histogram: 1 0 0 1 0 0 2 0 1 1
+Neighs:        86067.7 ave       95461 max       79169 min
+Histogram: 1 0 1 1 1 1 0 0 0 1
+
+Total # of neighbors = 516406
+Ave neighs/atom = 239.07685
+Neighbor list builds = 44
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   3362.6907     -16873.286      32652.488      2.2000182     -40596.04      -18.794463      9.5109183    
+      1000   3200.2799     -18585.352      32652.488      2.2000182     -40609.211     -18.800561      9.6232264    
+Loop time of 1.75092 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 49.345 ns/day, 0.486 hours/ns, 571.127 timesteps/s, 1.234 Matom-step/s
+96.9% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0712     | 1.1596     | 1.2514     |   5.5 | 66.23
+Kspace  | 0.36528    | 0.45903    | 0.54722    |   8.8 | 26.22
+Neigh   | 0.058571   | 0.061706   | 0.065297   |   0.9 |  3.52
+Comm    | 0.052492   | 0.055011   | 0.057884   |   0.9 |  3.14
+Output  | 1.9857e-05 | 2.198e-05  | 3.1349e-05 |   0.0 |  0.00
+Modify  | 0.0084434  | 0.0097789  | 0.010405   |   0.7 |  0.56
+Other   |            | 0.005768   |            |       |  0.33
+
+Nlocal:            360 ave         379 max         341 min
+Histogram: 1 0 0 2 0 0 2 0 0 1
+Nghost:        4733.83 ave        4764 max        4703 min
+Histogram: 1 0 1 1 0 0 1 1 0 1
+Neighs:          86091 ave       92004 max       80223 min
+Histogram: 1 1 0 0 1 1 0 0 1 1
+
+Total # of neighbors = 516546
+Ave neighs/atom = 239.14167
+Neighbor list builds = 44
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   3200.2799     -18585.352      32652.488      2.2000182     -40609.211     -18.800561      9.6232264    
+      1000   3232.0197     -14774.573      32652.488      2.2000182     -40687.19      -18.836662      9.5757413    
+Loop time of 1.75011 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 49.368 ns/day, 0.486 hours/ns, 571.392 timesteps/s, 1.234 Matom-step/s
+97.0% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0809     | 1.1589     | 1.2523     |   5.2 | 66.22
+Kspace  | 0.36516    | 0.4607     | 0.53808    |   8.3 | 26.32
+Neigh   | 0.057727   | 0.060144   | 0.063806   |   0.8 |  3.44
+Comm    | 0.052798   | 0.054702   | 0.057223   |   0.8 |  3.13
+Output  | 2.0201e-05 | 2.237e-05  | 3.2368e-05 |   0.0 |  0.00
+Modify  | 0.008737   | 0.0097345  | 0.010229   |   0.5 |  0.56
+Other   |            | 0.00595    |            |       |  0.34
+
+Nlocal:            360 ave         378 max         349 min
+Histogram: 2 0 1 0 1 1 0 0 0 1
+Nghost:        4721.17 ave        4750 max        4705 min
+Histogram: 2 1 0 1 0 1 0 0 0 1
+Neighs:        86113.8 ave       89455 max       81948 min
+Histogram: 1 0 1 0 0 1 0 1 1 1
+
+Total # of neighbors = 516683
+Ave neighs/atom = 239.20509
+Neighbor list builds = 43
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   3232.0197     -14774.573      32652.488      2.2000182     -40687.19      -18.836662      9.5757413    
+      1000   3064.8272     -20161.63       32652.488      2.2000182     -40724.754     -18.854053      9.7875075    
+Loop time of 1.74483 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 49.518 ns/day, 0.485 hours/ns, 573.120 timesteps/s, 1.238 Matom-step/s
+97.7% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.101      | 1.1627     | 1.2468     |   5.0 | 66.63
+Kspace  | 0.36898    | 0.45447    | 0.51517    |   8.1 | 26.05
+Neigh   | 0.055504   | 0.057269   | 0.060295   |   0.7 |  3.28
+Comm    | 0.052367   | 0.054858   | 0.05726    |   0.8 |  3.14
+Output  | 2.0353e-05 | 2.2496e-05 | 3.2685e-05 |   0.0 |  0.00
+Modify  | 0.0085377  | 0.0098363  | 0.010518   |   0.7 |  0.56
+Other   |            | 0.00571    |            |       |  0.33
+
+Nlocal:            360 ave         374 max         344 min
+Histogram: 1 0 0 1 0 1 2 0 0 1
+Nghost:        4743.83 ave        4771 max        4713 min
+Histogram: 1 0 0 2 0 0 0 2 0 1
+Neighs:        86099.3 ave       90393 max       83434 min
+Histogram: 2 2 0 0 0 0 0 0 0 2
+
+Total # of neighbors = 516596
+Ave neighs/atom = 239.16481
+Neighbor list builds = 41
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   3064.8272     -20161.63       32652.488      2.2000182     -40724.754     -18.854053      9.7875075    
+      1000   2970.7111     -15998.628      32652.488      2.2000182     -40743.268     -18.862624      9.8883167    
+Loop time of 1.73525 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 49.791 ns/day, 0.482 hours/ns, 576.287 timesteps/s, 1.245 Matom-step/s
+97.8% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.1038     | 1.1592     | 1.2379     |   4.6 | 66.80
+Kspace  | 0.36989    | 0.45018    | 0.5046     |   7.5 | 25.94
+Neigh   | 0.05438    | 0.055914   | 0.058872   |   0.7 |  3.22
+Comm    | 0.052434   | 0.054258   | 0.056774   |   0.8 |  3.13
+Output  | 1.9382e-05 | 2.222e-05  | 3.1441e-05 |   0.0 |  0.00
+Modify  | 0.0087969  | 0.0097843  | 0.010351   |   0.5 |  0.56
+Other   |            | 0.005938   |            |       |  0.34
+
+Nlocal:            360 ave         372 max         341 min
+Histogram: 1 0 0 1 0 1 0 0 1 2
+Nghost:        4719.67 ave        4737 max        4699 min
+Histogram: 1 0 0 0 1 2 0 1 0 1
+Neighs:        86039.5 ave       93855 max       81844 min
+Histogram: 1 2 1 0 1 0 0 0 0 1
+
+Total # of neighbors = 516237
+Ave neighs/atom = 238.99861
+Neighbor list builds = 40
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   2970.7111     -15998.628      32652.488      2.2000182     -40743.268     -18.862624      9.8883167    
+      1000   2885.4492     -22708.472      32652.488      2.2000182     -40786.092     -18.88245       9.8405313    
+Loop time of 1.73947 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 49.670 ns/day, 0.483 hours/ns, 574.886 timesteps/s, 1.242 Matom-step/s
+97.7% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0893     | 1.1567     | 1.2415     |   5.3 | 66.50
+Kspace  | 0.36924    | 0.45641    | 0.52276    |   8.6 | 26.24
+Neigh   | 0.054109   | 0.055944   | 0.058749   |   0.8 |  3.22
+Comm    | 0.052582   | 0.054443   | 0.056858   |   0.7 |  3.13
+Output  | 2.028e-05  | 2.2272e-05 | 3.1914e-05 |   0.0 |  0.00
+Modify  | 0.0093508  | 0.01017    | 0.010606   |   0.4 |  0.58
+Other   |            | 0.005816   |            |       |  0.33
+
+Nlocal:            360 ave         375 max         341 min
+Histogram: 1 0 0 0 1 2 0 1 0 1
+Nghost:        4733.17 ave        4756 max        4712 min
+Histogram: 2 0 1 0 0 0 0 1 1 1
+Neighs:        86051.5 ave       95001 max       81960 min
+Histogram: 3 0 1 0 0 1 0 0 0 1
+
+Total # of neighbors = 516309
+Ave neighs/atom = 239.03194
+Neighbor list builds = 40
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   2885.4492     -22708.472      32652.488      2.2000182     -40786.092     -18.88245       9.8405313    
+      1000   2821.2663     -12650.85       32652.488      2.2000182     -40820.077     -18.898184      9.9537386    
+Loop time of 1.73271 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 49.864 ns/day, 0.481 hours/ns, 577.131 timesteps/s, 1.247 Matom-step/s
+96.7% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.1028     | 1.1527     | 1.2451     |   4.7 | 66.52
+Kspace  | 0.36354    | 0.45771    | 0.50724    |   7.6 | 26.42
+Neigh   | 0.051349   | 0.052913   | 0.055939   |   0.7 |  3.05
+Comm    | 0.052192   | 0.053953   | 0.056811   |   0.7 |  3.11
+Output  | 2.0341e-05 | 2.2434e-05 | 3.1588e-05 |   0.0 |  0.00
+Modify  | 0.008932   | 0.0098272  | 0.010402   |   0.5 |  0.57
+Other   |            | 0.005623   |            |       |  0.32
+
+Nlocal:            360 ave         373 max         347 min
+Histogram: 2 0 0 1 0 0 0 1 1 1
+Nghost:        4711.67 ave        4724 max        4693 min
+Histogram: 1 1 0 0 0 0 0 2 0 2
+Neighs:        86005.3 ave       92863 max       80859 min
+Histogram: 2 0 0 2 0 0 0 0 1 1
+
+Total # of neighbors = 516032
+Ave neighs/atom = 238.9037
+Neighbor list builds = 38
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   2821.2663     -12650.85       32652.488      2.2000182     -40820.077     -18.898184      9.9537386    
+      1000   2649.5245     -21018.27       32652.488      2.2000182     -40833.029     -18.90418       9.9050803    
+Loop time of 1.73397 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 49.828 ns/day, 0.482 hours/ns, 576.710 timesteps/s, 1.246 Matom-step/s
+97.7% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.1121     | 1.1603     | 1.245      |   4.6 | 66.91
+Kspace  | 0.36589    | 0.4516     | 0.49932    |   7.5 | 26.04
+Neigh   | 0.051639   | 0.053039   | 0.055775   |   0.7 |  3.06
+Comm    | 0.051647   | 0.053725   | 0.05549    |   0.6 |  3.10
+Output  | 2.0014e-05 | 2.1981e-05 | 3.1531e-05 |   0.0 |  0.00
+Modify  | 0.009026   | 0.0099055  | 0.01048    |   0.5 |  0.57
+Other   |            | 0.005416   |            |       |  0.31
+
+Nlocal:            360 ave         377 max         339 min
+Histogram: 1 1 0 0 0 0 2 1 0 1
+Nghost:        4705.33 ave        4736 max        4678 min
+Histogram: 2 0 0 0 1 0 1 1 0 1
+Neighs:        86086.5 ave       91639 max       78757 min
+Histogram: 1 0 1 0 1 0 0 1 0 2
+
+Total # of neighbors = 516519
+Ave neighs/atom = 239.12917
+Neighbor list builds = 38
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   2649.5245     -21018.27       32652.488      2.2000182     -40833.029     -18.90418       9.9050803    
+      1000   2602.6344     -24252.024      32652.488      2.2000182     -40899.988     -18.93518       9.7082783    
+Loop time of 1.73234 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 49.875 ns/day, 0.481 hours/ns, 577.255 timesteps/s, 1.247 Matom-step/s
+97.1% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0983     | 1.1544     | 1.24       |   5.2 | 66.64
+Kspace  | 0.37422    | 0.46063    | 0.51676    |   8.3 | 26.59
+Neigh   | 0.047306   | 0.048892   | 0.051645   |   0.8 |  2.82
+Comm    | 0.050758   | 0.053293   | 0.055727   |   0.8 |  3.08
+Output  | 2.0888e-05 | 2.3016e-05 | 3.3009e-05 |   0.0 |  0.00
+Modify  | 0.0084125  | 0.0096314  | 0.010369   |   0.7 |  0.56
+Other   |            | 0.005479   |            |       |  0.32
+
+Nlocal:            360 ave         374 max         350 min
+Histogram: 2 0 0 1 0 2 0 0 0 1
+Nghost:        4737.17 ave        4756 max        4724 min
+Histogram: 1 2 0 1 0 0 0 1 0 1
+Neighs:          86047 ave       94874 max       81175 min
+Histogram: 1 2 0 1 1 0 0 0 0 1
+
+Total # of neighbors = 516282
+Ave neighs/atom = 239.01944
+Neighbor list builds = 35
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   2602.6344     -24252.024      32652.488      2.2000182     -40899.988     -18.93518       9.7082783    
+      1000   2504.9465     -28660.329      32652.488      2.2000182     -40922.141     -18.945435      9.9773844    
+Loop time of 1.73801 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 49.712 ns/day, 0.483 hours/ns, 575.370 timesteps/s, 1.243 Matom-step/s
+97.1% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.1054     | 1.154      | 1.2522     |   5.0 | 66.40
+Kspace  | 0.36575    | 0.46467    | 0.51205    |   7.9 | 26.74
+Neigh   | 0.048901   | 0.050408   | 0.053428   |   0.7 |  2.90
+Comm    | 0.050656   | 0.053432   | 0.055356   |   0.8 |  3.07
+Output  | 2.0766e-05 | 2.297e-05  | 3.2934e-05 |   0.0 |  0.00
+Modify  | 0.0085359  | 0.0096676  | 0.010299   |   0.6 |  0.56
+Other   |            | 0.005853   |            |       |  0.34
+
+Nlocal:            360 ave         374 max         339 min
+Histogram: 1 0 1 0 0 0 0 2 1 1
+Nghost:        4714.17 ave        4726 max        4701 min
+Histogram: 1 0 1 0 1 0 1 1 0 1
+Neighs:        86105.7 ave       95065 max       81266 min
+Histogram: 2 1 1 0 0 0 1 0 0 1
+
+Total # of neighbors = 516634
+Ave neighs/atom = 239.18241
+Neighbor list builds = 36
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   2504.9465     -28660.329      32652.488      2.2000182     -40922.141     -18.945435      9.9773844    
+      1000   2330.1854     -22569.287      32652.488      2.2000182     -40949.658     -18.958175      9.8405038    
+Loop time of 1.73091 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 49.916 ns/day, 0.481 hours/ns, 577.732 timesteps/s, 1.248 Matom-step/s
+97.3% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.1059     | 1.1551     | 1.2502     |   4.8 | 66.74
+Kspace  | 0.36274    | 0.45939    | 0.50863    |   7.8 | 26.54
+Neigh   | 0.046054   | 0.047584   | 0.050467   |   0.7 |  2.75
+Comm    | 0.051695   | 0.053339   | 0.055502   |   0.5 |  3.08
+Output  | 1.9457e-05 | 2.1752e-05 | 3.2556e-05 |   0.0 |  0.00
+Modify  | 0.0086153  | 0.0096462  | 0.010198   |   0.6 |  0.56
+Other   |            | 0.0058     |            |       |  0.34
+
+Nlocal:            360 ave         372 max         343 min
+Histogram: 1 1 0 0 0 0 0 1 2 1
+Nghost:        4735.17 ave        4756 max        4715 min
+Histogram: 1 0 0 1 1 1 1 0 0 1
+Neighs:          86063 ave       92221 max       79499 min
+Histogram: 1 0 0 0 3 0 0 1 0 1
+
+Total # of neighbors = 516378
+Ave neighs/atom = 239.06389
+Neighbor list builds = 34
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   2330.1854     -22569.287      32652.488      2.2000182     -40949.658     -18.958175      9.8405038    
+      1000   2249.9764     -14124.984      32652.488      2.2000182     -40991.453     -18.977525      9.8729477    
+Loop time of 1.73933 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 49.674 ns/day, 0.483 hours/ns, 574.933 timesteps/s, 1.242 Matom-step/s
+97.6% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.1028     | 1.1588     | 1.2611     |   5.0 | 66.63
+Kspace  | 0.36405    | 0.46642    | 0.52186    |   7.8 | 26.82
+Neigh   | 0.043038   | 0.044533   | 0.047698   |   0.8 |  2.56
+Comm    | 0.050342   | 0.05395    | 0.05756    |   1.0 |  3.10
+Output  | 1.9351e-05 | 2.104e-05  | 2.9213e-05 |   0.0 |  0.00
+Modify  | 0.0084271  | 0.0098493  | 0.010562   |   0.7 |  0.57
+Other   |            | 0.005729   |            |       |  0.33
+
+Nlocal:            360 ave         378 max         341 min
+Histogram: 1 0 0 1 1 1 0 1 0 1
+Nghost:        4743.17 ave        4800 max        4692 min
+Histogram: 1 0 1 0 1 1 1 0 0 1
+Neighs:        86074.5 ave       96373 max       81335 min
+Histogram: 1 3 0 1 0 0 0 0 0 1
+
+Total # of neighbors = 516447
+Ave neighs/atom = 239.09583
+Neighbor list builds = 32
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   2249.9764     -14124.984      32652.488      2.2000182     -40991.453     -18.977525      9.8729477    
+      1000   2249.1288     -20184.148      32652.488      2.2000182     -41029.548     -18.995161      9.8999127    
+Loop time of 1.73901 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 49.683 ns/day, 0.483 hours/ns, 575.039 timesteps/s, 1.242 Matom-step/s
+95.7% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0991     | 1.1514     | 1.2653     |   5.3 | 66.21
+Kspace  | 0.3619     | 0.47618    | 0.52786    |   8.3 | 27.38
+Neigh   | 0.041714   | 0.043165   | 0.046436   |   0.8 |  2.48
+Comm    | 0.049768   | 0.053104   | 0.056017   |   0.8 |  3.05
+Output  | 2.027e-05  | 2.2173e-05 | 3.1146e-05 |   0.0 |  0.00
+Modify  | 0.0084394  | 0.0095726  | 0.01023    |   0.7 |  0.55
+Other   |            | 0.005596   |            |       |  0.32
+
+Nlocal:            360 ave         372 max         345 min
+Histogram: 1 0 0 1 0 1 1 1 0 1
+Nghost:           4736 ave        4756 max        4713 min
+Histogram: 1 0 0 0 2 0 2 0 0 1
+Neighs:        86076.7 ave       91847 max       82790 min
+Histogram: 1 2 1 0 0 0 0 1 0 1
+
+Total # of neighbors = 516460
+Ave neighs/atom = 239.10185
+Neighbor list builds = 31
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   2249.1288     -20184.148      32652.488      2.2000182     -41029.548     -18.995161      9.8999127    
+      1000   2089.7723     -20299.997      32652.488      2.2000182     -41052.564     -19.005817      9.9178307    
+Loop time of 1.72946 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 49.958 ns/day, 0.480 hours/ns, 578.216 timesteps/s, 1.249 Matom-step/s
+97.5% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.1118     | 1.1569     | 1.2586     |   5.1 | 66.89
+Kspace  | 0.36262    | 0.46483    | 0.50815    |   8.1 | 26.88
+Neigh   | 0.039142   | 0.040517   | 0.0431     |   0.7 |  2.34
+Comm    | 0.049207   | 0.051825   | 0.054546   |   0.8 |  3.00
+Output  | 1.9266e-05 | 2.1472e-05 | 3.098e-05  |   0.0 |  0.00
+Modify  | 0.008342   | 0.0094373  | 0.010142   |   0.7 |  0.55
+Other   |            | 0.00593    |            |       |  0.34
+
+Nlocal:            360 ave         372 max         349 min
+Histogram: 2 0 0 0 1 0 2 0 0 1
+Nghost:        4721.17 ave        4743 max        4702 min
+Histogram: 2 0 0 1 0 0 1 0 1 1
+Neighs:        86098.7 ave       92985 max       80983 min
+Histogram: 1 0 0 3 0 1 0 0 0 1
+
+Total # of neighbors = 516592
+Ave neighs/atom = 239.16296
+Neighbor list builds = 29
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   2089.7723     -20299.997      32652.488      2.2000182     -41052.564     -19.005817      9.9178307    
+      1000   1992.9647     -17985.927      32652.488      2.2000182     -41089.025     -19.022697      9.8479694    
+Loop time of 1.73026 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 49.935 ns/day, 0.481 hours/ns, 577.947 timesteps/s, 1.248 Matom-step/s
+96.6% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0914     | 1.1523     | 1.2579     |   5.4 | 66.60
+Kspace  | 0.36274    | 0.46886    | 0.52854    |   8.5 | 27.10
+Neigh   | 0.038876   | 0.040345   | 0.043173   |   0.7 |  2.33
+Comm    | 0.050528   | 0.053289   | 0.056028   |   0.8 |  3.08
+Output  | 2.0421e-05 | 2.2371e-05 | 3.1618e-05 |   0.0 |  0.00
+Modify  | 0.0086827  | 0.0099255  | 0.010483   |   0.6 |  0.57
+Other   |            | 0.005539   |            |       |  0.32
+
+Nlocal:            360 ave         371 max         343 min
+Histogram: 1 0 0 0 0 2 1 0 1 1
+Nghost:        4740.83 ave        4756 max        4705 min
+Histogram: 1 0 0 0 0 1 0 1 0 3
+Neighs:        86093.2 ave       94005 max       82482 min
+Histogram: 3 1 0 0 0 0 1 0 0 1
+
+Total # of neighbors = 516559
+Ave neighs/atom = 239.14769
+Neighbor list builds = 29
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   1992.9647     -17985.927      32652.488      2.2000182     -41089.025     -19.022697      9.8479694    
+      1000   1864.6874     -21015.247      32652.488      2.2000182     -41113.753     -19.034145      9.7801973    
+Loop time of 1.733 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 49.856 ns/day, 0.481 hours/ns, 577.033 timesteps/s, 1.246 Matom-step/s
+97.3% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.1187     | 1.1544     | 1.2633     |   5.0 | 66.61
+Kspace  | 0.36105    | 0.4703     | 0.50646    |   7.8 | 27.14
+Neigh   | 0.039127   | 0.040377   | 0.043055   |   0.7 |  2.33
+Comm    | 0.049353   | 0.05233    | 0.055583   |   0.9 |  3.02
+Output  | 2.0579e-05 | 2.2417e-05 | 3.1299e-05 |   0.0 |  0.00
+Modify  | 0.008345   | 0.0097569  | 0.010549   |   0.8 |  0.56
+Other   |            | 0.005817   |            |       |  0.34
+
+Nlocal:            360 ave         374 max         339 min
+Histogram: 1 0 0 0 1 1 0 1 1 1
+Nghost:         4709.5 ave        4723 max        4704 min
+Histogram: 2 0 2 1 0 0 0 0 0 1
+Neighs:        86045.2 ave       94304 max       81653 min
+Histogram: 1 2 1 0 1 0 0 0 0 1
+
+Total # of neighbors = 516271
+Ave neighs/atom = 239.01435
+Neighbor list builds = 29
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   1864.6874     -21015.247      32652.488      2.2000182     -41113.753     -19.034145      9.7801973    
+      1000   1823.0135     -23196.378      32652.488      2.2000182     -41145.025     -19.048623      9.7922465    
+Loop time of 1.71504 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 50.378 ns/day, 0.476 hours/ns, 583.077 timesteps/s, 1.259 Matom-step/s
+96.5% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0938     | 1.1496     | 1.2493     |   4.9 | 67.03
+Kspace  | 0.36011    | 0.46104    | 0.51669    |   7.9 | 26.88
+Neigh   | 0.03641    | 0.037516   | 0.040089   |   0.7 |  2.19
+Comm    | 0.050183   | 0.051957   | 0.054026   |   0.6 |  3.03
+Output  | 1.9841e-05 | 2.1892e-05 | 3.1136e-05 |   0.0 |  0.00
+Modify  | 0.0083322  | 0.0093865  | 0.010009   |   0.6 |  0.55
+Other   |            | 0.005521   |            |       |  0.32
+
+Nlocal:            360 ave         370 max         342 min
+Histogram: 1 0 1 0 0 0 0 1 1 2
+Nghost:        4742.67 ave        4774 max        4719 min
+Histogram: 2 0 0 2 0 0 0 0 1 1
+Neighs:        86103.8 ave       93727 max       80740 min
+Histogram: 1 1 2 0 0 0 0 1 0 1
+
+Total # of neighbors = 516623
+Ave neighs/atom = 239.17731
+Neighbor list builds = 27
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   1823.0135     -23196.378      32652.488      2.2000182     -41145.025     -19.048623      9.7922465    
+      1000   1664.6464     -23840.607      32652.488      2.2000182     -41169.985     -19.060178      9.8239272    
+Loop time of 1.72141 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 50.192 ns/day, 0.478 hours/ns, 580.920 timesteps/s, 1.255 Matom-step/s
+96.5% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0792     | 1.1526     | 1.258      |   5.5 | 66.96
+Kspace  | 0.36112    | 0.46688    | 0.53999    |   8.7 | 27.12
+Neigh   | 0.033642   | 0.034769   | 0.037289   |   0.7 |  2.02
+Comm    | 0.049492   | 0.051827   | 0.055093   |   0.8 |  3.01
+Output  | 2.0093e-05 | 2.199e-05  | 3.0968e-05 |   0.0 |  0.00
+Modify  | 0.0084844  | 0.0093395  | 0.0097218  |   0.5 |  0.54
+Other   |            | 0.005945   |            |       |  0.35
+
+Nlocal:            360 ave         374 max         345 min
+Histogram: 1 0 2 0 0 0 1 0 0 2
+Nghost:           4738 ave        4750 max        4717 min
+Histogram: 1 0 0 0 1 0 1 1 0 2
+Neighs:        86054.2 ave       95126 max       81030 min
+Histogram: 1 0 3 1 0 0 0 0 0 1
+
+Total # of neighbors = 516325
+Ave neighs/atom = 239.03935
+Neighbor list builds = 25
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   1664.6464     -23840.607      32652.488      2.2000182     -41169.985     -19.060178      9.8239272    
+      1000   1578.2348     -18275.794      32652.488      2.2000182     -41209.454     -19.078451      9.7418723    
+Loop time of 1.71359 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 50.421 ns/day, 0.476 hours/ns, 583.571 timesteps/s, 1.261 Matom-step/s
+97.3% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.07       | 1.146      | 1.2564     |   5.5 | 66.88
+Kspace  | 0.35855    | 0.46949    | 0.54407    |   8.6 | 27.40
+Neigh   | 0.030975   | 0.031999   | 0.034242   |   0.7 |  1.87
+Comm    | 0.048826   | 0.050976   | 0.052986   |   0.7 |  2.97
+Output  | 1.9571e-05 | 2.1519e-05 | 3.1074e-05 |   0.0 |  0.00
+Modify  | 0.0082676  | 0.009555   | 0.010171   |   0.7 |  0.56
+Other   |            | 0.00555    |            |       |  0.32
+
+Nlocal:            360 ave         371 max         344 min
+Histogram: 1 1 0 0 0 1 0 0 1 2
+Nghost:        4733.67 ave        4748 max        4706 min
+Histogram: 1 0 0 0 0 0 1 2 1 1
+Neighs:          86067 ave       94258 max       80910 min
+Histogram: 1 1 2 0 0 1 0 0 0 1
+
+Total # of neighbors = 516402
+Ave neighs/atom = 239.075
+Neighbor list builds = 23
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   1578.2348     -18275.794      32652.488      2.2000182     -41209.454     -19.078451      9.7418723    
+      1000   1505.2976     -21932.552      32652.488      2.2000182     -41231.021     -19.088436      9.7147296    
+Loop time of 1.71215 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 50.463 ns/day, 0.476 hours/ns, 584.061 timesteps/s, 1.262 Matom-step/s
+96.5% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0836     | 1.1463     | 1.2581     |   5.3 | 66.95
+Kspace  | 0.35914    | 0.47073    | 0.53233    |   8.3 | 27.49
+Neigh   | 0.028258   | 0.029266   | 0.031397   |   0.6 |  1.71
+Comm    | 0.048183   | 0.050934   | 0.054132   |   0.9 |  2.97
+Output  | 1.9832e-05 | 2.1802e-05 | 3.0566e-05 |   0.0 |  0.00
+Modify  | 0.0083691  | 0.0094532  | 0.01008    |   0.6 |  0.55
+Other   |            | 0.005426   |            |       |  0.32
+
+Nlocal:            360 ave         373 max         345 min
+Histogram: 2 0 0 0 0 1 0 1 1 1
+Nghost:         4731.5 ave        4744 max        4716 min
+Histogram: 1 0 1 0 0 1 1 0 1 1
+Neighs:        86066.7 ave       94041 max       81026 min
+Histogram: 1 1 1 1 0 0 1 0 0 1
+
+Total # of neighbors = 516400
+Ave neighs/atom = 239.07407
+Neighbor list builds = 21
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   1505.2976     -21932.552      32652.488      2.2000182     -41231.021     -19.088436      9.7147296    
+      1000   1386.8311     -17666.225      32652.488      2.2000182     -41262.459     -19.10299       9.7458912    
+Loop time of 1.71024 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 50.519 ns/day, 0.475 hours/ns, 584.714 timesteps/s, 1.263 Matom-step/s
+96.9% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.083      | 1.1457     | 1.2596     |   5.3 | 66.99
+Kspace  | 0.35829    | 0.47205    | 0.53337    |   8.2 | 27.60
+Neigh   | 0.026875   | 0.027714   | 0.029806   |   0.6 |  1.62
+Comm    | 0.047189   | 0.049826   | 0.052305   |   0.8 |  2.91
+Output  | 2.0567e-05 | 2.2718e-05 | 3.2496e-05 |   0.0 |  0.00
+Modify  | 0.0083673  | 0.009303   | 0.0098329  |   0.6 |  0.54
+Other   |            | 0.005624   |            |       |  0.33
+
+Nlocal:            360 ave         373 max         342 min
+Histogram: 2 0 0 0 0 0 0 2 0 2
+Nghost:           4727 ave        4741 max        4691 min
+Histogram: 1 0 0 0 0 1 0 0 1 3
+Neighs:        86037.2 ave       93961 max       79332 min
+Histogram: 1 0 0 3 0 0 0 1 0 1
+
+Total # of neighbors = 516223
+Ave neighs/atom = 238.99213
+Neighbor list builds = 20
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   1386.8311     -17666.225      32652.488      2.2000182     -41262.459     -19.10299       9.7458912    
+      1000   1308.8469     -21525.395      32652.488      2.2000182     -41307.142     -19.123677      9.7729709    
+Loop time of 1.70164 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 50.775 ns/day, 0.473 hours/ns, 587.670 timesteps/s, 1.269 Matom-step/s
+96.3% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0751     | 1.1462     | 1.256      |   5.6 | 67.36
+Kspace  | 0.35733    | 0.46713    | 0.53755    |   8.7 | 27.45
+Neigh   | 0.022689   | 0.023549   | 0.02526    |   0.6 |  1.38
+Comm    | 0.048259   | 0.050267   | 0.053255   |   0.7 |  2.95
+Output  | 1.9583e-05 | 2.1289e-05 | 2.9352e-05 |   0.0 |  0.00
+Modify  | 0.0079511  | 0.0090966  | 0.0096072  |   0.6 |  0.53
+Other   |            | 0.005358   |            |       |  0.31
+
+Nlocal:            360 ave         375 max         346 min
+Histogram: 1 0 1 0 1 1 0 1 0 1
+Nghost:        4733.67 ave        4751 max        4718 min
+Histogram: 1 1 0 0 1 0 2 0 0 1
+Neighs:        86062.3 ave       95181 max       81549 min
+Histogram: 2 0 2 0 1 0 0 0 0 1
+
+Total # of neighbors = 516374
+Ave neighs/atom = 239.06204
+Neighbor list builds = 17
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   1308.8469     -21525.395      32652.488      2.2000182     -41307.142     -19.123677      9.7729709    
+      1000   1172.1072     -27121.979      32652.488      2.2000182     -41330.614     -19.134544      9.7757599    
+Loop time of 1.69443 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 50.991 ns/day, 0.471 hours/ns, 590.168 timesteps/s, 1.275 Matom-step/s
+96.5% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0825     | 1.1471     | 1.2522     |   5.2 | 67.70
+Kspace  | 0.35756    | 0.46181    | 0.52487    |   8.2 | 27.25
+Neigh   | 0.019993   | 0.020708   | 0.022216   |   0.5 |  1.22
+Comm    | 0.047223   | 0.049928   | 0.052847   |   0.8 |  2.95
+Output  | 2.2328e-05 | 2.408e-05  | 3.1223e-05 |   0.0 |  0.00
+Modify  | 0.007959   | 0.009227   | 0.0097724  |   0.7 |  0.54
+Other   |            | 0.005596   |            |       |  0.33
+
+Nlocal:            360 ave         372 max         343 min
+Histogram: 1 1 0 0 0 0 1 0 2 1
+Nghost:         4727.5 ave        4748 max        4696 min
+Histogram: 1 0 0 0 0 2 0 1 1 1
+Neighs:        86076.8 ave       94058 max       80789 min
+Histogram: 1 0 2 1 0 1 0 0 0 1
+
+Total # of neighbors = 516461
+Ave neighs/atom = 239.10231
+Neighbor list builds = 15
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   1172.1072     -27121.979      32652.488      2.2000182     -41330.614     -19.134544      9.7757599    
+      1000   1077.9379     -19866.966      32652.488      2.2000182     -41343.561     -19.140537      9.7755764    
+Loop time of 1.69727 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 50.905 ns/day, 0.471 hours/ns, 589.182 timesteps/s, 1.273 Matom-step/s
+97.4% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0802     | 1.1452     | 1.2607     |   5.5 | 67.47
+Kspace  | 0.35408    | 0.46911    | 0.533      |   8.5 | 27.64
+Neigh   | 0.018671   | 0.019352   | 0.020857   |   0.5 |  1.14
+Comm    | 0.046735   | 0.049046   | 0.051631   |   0.7 |  2.89
+Output  | 2.0188e-05 | 2.2008e-05 | 3.0733e-05 |   0.0 |  0.00
+Modify  | 0.0081557  | 0.0091351  | 0.0096589  |   0.5 |  0.54
+Other   |            | 0.005445   |            |       |  0.32
+
+Nlocal:            360 ave         375 max         340 min
+Histogram: 1 1 0 0 0 0 2 0 0 2
+Nghost:        4743.67 ave        4759 max        4729 min
+Histogram: 1 1 0 1 0 0 1 0 1 1
+Neighs:        86056.5 ave       94983 max       80376 min
+Histogram: 1 1 1 1 0 1 0 0 0 1
+
+Total # of neighbors = 516339
+Ave neighs/atom = 239.04583
+Neighbor list builds = 14
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   1077.9379     -19866.966      32652.488      2.2000182     -41343.561     -19.140537      9.7755764    
+      1000   972.87318     -20569.426      32652.488      2.2000182     -41378.215     -19.156581      9.7663136    
+Loop time of 1.70354 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 50.718 ns/day, 0.473 hours/ns, 587.014 timesteps/s, 1.268 Matom-step/s
+96.9% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0762     | 1.1465     | 1.2658     |   5.9 | 67.30
+Kspace  | 0.3562     | 0.47477    | 0.54351    |   9.0 | 27.87
+Neigh   | 0.017278   | 0.017936   | 0.019309   |   0.5 |  1.05
+Comm    | 0.046932   | 0.049356   | 0.05263    |   0.9 |  2.90
+Output  | 2.0095e-05 | 2.2297e-05 | 3.1474e-05 |   0.0 |  0.00
+Modify  | 0.0080197  | 0.0091733  | 0.0097639  |   0.6 |  0.54
+Other   |            | 0.005746   |            |       |  0.34
+
+Nlocal:            360 ave         377 max         335 min
+Histogram: 1 0 0 1 0 0 1 1 1 1
+Nghost:           4744 ave        4755 max        4732 min
+Histogram: 1 0 0 1 0 2 1 0 0 1
+Neighs:        86065.8 ave       96158 max       81049 min
+Histogram: 3 0 0 1 0 1 0 0 0 1
+
+Total # of neighbors = 516395
+Ave neighs/atom = 239.07176
+Neighbor list builds = 13
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   972.87318     -20569.426      32652.488      2.2000182     -41378.215     -19.156581      9.7663136    
+      1000   881.78984     -21240.591      32652.488      2.2000182     -41409.815     -19.171211      9.8121516    
+Loop time of 1.6997 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 50.832 ns/day, 0.472 hours/ns, 588.338 timesteps/s, 1.271 Matom-step/s
+96.2% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0759     | 1.1474     | 1.2631     |   5.8 | 67.51
+Kspace  | 0.35605    | 0.47058    | 0.53953    |   8.8 | 27.69
+Neigh   | 0.01735    | 0.017988   | 0.019262   |   0.5 |  1.06
+Comm    | 0.04655    | 0.049414   | 0.053286   |   1.2 |  2.91
+Output  | 2.0326e-05 | 2.2376e-05 | 3.2099e-05 |   0.0 |  0.00
+Modify  | 0.0080886  | 0.0090085  | 0.0095786  |   0.6 |  0.53
+Other   |            | 0.005254   |            |       |  0.31
+
+Nlocal:            360 ave         371 max         346 min
+Histogram: 2 0 0 0 0 1 0 0 1 2
+Nghost:        4733.17 ave        4752 max        4705 min
+Histogram: 1 0 1 0 0 0 0 2 1 1
+Neighs:        86092.5 ave       93154 max       80291 min
+Histogram: 1 0 1 1 1 0 1 0 0 1
+
+Total # of neighbors = 516555
+Ave neighs/atom = 239.14583
+Neighbor list builds = 13
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   881.78984     -21240.591      32652.488      2.2000182     -41409.815     -19.171211      9.8121516    
+      1000   784.0573      -17367.729      32652.488      2.2000182     -41436.19      -19.183421      9.7386217    
+Loop time of 1.67832 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 51.480 ns/day, 0.466 hours/ns, 595.833 timesteps/s, 1.287 Matom-step/s
+97.3% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0726     | 1.1432     | 1.2492     |   5.4 | 68.12
+Kspace  | 0.35518    | 0.45938    | 0.52854    |   8.4 | 27.37
+Neigh   | 0.011922   | 0.012318   | 0.013219   |   0.4 |  0.73
+Comm    | 0.045448   | 0.048553   | 0.050826   |   0.8 |  2.89
+Output  | 2.0014e-05 | 2.2076e-05 | 3.1091e-05 |   0.0 |  0.00
+Modify  | 0.0082276  | 0.0092627  | 0.0099458  |   0.6 |  0.55
+Other   |            | 0.005545   |            |       |  0.33
+
+Nlocal:            360 ave         374 max         346 min
+Histogram: 1 1 0 1 0 0 0 2 0 1
+Nghost:         4728.5 ave        4750 max        4711 min
+Histogram: 1 1 1 0 1 0 0 0 1 1
+Neighs:        86110.8 ave       94711 max       80783 min
+Histogram: 1 0 3 0 1 0 0 0 0 1
+
+Total # of neighbors = 516665
+Ave neighs/atom = 239.19676
+Neighbor list builds = 9
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   784.0573      -17367.729      32652.488      2.2000182     -41436.19      -19.183421      9.7386217    
+      1000   705.80146     -24313.657      32652.488      2.2000182     -41468.521     -19.198389      9.7886549    
+Loop time of 1.68377 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 51.313 ns/day, 0.468 hours/ns, 593.906 timesteps/s, 1.283 Matom-step/s
+97.0% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0848     | 1.1441     | 1.2587     |   5.4 | 67.95
+Kspace  | 0.35538    | 0.46859    | 0.5266     |   8.3 | 27.83
+Neigh   | 0.0079863  | 0.0082772  | 0.0088982  |   0.3 |  0.49
+Comm    | 0.045938   | 0.048323   | 0.051544   |   0.8 |  2.87
+Output  | 1.9695e-05 | 2.1888e-05 | 3.1996e-05 |   0.0 |  0.00
+Modify  | 0.0079617  | 0.0089663  | 0.0095659  |   0.6 |  0.53
+Other   |            | 0.005454   |            |       |  0.32
+
+Nlocal:            360 ave         373 max         341 min
+Histogram: 1 0 1 0 0 1 0 0 2 1
+Nghost:        4729.17 ave        4738 max        4704 min
+Histogram: 1 0 0 0 0 0 0 1 1 3
+Neighs:        86091.2 ave       93416 max       81034 min
+Histogram: 1 1 1 0 1 1 0 0 0 1
+
+Total # of neighbors = 516547
+Ave neighs/atom = 239.14213
+Neighbor list builds = 6
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   705.80146     -24313.657      32652.488      2.2000182     -41468.521     -19.198389      9.7886549    
+      1000   601.81039     -20366.713      32652.488      2.2000182     -41495.262     -19.210769      9.7714733    
+Loop time of 1.66958 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 51.750 ns/day, 0.464 hours/ns, 598.954 timesteps/s, 1.294 Matom-step/s
+96.5% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0859     | 1.148      | 1.2459     |   5.0 | 68.76
+Kspace  | 0.35456    | 0.45013    | 0.51059    |   7.8 | 26.96
+Neigh   | 0.0079787  | 0.008243   | 0.0087853  |   0.3 |  0.49
+Comm    | 0.045372   | 0.048749   | 0.051574   |   1.0 |  2.92
+Output  | 2.0351e-05 | 2.2263e-05 | 3.1169e-05 |   0.0 |  0.00
+Modify  | 0.0077062  | 0.0090785  | 0.0097904  |   0.7 |  0.54
+Other   |            | 0.005305   |            |       |  0.32
+
+Nlocal:            360 ave         373 max         342 min
+Histogram: 1 0 1 0 0 0 1 1 0 2
+Nghost:        4731.17 ave        4753 max        4685 min
+Histogram: 1 0 0 0 0 0 1 1 2 1
+Neighs:        86085.3 ave       93331 max       81150 min
+Histogram: 1 0 3 0 0 0 1 0 0 1
+
+Total # of neighbors = 516512
+Ave neighs/atom = 239.12593
+Neighbor list builds = 6
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   601.81039     -20366.713      32652.488      2.2000182     -41495.262     -19.210769      9.7714733    
+      1000   490.46315     -24719.65       32652.488      2.2000182     -41520.179     -19.222305      9.749259     
+Loop time of 1.6659 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 51.864 ns/day, 0.463 hours/ns, 600.276 timesteps/s, 1.297 Matom-step/s
+96.4% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0904     | 1.1462     | 1.2513     |   5.4 | 68.81
+Kspace  | 0.35342    | 0.45569    | 0.50913    |   8.2 | 27.35
+Neigh   | 0.0026584  | 0.0027378  | 0.0029055  |   0.2 |  0.16
+Comm    | 0.043797   | 0.047196   | 0.05058    |   1.0 |  2.83
+Output  | 1.9967e-05 | 2.1748e-05 | 2.987e-05  |   0.0 |  0.00
+Modify  | 0.0074949  | 0.0085486  | 0.0091725  |   0.6 |  0.51
+Other   |            | 0.005467   |            |       |  0.33
+
+Nlocal:            360 ave         369 max         342 min
+Histogram: 1 0 1 0 0 0 0 1 0 3
+Nghost:        4744.33 ave        4758 max        4712 min
+Histogram: 1 0 0 0 0 0 1 1 1 2
+Neighs:          86072 ave       93160 max       81005 min
+Histogram: 1 0 2 1 0 0 1 0 0 1
+
+Total # of neighbors = 516432
+Ave neighs/atom = 239.08889
+Neighbor list builds = 2
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   490.46315     -24719.65       32652.488      2.2000182     -41520.179     -19.222305      9.749259     
+      1000   397.50563     -21747.092      32652.488      2.2000182     -41549.568     -19.235911      9.7224401    
+Loop time of 1.6602 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 52.042 ns/day, 0.461 hours/ns, 602.337 timesteps/s, 1.301 Matom-step/s
+96.5% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0729     | 1.1425     | 1.2407     |   5.4 | 68.82
+Kspace  | 0.35297    | 0.45008    | 0.51777    |   8.4 | 27.11
+Neigh   | 0.0053118  | 0.0054889  | 0.0058538  |   0.3 |  0.33
+Comm    | 0.046281   | 0.04798    | 0.050204   |   0.6 |  2.89
+Output  | 2.0352e-05 | 2.2122e-05 | 3.0027e-05 |   0.0 |  0.00
+Modify  | 0.0077737  | 0.008768   | 0.0092567  |   0.6 |  0.53
+Other   |            | 0.005395   |            |       |  0.32
+
+Nlocal:            360 ave         372 max         339 min
+Histogram: 1 0 0 1 0 0 1 0 1 2
+Nghost:        4746.33 ave        4777 max        4704 min
+Histogram: 1 0 0 0 1 1 0 2 0 1
+Neighs:        86071.2 ave       93341 max       81399 min
+Histogram: 1 1 2 0 0 0 1 0 0 1
+
+Total # of neighbors = 516427
+Ave neighs/atom = 239.08657
+Neighbor list builds = 4
+Dangerous builds = 0
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.29696104
+  grid = 24 24 27
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0014110636
+  estimated relative force accuracy = 9.7992942e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 9424 2880
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 5.503 | 5.581 | 5.914 Mbytes
+   Step          Temp          Press          Volume        Density         PotEng         v_epa        c_msd0[4]   
+         0   397.50563     -21747.092      32652.488      2.2000182     -41549.568     -19.235911      9.7224401    
+      1000   302.82714     -23535.31       32652.488      2.2000182     -41577.91      -19.249032      9.655487     
+Loop time of 1.66585 on 6 procs for 1000 steps with 2160 atoms
+
+Performance: 51.865 ns/day, 0.463 hours/ns, 600.295 timesteps/s, 1.297 Matom-step/s
+97.3% CPU use with 6 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0826     | 1.1416     | 1.2507     |   5.4 | 68.53
+Kspace  | 0.3538     | 0.46086    | 0.51873    |   8.3 | 27.67
+Neigh   | 0.0013195  | 0.0013643  | 0.0014653  |   0.1 |  0.08
+Comm    | 0.045158   | 0.04757    | 0.050977   |   0.9 |  2.86
+Output  | 2.115e-05  | 2.3138e-05 | 3.1902e-05 |   0.0 |  0.00
+Modify  | 0.0078698  | 0.0088517  | 0.0093468  |   0.6 |  0.53
+Other   |            | 0.005544   |            |       |  0.33
+
+Nlocal:            360 ave         373 max         343 min
+Histogram: 1 0 1 0 0 1 0 1 1 1
+Nghost:        4749.17 ave        4767 max        4717 min
+Histogram: 1 0 0 0 1 0 0 2 1 1
+Neighs:        86056.7 ave       94661 max       81539 min
+Histogram: 2 1 0 1 1 0 0 0 0 1
+
+Total # of neighbors = 516340
+Ave neighs/atom = 239.0463
+Neighbor list builds = 1
+Dangerous builds = 0
+=========== DONE 1e14 (profile-only) ===========
+Total wall time: 0:01:40
