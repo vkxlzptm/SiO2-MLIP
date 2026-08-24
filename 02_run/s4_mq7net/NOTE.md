@@ -53,8 +53,19 @@ nohup lmp_7net -in in.mq7net > mq7net.log 2>&1 &
 이 계산 전체의 성패가 여기서 갈린다. BKS 액체 구조의 기억이 지워졌는지의 판정이다.
 
 ```bash
-grep -A99999 "MELT EQUIL" mq7net.log | awk 'NR%10==0 {print $1, $2, $7, $8}'
-#                                              step temp MSD maxf
+awk '/^ *Step +Temp/{on=1;next} /^Loop time/{on=0} on&&NF==9{print $1,$2,$7,$8,$9}' \
+    mq7net.log | tail -20
+#   출력: step  temp  epa  MSD  maxf
+#   thermo 9열: step temp press vol density pe v_epa c_msd0[4] c_maxf
+
+# 마지막 한 줄만
+awk '/^ *Step +Temp/{on=1;next} /^Loop time/{on=0} on&&NF==9{s=$1;m=$8;f=$9} \
+     END{print "step",s," MSD",m,"A^2  maxf",f}' mq7net.log
+
+# 진행 속도 (thermo 100 간격 -> 새 줄 1개 = 100 step)
+a=$(grep -cE '^ *[0-9]+ +[0-9]' mq7net.log); sleep 60
+b=$(grep -cE '^ *[0-9]+ +[0-9]' mq7net.log)
+echo "s/step = $(echo "60/(($b-$a)*100)" | bc -l)"
 ```
 
 | 판정 | 기준 (step 5000 ≈ 5 ps, 약 3 h 지점) | 조치 |
