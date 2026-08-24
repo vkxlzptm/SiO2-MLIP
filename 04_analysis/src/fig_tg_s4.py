@@ -156,7 +156,7 @@ def main():
             f.write(line)
     print(f"-> {DAT}/tg_s4_summary.dat")
 
-    fig, ax = plt.subplots(1, 3, figsize=(11, 3.6))
+    fig, ax = plt.subplots(1, 3, figsize=(10.5, 3.5))
     a, b, c = ax
 
     # ---------------- (a) E(T)-E(300K), T 증가 방향 = 오른쪽 ----------------

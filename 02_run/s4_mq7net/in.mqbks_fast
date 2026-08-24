@@ -1,6 +1,8 @@
-# S4 BKS 통제런 (profile-only, no RDF/traj) — Tg(rate) 곡선 확장/반복용
-# in.mqbks 에서 300K 평형+생산(RDF/traj) 단계를 뺐다. 목적이 mqbks_<tag>_profile.dat
-# 뿐이라 궤적(18 MB/런)을 만들 이유가 없다. 초기구조·셀·NVT 앙상블은 in.mqbks와 동일.
+# S4 BKS 통제런 (lightweight) — Tg(rate) 곡선 확장/반복용
+# in.mqbks 에서 300K '생산' 단계(RDF 18 MB 궤적)를 뺐다. 남긴 것은
+#   (1) mqbks_<tag>_profile.dat  — Tg 용
+#   (2) prod_bks_<tag>.data      — ring statistics 용 (2026-08-24 추가, 아래 3단계 주석)
+# 초기구조·셀·NVT 앙상블·300K 평형 길이는 in.mqbks 와 동일하다.
 #
 # 인자: -var ns <100K당 스텝수>  -var tag <출력태그>  -var seed <속도시드, 기본 90210>
 #   냉각률(K/s) = 1e17 / ns   (예: ns=100000 -> 1e12,  ns=5000 -> 2e13)
@@ -68,4 +70,19 @@ label QLOOP
   variable      Tset equal ${Tset}-100
 if "${Tset} >= 300" then "jump SELF QLOOP"
 
-print "=========== DONE ${tag} (profile-only) ==========="
+# ================= 3. 300 K 평형 5 ps -> 구조 저장 =================
+# 2026-08-24 추가. 원래 이 스크립트는 profile 만 뽑았는데, 그러면 스윕 결과로
+# **ring statistics 를 낼 수 없다.** S4 ring 비교(fig_rings_s4.py)의 가장 약한 고리가
+# "7net 은 시드 1개, BKS 도 매칭률(2e13)에서 실현 1개뿐이라 실현간 산포를 못 잰다"는
+# 점인데, 스윕에 이미 2e13_r2 / 2e13_r3 반복이 들어 있다. 구조만 저장하면
+# 매칭률에서 BKS 실현 3개가 생겨 **오차막대를 제대로 그릴 수 있다.**
+# 평형 5 ps 는 in.mqbks 통제런과 길이를 맞춘 것이다 (구조 비교 조건 일치).
+# 비용: 5,000 step / 557 step/s = 9 초/런. 궤적·RDF 는 여전히 안 만든다.
+print "=========== BKS EQUIL 300 K (NVT, 5 ps) -> prod_bks_${tag}.data ==========="
+reset_timestep  0
+fix             1 all nvt temp 300.0 300.0 ${Tdamp}
+run             5000
+unfix           1
+write_data      prod_bks_${tag}.data
+
+print "=========== DONE ${tag} (profile + final structure) ==========="

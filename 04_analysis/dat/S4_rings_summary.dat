@@ -1,0 +1,12 @@
+# King ring, distinct fraction. BKS = 4 runs (5e12 x2 seeds, 2e13, 5e13)
+# err = Poisson(7net) (+) Poisson(BKS) (+) BKS run-to-run scatter
+#   n    7net%  BKSmean%  BKSmin%  BKSmax%   diff%p   err%p  sigma
+  3     7.17      2.81     1.80     3.43     4.35    1.44    3.0
+  4    15.58     14.92    14.24    15.54     0.66    1.98    0.3
+  5    24.82     30.79    29.97    31.61    -5.97    2.72    2.2
+  6    31.65     30.97    27.45    35.69     0.68    4.27    0.2
+  7    15.67     16.45    14.83    18.26    -0.78    2.23    0.4
+  8     4.73      3.81     3.34     4.17     0.93    1.20    0.8
+  9     0.38      0.25     0.13     0.33     0.13    0.29    0.4
+
+# mean ring size (distinct):  7net 5.488   BKS 2e13 5.554  BKS 5e12 5.563  BKS 5e13 5.533  BKS 5e12* 5.580
