@@ -145,7 +145,7 @@ b.set_xlabel("Ring size  (number of Si)")
 b.set_ylabel("7net $-$ BKS  (%p)")
 b.set_xticks(NS); b.set_xlim(2.4, 9.6)
 b.yaxis.set_minor_locator(AutoMinorLocator(2))
-b.set_title(r"topology-formation effect", fontsize=10.5)
+b.set_title("Topology-formation effect", fontsize=10.5)
 b.text(0.035, 0.965, "(b)", transform=b.transAxes, fontsize=11.5,
        fontweight="bold", ha="left", va="top")
 # sigma 라벨은 0선 바로 안쪽(막대 위)에 흰 글씨로 — 오차막대·주석과 겹치지 않는다
@@ -173,7 +173,7 @@ for r in bks:
 c.errorbar(net["rate"], 100 * net["f"][0], yerr=100 * net["sig"][0], fmt="*", ms=17,
            mfc=NET_COL, mec=NET_COL, ecolor=NET_COL, elinewidth=1.0, capsize=2.6, zorder=4)
 c.set_xscale("log")
-c.set_xlabel("quench rate (K/s)")
+c.set_xlabel("Quench rate (K/s)")
 c.set_ylabel("3-ring fraction (%)")
 c.set_ylim(0, 9.2)
 c.set_xlim(3.0e12, 1.3e14)
