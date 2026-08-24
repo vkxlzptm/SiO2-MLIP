@@ -1,0 +1,168 @@
+LAMMPS (2 Aug 2023 - Update 3)
+  using 6 OpenMP thread(s) per MPI task
+# S4-EV  0 K E-V 스캔 @ **S4 자체 melt-quench 로 만든 망 위상**
+#
+# ─ 왜 NPT 가 아니라 E-V 인가 (2026-08-24 설계 변경) ───────────────────────────
+#  원래 계획은 "300 K NPT tail 검증"이었다. 7net 의 P300 = +0.80 GPa (팽창 경향)이
+#  BKS 세 런의 -2.8~-3.2 GPa 와 부호가 반대인데, 300 K 통계가 5 ps + 5 ps 로 짧아
+#  미평형 아티팩트일 가능성을 배제하지 못했기 때문이다.
+#
+#  그런데 로그를 다시 읽어보니 **그 가능성은 이미 배제된다**:
+#    7net 300 K 구간 10 ps(평형 5 + 생산 5) 전체에서
+#      평형 전반 +0.781 / 후반 +0.774 / 생산 전반 +0.797 / 후반 +0.795 GPa
+#    → 드리프트가 0.02 GPa 미만이고 요동 sd 는 0.11 GPa. **완전히 정상상태다.**
+#    같은 구간 MSD 도 150.9 Å² 에서 3자리까지 고정 — 300 K 에서 확산이 없다.
+#  즉 이 압력은 '아직 안 풀린 응력'이 아니라 **얼어붙은 망 위상 자체의 성질**이다.
+#  300 K NVT 를 더 길게 끌어도 나올 것이 없다 (움직일 자유도가 없다).
+#
+#  남은 진짜 질문은 "그래서 이 망이 원하는 밀도가 얼마냐"이고, 그건 부피 자유도를
+#  풀어야만 답이 나온다. 두 경로가 있다:
+#    (i)  300 K NPT   — 7net 으로 100 ps NPT = 100,000 step x 1.96 s = **54 시간**. 불가.
+#                       20 ps 로 줄여도 11 시간이고, 그마저 barostat 이 자리잡기에 짧다.
+#    (ii) 0 K E-V 스캔 — 7점 x 최대 150 eval x 1.99 s ≈ **35 분**. 게다가
+#                       RESULTS 2절의 rho0 = 2.2185 / K0 = 43.2 가 **정확히 이 방법**으로
+#                       나온 값이라, 같은 자로 잰 직접 비교가 된다.
+#  → (ii) 를 택한다. NPT 는 하지 않는다.
+#
+# ─ 이 스캔이 답하는 것 ────────────────────────────────────────────────────────
+#  RESULTS 2절의 rho0 = 2.2185 (+0.84 %) 는 **BKS 가 만든 망 위에서** 7net 이 부피만
+#  고른 값이다. 이번 스캔은 **7net 이 자기 힘으로 만든 망**에서 같은 값을 뽑는다.
+#  두 값의 차이 = 밀도에서의 **위상 형성 효과**. ring 통계(fig_rings_s4.png)와 같은 축이다.
+#  P300 = +0.80 GPa 와 K ~ 43 GPa 로 어림하면 rho0 ~ 2.16 (실험 대비 -1.8 %) 이 예상되는데,
+#  그러면 "7net 이 밀도를 7.8배 개선했다"는 이 프로젝트의 헤드라인이 **위상까지 스스로
+#  만들면 일부 되돌아간다**는 뜻이 된다. 확인해야 할 값이다. (예상은 예상일 뿐, 재본다.)
+#
+# ─ 인자 ──────────────────────────────────────────────────────────────────────
+#   -var s     <선형 스케일>          f^(1/3), f = 부피비
+#   -var dfile <출발 구조>            prod_7net_mq.data 등
+#   -var tag   <출력 태그>
+#
+# 설계는 in.ev220 을 그대로 따른다 (같은 자로 재야 비교가 된다):
+#   - velocity all set 0 0 0  : data 파일이 들고 온 300 K 속도를 죽여 Press 를 순수 virial 로
+#                               (RESULTS 8절 교훈 3 — 이걸 안 하면 virial 이 3배 어긋나 보인다)
+#   - etol = 0.0              : 에너지 수렴이 box 자유도에서 조기 종료를 일으킨다 (교훈 4)
+#   - 원자만 이완, 셀은 고정   : E-V 스캔이므로 box/relax 를 쓰지 않는다
+#
+# 실행: run_ev_s4.sh 참조
+
+variable        dfile index prod_7net_mq.data
+variable        tag   index 7net
+variable        s     index 1.0
+
+units           metal
+boundary        p p p
+atom_style      charge
+
+read_data       ${dfile}
+read_data       prod_7net_mq.data
+Reading data file ...
+  orthogonal box = (-0.13095199 -0.13140962 -0.15165528) to (30.269865 30.375648 35.055481)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  2160 atoms
+  reading velocities ...
+  2160 velocities
+  read_data CPU = 0.023 seconds
+mass            1 15.9994
+mass            2 28.0855
+
+pair_style      e3gnn
+PairE3GNN using device : CPU
+pair_coeff      * * ../../01_input/pot/deployed_nano_4.5.pt O Si
+Chemical specie 'O' is assigned to type 1
+Chemical specie 'Si' is assigned to type 2
+from sevenn version '0.13.0' single precision model, deployed: 2026-08-10
+FlashTP: no
+OEQ: no
+
+neighbor        1.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+change_box      all x scale ${s} y scale ${s} z scale ${s} remap
+change_box      all x scale 0.99328839 y scale ${s} z scale ${s} remap
+change_box      all x scale 0.99328839 y scale 0.99328839 z scale ${s} remap
+change_box      all x scale 0.99328839 y scale 0.99328839 z scale 0.99328839 remap
+Changing box ...
+  orthogonal box = (-0.028932771 -0.13140962 -0.15165528) to (30.167846 30.375648 35.055481)
+  orthogonal box = (-0.028932771 -0.029033881 -0.15165528) to (30.167846 30.273272 35.055481)
+  orthogonal box = (-0.028932771 -0.029033881 -0.033506994) to (30.167846 30.273272 34.937332)
+
+velocity        all set 0.0 0.0 0.0
+
+variable        epa  equal pe/atoms
+variable        dens equal density
+variable        fmag atom sqrt(fx*fx+fy*fy+fz*fz)
+compute         maxf all reduce max v_fmag
+
+thermo          20
+thermo_style    custom step pe v_epa press vol v_dens c_maxf
+
+min_style       cg
+min_modify      dmax 0.05
+minimize        0.0 1.0e-3 150 150
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 5.5
+  ghost atom cutoff = 5.5
+  binsize = 2.75, bins = 11 12 13
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair e3gnn, perpetual
+      attributes: full, newton on
+      pair build: full/bin/atomonly
+      stencil: full/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 9.237 | 9.237 | 9.237 Mbytes
+   Step         PotEng         v_epa          Press          Volume         v_dens         c_maxf    
+         0  -16837.212     -7.7950056      38456.232      31999.439      2.2449165      4.257612     
+        20  -16924.304     -7.8353259      15575.19       31999.439      2.2449165      0.39277434   
+        40  -16926.111     -7.8361625      14856.006      31999.439      2.2449165      0.21508944   
+        60  -16926.417     -7.8363039      14671.449      31999.439      2.2449165      0.077080696  
+        77  -16926.49      -7.836338       14631.474      31999.439      2.2449165      0.09757815   
+Loop time of 309.944 on 6 procs for 77 steps with 2160 atoms
+
+467.5% CPU use with 1 MPI tasks x 6 OpenMP threads
+
+Minimization stats:
+  Stopping criterion = max force evaluations
+  Energy initial, next-to-last, final = 
+     -16837.2120047788  -16926.4877777706  -16926.4900563302
+  Force two-norm initial, final = 70.914142 0.33873532
+  Force max component initial, final = 3.8584712 0.078423157
+  Final line search alpha, max atom move = 0.4112326 0.032250159
+  Iterations, force evaluations = 77 150
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 309.93     | 309.93     | 309.93     |   0.0 | 99.99
+Neigh   | 0.0063433  | 0.0063433  | 0.0063433  |   0.0 |  0.00
+Comm    | 0.0030264  | 0.0030264  | 0.0030264  |   0.0 |  0.00
+Output  | 0.00035457 | 0.00035457 | 0.00035457 |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.006606   |            |       |  0.00
+
+Nlocal:           2160 ave        2160 max        2160 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           3077 ave        3077 max        3077 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:              0 ave           0 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:       101366 ave      101366 max      101366 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 101366
+Ave neighs/atom = 46.928704
+Neighbor list builds = 2
+Dangerous builds = 0
+
+variable        Vf equal vol
+variable        Df equal density
+variable        Ef equal pe
+variable        ef equal pe/atoms
+variable        Pf equal press
+variable        Ff equal c_maxf
+print           "EVPOINT ${s} ${Vf} ${Df} ${Ef} ${ef} ${Pf} ${Ff}"
+EVPOINT 0.99328839 31999.438676874 2.2449165494537 -16926.4900563302 -7.83633798904174 14631.4739953356 0.0975781499041457
+Total wall time: 0:05:12
