@@ -1,0 +1,22 @@
+=== BKS control: 5e12 K/s  (ns=20000) ===
+WARNING: Compute rdf cutoff less than neighbor cutoff - forcing a needless neighbor list build (src/compute_rdf.cpp:179)
+=========== DONE 5e12 ===========
+Total wall time: 0:22:32
+=== BKS control: 2e13 K/s  (ns=5000) ===
+WARNING: Compute rdf cutoff less than neighbor cutoff - forcing a needless neighbor list build (src/compute_rdf.cpp:179)
+=========== DONE 2e13 ===========
+Total wall time: 0:06:27
+=== BKS control: 5e13 K/s  (ns=2000) ===
+WARNING: Compute rdf cutoff less than neighbor cutoff - forcing a needless neighbor list build (src/compute_rdf.cpp:179)
+=========== DONE 5e13 ===========
+Total wall time: 0:03:04
+=== ALL BKS CONTROLS DONE ===
+-rw-rw-r-- 1 dhl dhl     2803  8월 18 22:13 mqbks_2e13_profile.dat
+-rw-rw-r-- 1 dhl dhl     2805  8월 18 22:06 mqbks_5e12_profile.dat
+-rw-rw-r-- 1 dhl dhl     2801  8월 18 22:16 mqbks_5e13_profile.dat
+-rw-rw-r-- 1 dhl dhl    10015  8월 18 22:13 rdf_bks_2e13.dat
+-rw-rw-r-- 1 dhl dhl     9994  8월 18 22:06 rdf_bks_5e12.dat
+-rw-rw-r-- 1 dhl dhl    10034  8월 18 22:16 rdf_bks_5e13.dat
+-rw-rw-r-- 1 dhl dhl 18207153  8월 18 22:13 traj_bks_2e13.lammpstrj
+-rw-rw-r-- 1 dhl dhl 18205919  8월 18 22:06 traj_bks_5e12.lammpstrj
+-rw-rw-r-- 1 dhl dhl 18216745  8월 18 22:16 traj_bks_5e13.lammpstrj
