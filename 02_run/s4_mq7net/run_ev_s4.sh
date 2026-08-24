@@ -41,6 +41,12 @@ mkdir -p logs ev
 
 DFILE=${1:-prod_7net_mq.data}
 TAG=${2:-7net}
+# pilot 점 목록. 기본은 S4 자체 형성 망(f0 ~ 1.019)에 맞춰져 있다.
+# **다른 구조를 돌릴 때는 반드시 다시 잡아라** — pilot 이 P=0 을 괄호치지 못하면
+# 격자를 만들지 않고 멈춘다(외삽 방지). 예:
+#   BKS 가 만든 망을 7net 으로 읽으면 f0 ~ 0.99 이므로
+#   PILOT_FS="0.96 0.98 1.00 1.02" bash run_ev_s4.sh prod_bks_2e13.data bksnet2e13
+PILOT_FS="${PILOT_FS:-0.98 1.00 1.02 1.04}"
 HALFWIDTH=${3:-0.06}        # V0 기준 반폭 (부피비). 기존 스캔과 같은 자릿수.
 NMAIN=${4:-7}               # 2단계 점 개수 (홀수여야 V0 자신이 격자에 들어간다)
 
@@ -72,11 +78,12 @@ runpt() {   # $1 = f (부피비, V0 기준 아님 — V_ref = prod 구조의 부
 PILOT="ev/ev_s4_${TAG}_pilot.txt"
 echo "# scale volume(A^3) density(g/cc) PE(eV) epa(eV) press(bar) maxf(eV/A)" > "$PILOT"
 echo "=========== STAGE 1: pilot (P=0 bracketing) ==========="
-for f in 0.98 1.00 1.02 1.04; do runpt "$f" pilot >> "$PILOT"; done
+for f in $PILOT_FS; do runpt "$f" pilot >> "$PILOT"; done
 cat "$PILOT"
 
 # ================== V0 결정 + 대칭 격자 생성 ==================
-read -r F0 RHO0 KLOC < <(python3 - "$PILOT" <<'PY'
+F_FIRST=$(echo $PILOT_FS | awk '{print $1}')
+read -r F0 RHO0 KLOC < <(python3 - "$PILOT" "$F_FIRST" <<'PY'
 # ★ numpy 를 쓰지 않는다. dhl-desktop 에서 이 스크립트는 conda 를 활성화하지 않고
 #   돌 수 있고(LAMMPS 바이너리만 있으면 된다), 그때 plain python3 에 numpy 가
 #   없으면 set -e 가 여기서 죽는다 — pilot 4점(20분)을 버리고 나서.
@@ -92,7 +99,7 @@ for line in open(sys.argv[1]):
     V.append(float(c[1])); rho.append(float(c[2])); P.append(float(c[5]) / 1e4)  # GPa
 if len(V) < 3:
     sys.exit("pilot 점이 3개 미만이다 — LAMMPS 실행 실패를 의심하라")
-Vref = V[0] / 0.98          # 첫 점이 f=0.98 이므로 기준 부피를 되돌린다
+Vref = V[0] / float(sys.argv[2])   # 첫 pilot 점의 f 로 기준 부피를 되돌린다
 f = [v / Vref for v in V]
 
 # P(f) = a f^2 + b f + c  최소제곱 (정규방정식 + Cramer)
