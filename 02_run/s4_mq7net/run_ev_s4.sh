@@ -57,37 +57,95 @@ runpt() {   # $1 = f (부피비, V0 기준 아님 — V_ref = prod 구조의 부
 }
 
 # ================== 1단계: P = 0 괄호치기 ==================
-# f = 1.00 (=현재 rho 2.20), 1.03, 1.06 세 점. P300 이 양수(팽창 경향)이므로
-# 평형은 f > 1 쪽에 있다. 압축 방향은 이미 P > 0 임이 자명해 점을 아낀다.
+# f = 0.98 / 1.00 / 1.02 / 1.04 (rho 2.245 ~ 2.115). 점 하나(5분) 더 써서
+# **평형점을 양쪽에서 괄호친다** — 한쪽에만 점을 찍으면 2차 피팅이 외삽이 되고,
+# 그 위에 2단계 격자 7점(35분)을 세우므로 빗나가면 손실이 훨씬 크다.
+#
+# 예상 위치 (2026-08-24 실측 보정):
+#   S4 7net 망의 P(300 K) = +8,000 bar. 여기서 열압력을 빼야 0 K virial 이 된다.
+#   기존 7net 구조(s3_md/nvt_7net220.log)에서 같은 포텐셜·같은 밀도로 실측한 열압력은
+#     300 K NVT -2,950 bar  vs  같은 구조 0 K virial -3,654 bar  ->  +704 bar
+#     (운동항 N kB T/V = +2,740, 열 virial -2,036 의 합)
+#   -> S4 망의 0 K P ~ +7,300 bar = +0.73 GPa,  K ~ 43 GPa 이므로
+#      dV/V ~ 0.017  ->  f0 ~ 1.017,  rho0 ~ 2.163 g/cc.
+#   4점 구간(0.98~1.04)이 이를 넉넉히 포함한다.
 PILOT="ev/ev_s4_${TAG}_pilot.txt"
 echo "# scale volume(A^3) density(g/cc) PE(eV) epa(eV) press(bar) maxf(eV/A)" > "$PILOT"
 echo "=========== STAGE 1: pilot (P=0 bracketing) ==========="
-for f in 1.00 1.03 1.06; do runpt "$f" pilot >> "$PILOT"; done
+for f in 0.98 1.00 1.02 1.04; do runpt "$f" pilot >> "$PILOT"; done
 cat "$PILOT"
 
 # ================== V0 결정 + 대칭 격자 생성 ==================
 read -r F0 RHO0 KLOC < <(python3 - "$PILOT" <<'PY'
-import sys, numpy as np
-d = np.atleast_2d(np.loadtxt(sys.argv[1]))
-V, rho, P = d[:, 1], d[:, 2], d[:, 5] / 1e4        # GPa
-Vref = V[0]                                        # 첫 점(f=1.00)의 부피 = 기준
-f = V / Vref
-# P(f) 를 2차로 피팅해 P=0 근을 찾는다. 선형 외삽은 K'<0 곡률을 무시해 치우친다.
-c = np.polyfit(f, P, 2)
-roots = [r.real for r in np.roots(c) if abs(r.imag) < 1e-9 and 0.8 < r.real < 1.4]
-f0 = min(roots, key=lambda r: abs(r - 1.0)) if roots else float(np.interp(0, P[::-1], f[::-1]))
-dPdf = np.polyval(np.polyder(c), f0)               # 국소 K = -V dP/dV = -f dP/df
-print(f"{f0:.5f} {rho[0]/f0:.4f} {-f0*dPdf:.2f}")
+# ★ numpy 를 쓰지 않는다. dhl-desktop 에서 이 스크립트는 conda 를 활성화하지 않고
+#   돌 수 있고(LAMMPS 바이너리만 있으면 된다), 그때 plain python3 에 numpy 가
+#   없으면 set -e 가 여기서 죽는다 — pilot 4점(20분)을 버리고 나서.
+#   2차 최소제곱은 3x3 정규방정식이라 표준 라이브러리로 충분하다.
+import sys
+V, rho, P = [], [], []
+for line in open(sys.argv[1]):
+    if line.lstrip().startswith("#"):
+        continue
+    c = line.split()
+    if len(c) < 6:
+        continue
+    V.append(float(c[1])); rho.append(float(c[2])); P.append(float(c[5]) / 1e4)  # GPa
+if len(V) < 3:
+    sys.exit("pilot 점이 3개 미만이다 — LAMMPS 실행 실패를 의심하라")
+Vref = V[0] / 0.98          # 첫 점이 f=0.98 이므로 기준 부피를 되돌린다
+f = [v / Vref for v in V]
+
+# P(f) = a f^2 + b f + c  최소제곱 (정규방정식 + Cramer)
+S = lambda k: sum(x**k for x in f)
+T = lambda k: sum(x**k * y for x, y in zip(f, P))
+A = [[S(4), S(3), S(2)], [S(3), S(2), S(1)], [S(2), S(1), float(len(f))]]
+rhs = [T(2), T(1), T(0)]
+def det3(m):
+    return (m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])
+          - m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])
+          + m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]))
+D = det3(A)
+sol = []
+for j in range(3):
+    M = [row[:] for row in A]
+    for i in range(3):
+        M[i][j] = rhs[i]
+    sol.append(det3(M) / D)
+a, b, cc = sol
+
+# P = 0 의 근. 실근이 없거나 구간 밖이면 선형 보간으로 후퇴.
+f0 = None
+disc = b*b - 4*a*cc
+if abs(a) > 1e-12 and disc >= 0:
+    cand = [(-b + disc**0.5) / (2*a), (-b - disc**0.5) / (2*a)]
+    cand = [r for r in cand if min(f) - 0.03 <= r <= max(f) + 0.03]
+    if cand:
+        f0 = min(cand, key=lambda r: abs(r - 1.0))
+if f0 is None:
+    for i in range(len(f) - 1):
+        if P[i] * P[i+1] <= 0:
+            f0 = f[i] + (f[i+1] - f[i]) * P[i] / (P[i] - P[i+1])
+            break
+if f0 is None:
+    sys.stderr.write(
+        "!! P=0 이 pilot 구간 안에 없다. P = " + ", ".join(f"{x:+.2f}" for x in P) +
+        " GPa (f = " + ", ".join(f"{x:.3f}" for x in f) + ")\n"
+        "   구간을 옮겨 pilot 을 다시 돌려라. 2단계 격자를 외삽 위에 세우면 안 된다.\n")
+    sys.exit(1)
+
+dPdf = 2*a*f0 + b
+rho0 = rho[0] * f[0] / f0          # rho * f 는 상수 (= rho_ref)
+print(f"{f0:.5f} {rho0:.4f} {-f0*dPdf:.2f}")
 PY
 )
 echo ""
 echo "=========== V0 실측: f0 = ${F0}   rho0 = ${RHO0} g/cc   국소 K = ${KLOC} GPa ==========="
 echo "    (기존 7net 값 = BKS 위상 위: rho0 2.2185.  차이가 밀도에서의 위상 형성 효과)"
 
+# 여기도 numpy 없이 (linspace 는 한 줄이면 된다)
 GRID=$(python3 -c "
 f0=$F0; hw=$HALFWIDTH; n=$NMAIN
-import numpy as np
-print(' '.join(f'{f0*x:.4f}' for x in np.linspace(1-hw,1+hw,n)))")
+print(' '.join(f'{f0*(1-hw+2*hw*i/(n-1)):.4f}' for i in range(n)))")
 echo "=========== STAGE 2: V0 대칭 격자 (${NMAIN}점, V/V0 = $(python3 -c "print(f'{1-$HALFWIDTH:.2f}')")~$(python3 -c "print(f'{1+$HALFWIDTH:.2f}')")) ==========="
 echo "  f = $GRID"
 echo ""

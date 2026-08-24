@@ -345,17 +345,17 @@ def main():
         if m2:
             gap = m2 - net[0]["arrest"]
             dec = gap / slope
-            c.annotate("", xy=(net[0]["rate"], net[0]["arrest"]), xytext=(net[0]["rate"], m2),
+            c.annotate("", xy=(net[0]["rate"], net[0]["arrest"]+80), xytext=(net[0]["rate"], m2-30),
                        arrowprops=dict(arrowstyle="<->", lw=1.2, color="0.35"))
             # "decades" 는 10배(자릿수)라는 뜻인데 연대(年代)로 오독되기 쉽다.
             # 그림에서는 배수로 직접 쓴다.
-            c.text(net[0]["rate"] * 1.35, 0.5 * (m2 + net[0]["arrest"]),
+            c.text(net[0]["rate"] * 1.13, 0.5 * (m2 + net[0]["arrest"]),
                    f"{gap:.0f} K\n$\\equiv$ $10^{{{dec:.1f}}}\\times$ slower\n  quench rate",
                    fontsize=7.4, color="0.25", va="center", ha="left")
 
     c.set_xscale("log")
     c.tick_params(axis="x", labelsize=8.5)
-    plt.setp(c.get_xticklabels(), rotation=35, ha="right", rotation_mode="anchor")
+    #plt.setp(c.get_xticklabels(), rotation=5, ha="right", rotation_mode="anchor")
     plt.setp(c.get_xticklabels(minor=True), rotation=35, ha="right", rotation_mode="anchor")
     c.set_xlabel("Quench rate (K/s)"); c.set_ylabel("Kinetic-arrest $T_g$ (K)")
     c.set_ylim(1650, 3750)
@@ -369,7 +369,7 @@ def main():
     c.plot([], [], "*", c=NET_COL, ms=13, label=NET_LABEL)
     # 범례는 좌상단 — 좌하단/우하단은 7net 별표와 gap 화살표가 차지한다.
     c.legend(loc="upper left", fontsize=7.0, framealpha=0.92,
-             handletextpad=0.5, borderaxespad=0.3)
+             handletextpad=0.8, borderaxespad=0.9, labelspacing=0.9)
     c.set_title("Cooling-rate dependence of $T_g$", fontsize=9.5)
 
     fig.tight_layout()
