@@ -7,3 +7,16 @@ Total wall time: 0:13:47
 RELAXED relaxed_bksnet2e13.data  P = -10446.877717653138461 bar  maxf = 0.0037516499519622023388 eV/A  rho = 2.2000182292338230639
 =========== STAGE 1: pilot (P=0 bracketing) ===========
 --- bksnet2e13 pilot  f=0.96  s=0.98648483
+        40  -16927.389     -7.8367543      7264.984       31346.389      2.2916857      0.055283295  
+        60  -16927.434     -7.8367749      7187.6764      31346.389      2.2916857      0.034702048  
+--- bksnet2e13 pilot  f=0.98  s=0.99328839
+   Step         PotEng         v_epa          Press          Volume         v_dens         c_maxf    
+         0  -16924.171     -7.8352644      20519.906      31999.439      2.2449165      0.42545084   
+--- bksnet2e13 pilot  f=1.00  s=1.00000000
+  Unit style    : metal
+  Current step  : 0
+--- bksnet2e13 pilot  f=1.02  s=1.00662271
+   Step         PotEng         v_epa          Press          Volume         v_dens         c_maxf    
+         0  -16916.203     -7.8315756     -37400.817      33305.538      2.1568806      0.38322062   
+# scale volume(A^3) density(g/cc) PE(eV) epa(eV) press(bar) maxf(eV/A)
+pilot 점이 3개 미만이다 — LAMMPS 실행 실패를 의심하라

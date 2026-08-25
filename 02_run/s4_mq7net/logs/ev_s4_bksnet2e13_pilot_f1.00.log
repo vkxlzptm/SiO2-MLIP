@@ -48,122 +48,13 @@ LAMMPS (2 Aug 2023 - Update 3)
 variable        dfile index prod_7net_mq.data
 variable        tag   index 7net
 variable        s     index 1.0
+variable        cap   index 1200        # minimize eval 상한. -var cap 으로 덮어쓸 수 있다.
 
 units           metal
 boundary        p p p
 atom_style      charge
 
 read_data       ${dfile}
-read_data       prod_bks_2e13.data
+read_data       relaxed_bksnet2e13.data
 Reading data file ...
-  orthogonal box = (-0.13095199 -0.13140962 -0.15165528) to (30.269865 30.375648 35.055481)
-  1 by 1 by 1 MPI processor grid
-  reading atoms ...
-  2160 atoms
-  reading velocities ...
-  2160 velocities
-  read_data CPU = 0.024 seconds
-mass            1 15.9994
-mass            2 28.0855
-
-pair_style      e3gnn
-PairE3GNN using device : CPU
-pair_coeff      * * ../../01_input/pot/deployed_nano_4.5.pt O Si
-Chemical specie 'O' is assigned to type 1
-Chemical specie 'Si' is assigned to type 2
-from sevenn version '0.13.0' single precision model, deployed: 2026-08-10
-FlashTP: no
-OEQ: no
-
-neighbor        1.0 bin
-neigh_modify    every 1 delay 0 check yes
-
-change_box      all x scale ${s} y scale ${s} z scale ${s} remap
-change_box      all x scale 1.00000000 y scale ${s} z scale ${s} remap
-change_box      all x scale 1.00000000 y scale 1.00000000 z scale ${s} remap
-change_box      all x scale 1.00000000 y scale 1.00000000 z scale 1.00000000 remap
-Changing box ...
-  orthogonal box = (-0.13095199 -0.13140962 -0.15165528) to (30.269865 30.375648 35.055481)
-  orthogonal box = (-0.13095199 -0.13140962 -0.15165528) to (30.269865 30.375648 35.055481)
-  orthogonal box = (-0.13095199 -0.13140962 -0.15165528) to (30.269865 30.375648 35.055481)
-
-velocity        all set 0.0 0.0 0.0
-
-variable        epa  equal pe/atoms
-variable        dens equal density
-variable        fmag atom sqrt(fx*fx+fy*fy+fz*fz)
-compute         maxf all reduce max v_fmag
-
-thermo          20
-thermo_style    custom step pe v_epa press vol v_dens c_maxf
-
-min_style       cg
-min_modify      dmax 0.05
-minimize        0.0 1.0e-3 150 150
-Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
-Neighbor list info ...
-  update: every = 1 steps, delay = 0 steps, check = yes
-  max neighbors/atom: 2000, page size: 100000
-  master list distance cutoff = 5.5
-  ghost atom cutoff = 5.5
-  binsize = 2.75, bins = 12 12 13
-  1 neighbor lists, perpetual/occasional/extra = 1 0 0
-  (1) pair e3gnn, perpetual
-      attributes: full, newton on
-      pair build: full/bin/atomonly
-      stencil: full/bin/3d
-      bin: standard
-Per MPI rank memory allocation (min/avg/max) = 9.238 | 9.238 | 9.238 Mbytes
-   Step         PotEng         v_epa          Press          Volume         v_dens         c_maxf    
-         0  -16802.013     -7.7787098      36699.173      32652.488      2.2000182      5.082595     
-        20  -16923.175     -7.8348031     -12064.674      32652.488      2.2000182      1.8145343    
-        40  -16925.516     -7.8358872     -10336.842      32652.488      2.2000182      0.29160656   
-        60  -16925.824     -7.8360294     -10436.483      32652.488      2.2000182      0.13679258   
-        80  -16925.952     -7.8360889     -10534.075      32652.488      2.2000182      0.089123812  
-        81  -16925.959     -7.8360924     -10529.97       32652.488      2.2000182      0.10953991   
-Loop time of 310.157 on 6 procs for 81 steps with 2160 atoms
-
-467.9% CPU use with 1 MPI tasks x 6 OpenMP threads
-
-Minimization stats:
-  Stopping criterion = max force evaluations
-  Energy initial, next-to-last, final = 
-     -16802.0132431197  -16925.9520347873    -16925.95947816
-  Force two-norm initial, final = 81.34699 0.62582683
-  Force max component initial, final = 4.2849698 0.081210211
-  Final line search alpha, max atom move = 0.062518368 0.0050771298
-  Iterations, force evaluations = 81 151
-
-MPI task timing breakdown:
-Section |  min time  |  avg time  |  max time  |%varavg| %total
----------------------------------------------------------------
-Pair    | 310.14     | 310.14     | 310.14     |   0.0 | 99.99
-Neigh   | 0.006045   | 0.006045   | 0.006045   |   0.0 |  0.00
-Comm    | 0.003068   | 0.003068   | 0.003068   |   0.0 |  0.00
-Output  | 0.00047856 | 0.00047856 | 0.00047856 |   0.0 |  0.00
-Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.006758   |            |       |  0.00
-
-Nlocal:           2160 ave        2160 max        2160 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           3086 ave        3086 max        3086 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-Neighs:              0 ave           0 max           0 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-FullNghs:       101022 ave      101022 max      101022 min
-Histogram: 1 0 0 0 0 0 0 0 0 0
-
-Total # of neighbors = 101022
-Ave neighs/atom = 46.769444
-Neighbor list builds = 2
-Dangerous builds = 0
-
-variable        Vf equal vol
-variable        Df equal density
-variable        Ef equal pe
-variable        ef equal pe/atoms
-variable        Pf equal press
-variable        Ff equal c_maxf
-print           "EVPOINT ${s} ${Vf} ${Df} ${Ef} ${ef} ${Pf} ${Ff}"
-EVPOINT 1.00000000 32652.4882859543 2.20001822923382 -16925.95947816 -7.83609235099998 -10529.9699007389 0.109539910547885
-Total wall time: 0:05:12
+  orthogonal box = (-0

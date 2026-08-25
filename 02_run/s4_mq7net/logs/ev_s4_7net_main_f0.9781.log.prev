@@ -48,7 +48,6 @@ LAMMPS (2 Aug 2023 - Update 3)
 variable        dfile index prod_7net_mq.data
 variable        tag   index 7net
 variable        s     index 1.0
-variable        cap   index 1200        # minimize eval 상한. -var cap 으로 덮어쓸 수 있다.
 
 units           metal
 boundary        p p p
@@ -100,9 +99,7 @@ thermo_style    custom step pe v_epa press vol v_dens c_maxf
 
 min_style       cg
 min_modify      dmax 0.05
-minimize        0.0 1.0e-3 ${cap} ${cap}    # 2026-08-25: 150 -> 400 -> 가변(기본 1200).
-minimize        0.0 1.0e-3 1200 ${cap}    
-minimize        0.0 1.0e-3 1200 1200    
+minimize        0.0 1.0e-3 400 400          # 2026-08-25: 150 -> 400.
 Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
 Neighbor list info ...
   update: every = 1 steps, delay = 0 steps, check = yes
@@ -118,36 +115,36 @@ Neighbor list info ...
       bin: standard
 Per MPI rank memory allocation (min/avg/max) = 9.239 | 9.239 | 9.239 Mbytes
    Step         PotEng         v_epa          Press          Volume         v_dens         c_maxf    
-         0  -16919.996     -7.8333316      42832.029      31937.399      2.2492774      0.51916513   
-        20  -16925.798     -7.8360175      15957.97       31937.399      2.2492774      0.16848073   
-        40  -16925.917     -7.8360727      15444.737      31937.399      2.2492774      0.061538134  
-        60  -16925.947     -7.8360865      15283.849      31937.399      2.2492774      0.041077735  
-        80  -16925.957     -7.8360912      15247.933      31937.399      2.2492774      0.026119888  
-       100  -16925.96      -7.8360925      15235.232      31937.399      2.2492774      0.017264319  
-       120  -16925.961     -7.8360929      15235.881      31937.399      2.2492774      0.0064777996 
-       124  -16925.961     -7.8360929      15236.593      31937.399      2.2492774      0.0053342469 
-Loop time of 754.258 on 6 procs for 124 steps with 2160 atoms
+         0  -16919.996     -7.8333316      42832.028      31937.399      2.2492774      0.51916607   
+        20  -16925.798     -7.8360174      15957.979      31937.399      2.2492774      0.16835729   
+        40  -16925.917     -7.8360727      15444.742      31937.399      2.2492774      0.061433824  
+        60  -16925.947     -7.8360865      15283.857      31937.399      2.2492774      0.041193723  
+        80  -16925.957     -7.8360912      15247.918      31937.399      2.2492774      0.025994491  
+       100  -16925.96      -7.8360925      15235.239      31937.399      2.2492774      0.017252785  
+       120  -16925.961     -7.8360929      15236.331      31937.399      2.2492774      0.0059494379 
+       134  -16925.961     -7.836093       15234.606      31937.399      2.2492774      0.0033250489 
+Loop time of 830.242 on 6 procs for 134 steps with 2160 atoms
 
-462.7% CPU use with 1 MPI tasks x 6 OpenMP threads
+467.6% CPU use with 1 MPI tasks x 6 OpenMP threads
 
 Minimization stats:
-  Stopping criterion = linesearch alpha is zero
+  Stopping criterion = max force evaluations
   Energy initial, next-to-last, final = 
-     -16919.9963142226  -16925.9607146239  -16925.9607146239
-  Force two-norm initial, final = 10.400028 0.030164026
-  Force max component initial, final = 0.47811481 0.0043324977
-  Final line search alpha, max atom move = 7.6293945e-06 3.3054334e-08
-  Iterations, force evaluations = 124 365
+     -16919.9963142226  -16925.9608345235  -16925.9608403779
+  Force two-norm initial, final = 10.400027 0.020189264
+  Force max component initial, final = 0.47811493 0.0028653741
+  Final line search alpha, max atom move = 0.03125 8.954294e-05
+  Iterations, force evaluations = 134 404
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 754.24     | 754.24     | 754.24     |   0.0 |100.00
+Pair    | 830.22     | 830.22     | 830.22     |   0.0 |100.00
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.0071812  | 0.0071812  | 0.0071812  |   0.0 |  0.00
-Output  | 0.00073517 | 0.00073517 | 0.00073517 |   0.0 |  0.00
+Comm    | 0.0079239  | 0.0079239  | 0.0079239  |   0.0 |  0.00
+Output  | 0.00071937 | 0.00071937 | 0.00071937 |   0.0 |  0.00
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.01411    |            |       |  0.00
+Other   |            | 0.01553    |            |       |  0.00
 
 Nlocal:           2160 ave        2160 max        2160 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
@@ -165,18 +162,6 @@ Dangerous builds = 0
 #   ev220 도 150 으로 창 끝(f=0.94)에서 cap 에 걸렸다(2-norm 0.395). 이완된 구조에서
 #   출발해도 큰 변형 점은 150 이 모자란다. 보통은 그 전에 "linesearch alpha is zero"
 #   로 조기 종료하므로 실제 추가 비용은 창 끝 몇 점뿐이다.
-#
-# ★ 2026-08-25 (2차 진단). **ftol = 1.0e-3 은 이 시스템에서 도달 불가능한 값이다.**
-#   400-cap 실행에서 정상 종료("linesearch alpha is zero")한 9 점의 최종 전역 힘
-#   2-norm 이 0.016 ~ 0.035 eV/A 였다 — ftol 보다 20~35 배 크다. 즉 CG 는 ftol 을
-#   만족해서 멈춘 적이 한 번도 없고, 항상 **수치 잡음 바닥에 닿아** 라인서치가
-#   죽으면서 멈췄다. 2160 원자 MLIP 힘의 바닥이 거기다.
-#   -> 따라서 "수렴했다"의 실질 판정선은 ftol 이 아니라
-#      **(a) 종료 사유 = linesearch alpha is zero  AND
-#        (b) 최종 2-norm 이 0.02~0.035 잡음 바닥 대역 안** 이다.
-#      cap 을 올리는 것은 (a) 를 확보하기 위한 조치이지 ftol 을 맞추려는 게 아니다.
-#      ftol 을 잡음 바닥 위로 올리는 것은 하지 않는다 — 그러면 점마다 다른 깊이에서
-#      멈춰 P(V) 곡률이 다시 계통적으로 휜다(분석 12 와 같은 실패).
 
 variable        Vf equal vol
 variable        Df equal density
@@ -185,5 +170,5 @@ variable        ef equal pe/atoms
 variable        Pf equal press
 variable        Ff equal c_maxf
 print           "EVPOINT ${s} ${Vf} ${Df} ${Ef} ${ef} ${Pf} ${Ff}"
-EVPOINT 0.99264605 31937.3985977499 2.24927741810519 -16925.9607146239 -7.83609292343701 15236.5928580605 0.00533424691466155
-Total wall time: 0:12:36
+EVPOINT 0.99264605 31937.3985977499 2.24927741810519 -16925.9608403779 -7.83609298165646 15234.6061958409 0.0033250489158213
+Total wall time: 0:13:52
