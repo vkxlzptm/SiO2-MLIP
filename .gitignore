@@ -41,3 +41,7 @@ init_struct/
 .*.swp
 .*.swo
 *~
+
+# --- 이 환경(Cowork 샌드박스)이 삭제 권한이 없어 옮겨두는 자리 ---
+# device_bash 는 unlink 를 못 한다. 지울 파일은 여기로 옮기고 사용자가 지운다.
+_to_delete/
