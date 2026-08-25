@@ -1,1 +1,9 @@
-이미 실행 중이다. 중복 실행 차단.
+=========== STAGE 0: 0 K relax -> relaxed_bksnet2e13.data (약 13분) ===========
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+RELAXED relaxed_bksnet2e13.data  P = -10446.877717653138461 bar  maxf = 0.0037516499519622023388 eV/A  rho = 2.2000182292338230639
+Total wall time: 0:13:47
+  Stopping criterion = max force evaluations
+  Force two-norm initial, final = 81.346989 0.023925277
+RELAXED relaxed_bksnet2e13.data  P = -10446.877717653138461 bar  maxf = 0.0037516499519622023388 eV/A  rho = 2.2000182292338230639
+=========== STAGE 1: pilot (P=0 bracketing) ===========
+--- bksnet2e13 pilot  f=0.96  s=0.98648483

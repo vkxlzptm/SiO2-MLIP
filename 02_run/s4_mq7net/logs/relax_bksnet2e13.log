@@ -1,0 +1,138 @@
+LAMMPS (2 Aug 2023 - Update 3)
+  using 6 OpenMP thread(s) per MPI task
+# S4-EV 0단계  0 K 이완 — E-V 스캔의 **출발 구조**를 만든다.
+#
+# ★ 왜 이 파일이 뒤늦게 생겼나 (2026-08-25, 프로토콜 오류 정정)
+#   기존 7net E-V 는 2단계였다:
+#     in.relax220 : 300 K 스냅샷 -> minimize 400 eval -> relaxed220.data
+#                   (종료 "linesearch alpha is zero", force 2-norm 0.024, 13분)
+#     in.ev220    : **이미 이완된** relaxed220.data 를 읽어 부피만 바꿔 150 eval
+#   즉 150 eval 은 '최소점 근처를 살짝 미는' 용도였다.
+#
+#   그런데 in.ev_s4 는 in.ev220 의 minimize 설정만 베끼고 **그 전제를 안 지켰다** —
+#   prod_*.data(300 K MD 스냅샷)를 직접 읽어 150 eval 을 줬다. 그 결과
+#   **S4 스캔 14개 점이 전부 "max force evaluations" 로 잘렸다.**
+#   덜 이완된 배치에서 읽은 virial P 로 BM3 를 피팅한 셈이고, 특히 곡률(K0')이
+#   부피마다 다른 이완 잔차에 오염된다.
+#
+#   -> 옛 프로토콜과 **똑같이** 0단계를 복원한다. 이 파일이 그 0단계다.
+#
+# 인자: -var dfile <300K 스냅샷>  -var out <출력 구조>
+# 비용: 400 eval 상한, 실측 기준 약 13분 (7net, 2160원자)
+# 실행: run_ev_s4.sh 가 자동으로 먼저 부른다
+
+variable        dfile index prod_7net_mq.data
+variable        out   index relaxed_7net_mq.data
+
+units           metal
+boundary        p p p
+atom_style      charge
+
+read_data       ${dfile}
+read_data       prod_bks_2e13.data
+Reading data file ...
+  orthogonal box = (-0.13095199 -0.13140962 -0.15165528) to (30.269865 30.375648 35.055481)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  2160 atoms
+  reading velocities ...
+  2160 velocities
+  read_data CPU = 0.008 seconds
+mass            1 15.9994
+mass            2 28.0855
+
+pair_style      e3gnn
+PairE3GNN using device : CPU
+pair_coeff      * * ../../01_input/pot/deployed_nano_4.5.pt O Si
+Chemical specie 'O' is assigned to type 1
+Chemical specie 'Si' is assigned to type 2
+from sevenn version '0.13.0' single precision model, deployed: 2026-08-10
+FlashTP: no
+OEQ: no
+
+neighbor        1.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+velocity        all set 0.0 0.0 0.0        # Press 를 순수 virial 로 (RESULTS 8절 교훈 3)
+
+variable        epa  equal pe/atoms
+variable        dens equal density
+variable        fmag atom sqrt(fx*fx+fy*fy+fz*fz)
+compute         maxf all reduce max v_fmag
+
+thermo          20
+thermo_style    custom step pe v_epa press vol v_dens c_maxf
+
+min_style       cg
+min_modify      dmax 0.05
+minimize        0.0 1.0e-3 400 400          # in.relax220 과 동일 설정
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 5.5
+  ghost atom cutoff = 5.5
+  binsize = 2.75, bins = 12 12 13
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair e3gnn, perpetual
+      attributes: full, newton on
+      pair build: full/bin/atomonly
+      stencil: full/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 9.238 | 9.238 | 9.238 Mbytes
+   Step         PotEng         v_epa          Press          Volume         v_dens         c_maxf    
+         0  -16802.013     -7.7787098      36699.171      32652.488      2.2000182      5.0825949    
+        20  -16923.175     -7.8348031     -12064.881      32652.488      2.2000182      1.814626     
+        40  -16925.516     -7.8358872     -10336.633      32652.488      2.2000182      0.29022321   
+        60  -16925.824     -7.8360295     -10436.503      32652.488      2.2000182      0.14085399   
+        80  -16925.952     -7.8360889     -10534.058      32652.488      2.2000182      0.09150905   
+       100  -16926.045     -7.8361318     -10426.844      32652.488      2.2000182      0.067248285  
+       120  -16926.077     -7.8361465     -10419.633      32652.488      2.2000182      0.042522203  
+       140  -16926.086     -7.8361512     -10443.255      32652.488      2.2000182      0.022698337  
+       160  -16926.089     -7.8361523     -10440.763      32652.488      2.2000182      0.013315477  
+       180  -16926.09      -7.8361527     -10444.861      32652.488      2.2000182      0.0051133485 
+       188  -16926.09      -7.8361528     -10446.878      32652.488      2.2000182      0.00375165   
+Loop time of 825.396 on 6 procs for 188 steps with 2160 atoms
+
+466.9% CPU use with 1 MPI tasks x 6 OpenMP threads
+
+Minimization stats:
+  Stopping criterion = max force evaluations
+  Energy initial, next-to-last, final = 
+     -16802.0132431197   -16926.089958832  -16926.0899756929
+  Force two-norm initial, final = 81.346989 0.023925277
+  Force max component initial, final = 4.2849693 0.0036881221
+  Final line search alpha, max atom move = 0.5 0.0018440611
+  Iterations, force evaluations = 188 403
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 825.36     | 825.36     | 825.36     |   0.0 |100.00
+Neigh   | 0.0090495  | 0.0090495  | 0.0090495  |   0.0 |  0.00
+Comm    | 0.0081075  | 0.0081075  | 0.0081075  |   0.0 |  0.00
+Output  | 0.0010912  | 0.0010912  | 0.0010912  |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.01708    |            |       |  0.00
+
+Nlocal:           2160 ave        2160 max        2160 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           3076 ave        3076 max        3076 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:              0 ave           0 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:       100994 ave      100994 max      100994 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 100994
+Ave neighs/atom = 46.756481
+Neighbor list builds = 3
+Dangerous builds = 0
+
+write_data      ${out}
+write_data      relaxed_bksnet2e13.data
+System init for write_data ...
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+print           "RELAXED ${out}  P = $(press) bar  maxf = $(c_maxf) eV/A  rho = $(density)"
+RELAXED relaxed_bksnet2e13.data  P = -10446.877717653138461 bar  maxf = 0.0037516499519622023388 eV/A  rho = 2.2000182292338230639
+Total wall time: 0:13:47
