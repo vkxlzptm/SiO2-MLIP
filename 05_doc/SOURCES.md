@@ -170,7 +170,7 @@ Sundararaman / Zeidler) 어디에도 `36.7`이 없다. 웹 검색으로도 이 �
 - `PPT_BRIEF.md` §5 표 갱신
 
 재생성 후 스크립트 출력: BKS 45.33 (**+22.5 %**), 7net 43.92 (**+18.7 %**), K₀ 43.23 (**+16.8 %**),
-BKS K₀ 34.33 (**−7.2 %**). `fig_bulkmod.png`의 `both ≈ +20 % vs K_exp` 주석은 그대로 유효하다.
+BKS K₀ 34.33 (**−7.2 %**). `fig_bulkmod2.png`의 `both ≈ +20 % vs K_exp` 주석은 그대로 유효하다.
 
 ---
 

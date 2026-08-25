@@ -92,7 +92,7 @@ fig, ax = plt.subplots(figsize=(5.0, 4.0))
 ax.axvline(RHO_EXP, ls="--", lw=1.2, c="0.35", alpha=0.9, zorder=1)
 # 세로 라벨은 표·곡선과 계속 부딪힌다. 2.20 은 x 눈금과 정확히 겹치므로
 # 상단 빈 구역에 가로로 한 번만 적는다.
-ax.text(RHO_EXP + 0.004, 49.8, rf"$\rho_{{\rm exp}}$",
+ax.text(RHO_EXP + 0.006, 49.6, rf"$\rho_{{\rm exp}}$",
         fontsize=9, c="0.3", ha="left", va="top", zorder=8)
 
 # ---- (1) BKS 곡선 — 맥락용 ----
@@ -167,8 +167,8 @@ ax.text(RHO_EXP - 0.007, 0.5 * (ktop + kown),
 #              -> 상자를 옮기면 열도 같이 따라온다 (예전엔 절대값이라 따로 고쳐야 했다)
 #              lab 만 왼쪽정렬, 나머지는 오른쪽정렬(숫자 자릿수 맞추려고)
 TABLE = dict(
-    x=0.025, y=0.075, w=0.800, fs=6.8, row_dy=0.045, pad=0.030,
-    cols=dict(lab=0.017, rate=0.305, r0=0.455, k0=0.575, kx=0.760),
+    x=0.015, y=0.015, w=0.70, fs=7.2, row_dy=0.05, pad=0.025,
+    cols=dict(lab=0.020, rate=0.31, r0=0.40, k0=0.49, kx=0.68),
 )
 # ※ 열 간격은 figsize 에 딸려 온다. 그림 크기를 바꾸면(현재 5.0x4.0)
 #   axes 분율은 그대로인데 글자는 pt 단위라 상대적으로 커져 열이 붙는다.
@@ -199,7 +199,7 @@ for i, (lab, rate, key, col, wt) in enumerate(ROWS):
             ha="left", va="center", color="0.15", fontweight=wt, zorder=11)
     ax.text(CX["rate"], y, rate, transform=ax.transAxes, fontsize=FS,
             ha="right", va="center", color="0.45", fontweight=wt, zorder=11)
-    ax.text(CX["r0"], y, f"{v['rho0']:.3f}", transform=ax.transAxes, fontsize=FS,
+    ax.text(CX["r0"], y, f"{v['rho0']:.2f}", transform=ax.transAxes, fontsize=FS,
             ha="right", va="center", color=col, fontweight=wt, zorder=11)
     ax.text(CX["k0"], y, f"{v['K0']:.1f}", transform=ax.transAxes, fontsize=FS,
             ha="right", va="center", color=col, fontweight=wt, zorder=11)
@@ -210,7 +210,7 @@ for i, (lab, rate, key, col, wt) in enumerate(ROWS):
 # 냉각률 효과는 표의 두 5e12/2e13 행이 직접 보여준다.
 ax.set_xlabel(r"$\rho$ (g/cm$^3$)")
 ax.set_ylabel(r"$K = -V\,\mathrm{d}P/\mathrm{d}V$  (GPa)")
-ax.set_xlim(2.02, 2.46)
+ax.set_xlim(2.02, 2.47)
 ax.set_ylim(21, 50)
 ax.xaxis.set_minor_locator(AutoMinorLocator(2))
 ax.yaxis.set_minor_locator(AutoMinorLocator(2))
@@ -232,8 +232,8 @@ ax.legend(h, l, loc="upper right", framealpha=0.94, fontsize=7.6,
           handlelength=1.9, borderpad=0.45, labelspacing=0.45)
 ax.set_title("Who built the network sets the elastic error", fontsize=11)
 fig.tight_layout()
-fig.savefig(FIG / "fig_bulkmod.png", dpi=300)
-print(f"-> {FIG}/fig_bulkmod.png\n")
+fig.savefig(FIG / "fig_bulkmod2.png", dpi=300)
+print(f"-> {FIG}/fig_bulkmod2.png\n")
 
 print(f"{'구조':<24}{'rho0':>9}{'K0':>8}{'K@2.20':>9}{'vs exp':>9}")
 for lab, rate, key, *_ in ROWS:
