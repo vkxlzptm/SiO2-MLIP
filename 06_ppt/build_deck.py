@@ -237,7 +237,7 @@ footnote(s, "[4] Zeidler, PRL 113, 135501 (2014). FSDP = first sharp diffraction
 s = add()
 title_of(s, "밀도 · 부피탄성률 — 비교 조건의 영향")
 s.shapes.add_picture(FIG("fig_density.png"), In(1.65), In(TOP), In(6.31), In(2.75))
-s.shapes.add_picture(FIG("fig_bulkmod.png"), In(8.31), In(TOP), In(3.36), In(2.75))
+s.shapes.add_picture(FIG("fig_bulkmod2.png"), In(8.31), In(TOP), In(3.36), In(2.75))
 caption(s, "좌: E–V / virial P–V → ρ₀ · K₀          우: 동일 밀도에서 읽은 K(ρ)          [exp.: [5][7]]",
         1.65, 4.02, 10.02)
 bullets(s, [

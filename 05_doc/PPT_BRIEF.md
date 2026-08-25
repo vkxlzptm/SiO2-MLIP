@@ -191,13 +191,13 @@ Si–O 결합이 늘어나는 건 PBE underbinding으로 설명되지만 K₀는
 | `fig_rings.png` | ring 통계 — **실험 계열 없음** (§10-8) | 3 |
 | `fig_sq.png` | 중성자 S(q) + FSDP 확대 | 3 |
 | `fig_density.png` | E–V / P–V, 평형 밀도 | 4 |
-| `fig_bulkmod.png` | K(ρ) — **K₀ 함정의 핵심 그림** | 4 |
+| `fig_bulkmod2.png` | K(ρ) — **K₀ 함정의 핵심 그림** | 4 |
 | `fig_speed_vert.png` | 속도 · 병렬 확장성 (세로 2단) | 5 |
 | `fig_alpha_schematic.png` | 열팽창계수 개념도 — **데이터 아님, schematic** | 6 |
 
 (슬라이드 번호는 `06_ppt/SiO2_MLIP_SevenNet_pilot_v10.pptx` 기준. 7p.는 부록 표.)
 
-**사용자가 `fig_density.png`, `fig_bulkmod.png`, `fig_sq.py`의 범위·라벨 위치를 직접
+**사용자가 `fig_density.png`, `fig_bulkmod2.png`, `fig_sq.py`의 범위·라벨 위치를 직접
 손으로 다듬어 놓았다. 요청 없이 재생성하거나 스타일을 바꾸지 말 것.**
 
 ---

@@ -34,7 +34,7 @@ Sarnthein(LDA). MLIP 벤치마크 관행은 `05_doc/S3_MLIP_benchmark_practice.m
 
 ---
 
-## 2. 밀도와 부피탄성률  → `fig_density.png`, `fig_bulkmod.png`
+## 2. 밀도와 부피탄성률  → `fig_density.png`, `fig_bulkmod2.png`
 
 BKS가 ρ=2.20 고정 NVT로 만든 **하나의** 네트워크를 두 포텐셜에 각각 넘겨
 "어느 부피를 원하냐"고 물었다. 부피별 셀 고정 + 원자만 0 K 이완, 7점 E–V 스캔.
@@ -57,7 +57,7 @@ BKS가 ρ=2.20 고정 NVT로 만든 **하나의** 네트워크를 두 포텐셜�
 0.17 % 차이 → 열팽창 무시 가능. tail off 조합에서도 같은 수준(0.14 %)이었으므로
 관례가 바뀌어도 내부 정합은 유지된다.
 
-### ★ K₀ 비교의 함정 — 같은 밀도에서 보면 두 포텐셜이 겹친다  → `fig_bulkmod.png`
+### ★ K₀ 비교의 함정 — 같은 밀도에서 보면 두 포텐셜이 겹친다  → `fig_bulkmod2.png`
 
 K₀는 **정의상 P=0인 부피에서의 값**이고, 각자의 평형에서 읽는 게 표준이다.
 문제는 **방법을 비교할 때 V₀의 오차와 K(V)의 오차가 섞인다**는 점이다.
@@ -563,7 +563,7 @@ RMS 0.03→7.8). 잘린 q 데이터의 h(r)은 리플이 안 죽어서, r 창은
 | `fig_pdf.png` | partial g(r) 3단 (Si–O inset — 세로 점선은 제1피크 위치) | `src/fig_pdf.py` |
 | `fig_bad.png` | O–Si–O / Si–O–Si 결합각 분포 | `src/fig_bad.py` |
 | `fig_density.png` | BKS·7net E–V + BM3, virial P(V) → ρ₀·K₀ | `src/fig_density.py` |
-| `fig_bulkmod.png` | K(ρ) — 같은 밀도에서 두 포텐셜이 겹침 | `src/fig_bulkmod.py` |
+| `fig_bulkmod2.png` | K(ρ) — 같은 밀도에서 두 포텐셜이 겹침 | `src/fig_bulkmod.py` |
 | `fig_sq.png` | 중성자 S(q) — 실험 대비 FSDP 위치·진폭 | `src/fig_sq.py` |
 | `fig_speed.png` | 처리량 ×1,244 + 병렬 확장성 | `src/fig_speed.py` |
 | `fig_rings.png` | ring size 분포 | `src/fig_rings.py` |

@@ -92,7 +92,7 @@ fig, ax = plt.subplots(figsize=(5.0, 4.0))
 ax.axvline(RHO_EXP, ls="--", lw=1.2, c="0.35", alpha=0.9, zorder=1)
 # 세로 라벨은 표·곡선과 계속 부딪힌다. 2.20 은 x 눈금과 정확히 겹치므로
 # 상단 빈 구역에 가로로 한 번만 적는다.
-ax.text(RHO_EXP + 0.006, 49.6, rf"$\rho_{{\rm exp}}$",
+ax.text(RHO_EXP + 0.004, 49.8, rf"$\rho_{{\rm exp}}$",
         fontsize=9, c="0.3", ha="left", va="top", zorder=8)
 
 # ---- (1) BKS 곡선 — 맥락용 ----
@@ -126,8 +126,7 @@ rr = np.linspace(v["rlo"], v["rhi"], 400)
 ax.plot(rr, K_of_rho(*v["pf"], rr), "-", c=NET_COL, lw=1.5, zorder=3)
 ax.plot(MASS / v["V"], K_of_rho(*v["pf"], MASS / v["V"]), "o", ms=4.0,
         mfc="w", mec=NET_COL, mew=1.2, zorder=4)
-# ---- (3) 7net on its OWN network — 이 그림의 주인공 ----
-v = F["net_own"]
+# ---- (3) 7net on its OWN network — 이 그림의 주인공 ----v = F["net_own"]
 rr = np.linspace(v["rlo"], v["rhi"], 400)
 ax.plot(rr, K_of_rho(*v["pf"], rr), "-", c=NET_COL, lw=2.6, zorder=5)
 ax.plot(MASS / v["V"], K_of_rho(*v["pf"], MASS / v["V"]), "D", ms=4.2,
@@ -155,51 +154,32 @@ ax.text(RHO_EXP - 0.007, 0.5 * (ktop + kown),
         fontsize=7.5, ha="right", va="center", color=NET_COL, linespacing=1.35,
         bbox=dict(fc="white", ec="none", alpha=0.85, pad=1.5), zorder=9)
 
-# ---- 표 ---------------------------------------------------------------
-# ★ 표 위치·크기를 만질 때는 **아래 TABLE 딕셔너리만** 고치면 된다.
-#   좌표는 전부 axes 분율(왼쪽아래 0,0 ~ 오른쪽위 1,1). 데이터 값이 아니다.
-#     x, y   : 상자의 **왼쪽아래 모서리**
-#     w      : 상자 폭.  높이 h 는 행 수에서 자동 계산된다(아래).
-#     fs     : 글자 크기
-#     row_dy : 행 간격.  키우면 상자도 같이 커진다
-#     pad    : 상자 안쪽 위/아래 여백
-#     cols   : 각 열의 x 위치를 **상자 왼쪽(x) 기준 상대값**으로 준다.
-#              -> 상자를 옮기면 열도 같이 따라온다 (예전엔 절대값이라 따로 고쳐야 했다)
-#              lab 만 왼쪽정렬, 나머지는 오른쪽정렬(숫자 자릿수 맞추려고)
-TABLE = dict(
-    x=0.015, y=0.015, w=0.70, fs=7.2, row_dy=0.05, pad=0.025,
-    cols=dict(lab=0.020, rate=0.31, r0=0.40, k0=0.49, kx=0.68),
-)
-# ※ 열 간격은 figsize 에 딸려 온다. 그림 크기를 바꾸면(현재 5.0x4.0)
-#   axes 분율은 그대로인데 글자는 pt 단위라 상대적으로 커져 열이 붙는다.
-#   -> figsize 를 줄이면 w 를 늘리거나 fs 를 줄일 것.
-
+# ---- 표 ----
+BOX = dict(x=0.025, y=0.098, w=0.660, h=0.232)   # 3행 기준 (4행이면 y=0.028, h=0.300)
+ax.add_patch(Rectangle((BOX["x"], BOX["y"]), BOX["w"], BOX["h"],
+                       transform=ax.transAxes, fc="white", ec="0.75", lw=0.7,
+                       alpha=0.96, zorder=10))
+FS = 7.1
+CX = dict(lab=0.042, rate=0.310, r0=0.425, k0=0.520, kx=0.672)
+ax.text(CX["rate"], 0.293, "quench", transform=ax.transAxes, fontsize=FS,
+        ha="right", va="center", color="0.35", zorder=11)
+ax.text(CX["r0"], 0.293, r"$\rho_0$", transform=ax.transAxes, fontsize=FS,
+        ha="right", va="center", color="0.35", zorder=11)
+ax.text(CX["k0"], 0.293, r"$K_0$", transform=ax.transAxes, fontsize=FS,
+        ha="right", va="center", color="0.35", zorder=11)
+ax.text(CX["kx"], 0.293, rf"$K$ @ {RHO_EXP:.2f}", transform=ax.transAxes, fontsize=FS,
+        ha="right", va="center", color="0.35", zorder=11)
 ROWS = [("BKS / BKS net", "5e12", "bks", BKS_COL, "normal"),
         ("7net / BKS net", "5e12", "net_bks1", NET_COL, "normal"),
         ("7net / OWN net", "2e13", "net_own", NET_COL, "bold")]
-
-# 높이·행 y 는 행 수에서 자동으로 나온다 (행을 늘리거나 줄여도 상자가 따라간다)
-T = TABLE
-_h = 2 * T["pad"] + (len(ROWS) + 1) * T["row_dy"]        # 헤더 1줄 + 데이터 행
-_hdr_y = T["y"] + _h - T["pad"] - 0.5 * T["row_dy"]
-CX = {k: T["x"] + dx for k, dx in T["cols"].items()}
-
-ax.add_patch(Rectangle((T["x"], T["y"]), T["w"], _h,
-                       transform=ax.transAxes, fc="white", ec="0.75", lw=0.7,
-                       alpha=0.96, zorder=10))
-FS = T["fs"]
-for key, lab in (("rate", "quench"), ("r0", r"$\rho_0$"), ("k0", r"$K_0$"),
-                 ("kx", rf"$K$ @ {RHO_EXP:.2f}")):
-    ax.text(CX[key], _hdr_y, lab, transform=ax.transAxes, fontsize=FS,
-            ha="right", va="center", color="0.35", zorder=11)
 for i, (lab, rate, key, col, wt) in enumerate(ROWS):
-    y = _hdr_y - T["row_dy"] * (i + 1)
+    y = 0.245 - 0.042 * i
     v = F[key]
     ax.text(CX["lab"], y, lab, transform=ax.transAxes, fontsize=FS,
             ha="left", va="center", color="0.15", fontweight=wt, zorder=11)
     ax.text(CX["rate"], y, rate, transform=ax.transAxes, fontsize=FS,
             ha="right", va="center", color="0.45", fontweight=wt, zorder=11)
-    ax.text(CX["r0"], y, f"{v['rho0']:.2f}", transform=ax.transAxes, fontsize=FS,
+    ax.text(CX["r0"], y, f"{v['rho0']:.3f}", transform=ax.transAxes, fontsize=FS,
             ha="right", va="center", color=col, fontweight=wt, zorder=11)
     ax.text(CX["k0"], y, f"{v['K0']:.1f}", transform=ax.transAxes, fontsize=FS,
             ha="right", va="center", color=col, fontweight=wt, zorder=11)
@@ -207,10 +187,10 @@ for i, (lab, rate, key, col, wt) in enumerate(ROWS):
             transform=ax.transAxes, fontsize=FS,
             ha="right", va="center", color=col, fontweight=wt, zorder=11)
 
-# 냉각률 효과는 표의 두 5e12/2e13 행이 직접 보여준다.
+# 냉각률 효과는 이제 표의 두 행(5e12 / 2e13)이 직접 보여준다 — 각주 삭제.
 ax.set_xlabel(r"$\rho$ (g/cm$^3$)")
 ax.set_ylabel(r"$K = -V\,\mathrm{d}P/\mathrm{d}V$  (GPa)")
-ax.set_xlim(2.02, 2.47)
+ax.set_xlim(2.02, 2.46)
 ax.set_ylim(21, 50)
 ax.xaxis.set_minor_locator(AutoMinorLocator(2))
 ax.yaxis.set_minor_locator(AutoMinorLocator(2))
@@ -232,8 +212,8 @@ ax.legend(h, l, loc="upper right", framealpha=0.94, fontsize=7.6,
           handlelength=1.9, borderpad=0.45, labelspacing=0.45)
 ax.set_title("Who built the network sets the elastic error", fontsize=11)
 fig.tight_layout()
-fig.savefig(FIG / "fig_bulkmod2.png", dpi=300)
-print(f"-> {FIG}/fig_bulkmod2.png\n")
+fig.savefig(FIG / "fig_bulkmod.png", dpi=300)
+print(f"-> {FIG}/fig_bulkmod.png\n")
 
 print(f"{'구조':<24}{'rho0':>9}{'K0':>8}{'K@2.20':>9}{'vs exp':>9}")
 for lab, rate, key, *_ in ROWS:
