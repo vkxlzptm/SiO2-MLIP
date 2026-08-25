@@ -1,10 +1,12 @@
 # 새 채팅 시작 프롬프트 — S4 (7net 자체 melt-quench)
 
-> **2026-08-24 (3차 갱신).** S4 본런 + BKS 확장 스윕 완료. ring 해석 완료
-> (`fig_rings_s4.png`), P300 부호 반전 검증 완료, Tg 에 **시드 오차막대가 처음 생김**.
-> 해석 근거는 전부 `NOTE.md` 의 "S4 분석 1~4" 절에 있다.
-> **미결 2개**: (a) ring 반복 2개 재실행(12분) — 스윕이 패치 전 스크립트로 돌아 구조가
-> 안 남았다. (b) `run_ev_s4.sh` 미실행 (2단계 대칭 격자로 재설계됨).
+> **2026-08-25 (4차 갱신).** Ring/Tg/P300/각도 메커니즘 해석 **확정**.
+> `fig_rings_s4.png` 단일 패널로 재설계 완료. E-V 분해(K@2.20, [A]/[B])는
+> **잠정** — 스캔 14점 전부 LAMMPS minimize 미수렴으로 밝혀져 수정판 재실행 대기 중,
+> **재실행 자체가 아직 시작 안 됨(최우선 미결)**. `fig_bulkmod2.png`도 같은 버그
+> 데이터로 그려진 잠정 그림. 로컬(Mac 샌드박스)에 커밋 안 된 변경 다수 — sync 필요.
+> 해석 근거는 전부 `NOTE.md` 의 "S4 분석 1~14" 절에 있다. project memory
+> (`s4_ring_and_pressure.md`, `feedback_workflow.md`)에도 확정/잠정 구분과 규칙이 있다.
 
 ---
 
@@ -21,9 +23,12 @@ SiO2-MLIP 프로젝트, S4 단계(7net 자체 melt-quench)를 이어간다. 폴�
    docstring에 방법론·비교 설계·오차 처리 근거가 다 들어 있다
 
 **바로 이어서 할 일** (아래 "남은 작업" 순서대로):
-1. `traj_analyze.py` 를 S4 궤적 쌍에 실행 (dhl-desktop) — 3-ring 초과의 독립 확인
-2. `sq_direct.py` 로 S(q)/FSDP — RESULTS 4절이 남긴 질문에 직접 답한다
-3. `fig_bulkmod.py` 에 자기망 곡선 추가 · `RESULTS.md` 갱신
+1. **[최우선] E-V 재실행** (dhl-desktop, LAMMPS 있는 쪽). 수정은 이미 끝났고 실행만
+   안 됨 — "남은 작업" 1번의 명령 그대로 붙여넣으면 된다.
+2. 재실행 끝나면 `ev_s4_summary.py`/`bm3.py` 재피팅 → `fig_bulkmod2.png` 갱신
+3. `traj_analyze.py` 를 S4 궤적 쌍에 실행 (dhl-desktop) — 3-ring 초과의 독립 확인
+4. `sq_direct.py` 로 S(q)/FSDP — RESULTS 4절이 남긴 질문에 직접 답한다
+5. `RESULTS.md` 갱신 (2절 "K0 함정" 서사가 옛 2곡선 그림 기준이라 지금과 안 맞음)
 
 ---
 
@@ -63,7 +68,7 @@ melt-quench가 필요했다.
 | BKS 5×10¹² K/s | 통제런 | ✅ 완료 |
 | BKS 5×10¹³ K/s | 통제런 | ✅ 완료 |
 | BKS 확장 스윕 (1e12/2e12/1e13/1e14/2e14 + 2e13 반복 2개) | `run_bks_sweep.sh` | ✅ 완료 — 단 **패치 전 스크립트로 돌아 `prod_bks_*.data` 가 없다** |
-| 0 K E-V 스캔 ×3 (7net 자기망 / 7net·BKS망2e13 / BKS·BKS망2e13) | `run_ev_s4.sh`, `run_ev_bks_s4.sh` | ✅ 완료 |
+| 0 K E-V 스캔 ×3 (7net 자기망 / 7net·BKS망2e13 / BKS·BKS망2e13) | `run_ev_s4.sh`, `run_ev_bks_s4.sh` | ⚠️ **1회차 완료했으나 전점 미수렴** (max force evaluations) — 아래 "핵심 결과 5" 참고. 수정판(`in.relax_s4` 추가) 작성 완료, **재실행 미착수** |
 
 ## 핵심 결과 1 — Tg (`fig_tg_s4.png`, `tg_s4_summary.dat`) — **스윕 반영 완료**
 
@@ -157,7 +162,8 @@ BKS 220 런(seed 77213, 200 ps 용융, 5e12 K/s)을 넣었다 — 같은 냉각�
 
 ⚠ **기존 `fig_rings.png`(06_ppt 덱 3페이지)와 헷갈리지 말 것**: 그건 "7net 이 BKS 가 만든
 위상을 그대로 물려받는다"는 **다른 실험**이다. 같은 그림에 섞지 말고, 대비시키려면
-나란히 놓아라 (fig_rings_s4.png 패널 (c) 가 s0 점에 화살표로 그 대비를 표시해 둔다).
+나란히 놓아라. (2026-08-25: fig_rings_s4.png 는 3패널 → fig_rings.png 와 같은 형식의
+단일 패널로 단순화됨 — NOTE.md "S4 분석 14" 참고.)
 
 ## 핵심 결과 3 — P300 부호 반전은 **미평형이 아니다** (추가 계산 없이 결론)
 
@@ -179,7 +185,26 @@ BKS 220 런(seed 77213, 200 ps 용융, 5e12 K/s)을 넣었다 — 같은 냉각�
 ρ₀ = 2.2185 / K₀ = 43.2 가 정확히 그 방법으로 나온 값**이라 같은 자로 뺄셈이 된다.
 → `in.ev_s4`, `run_ev_s4.sh` (작성 완료, 미실행). 근거는 NOTE.md "S4 분석 2".
 
-## 핵심 결과 4 — E-V: 탄성률 오차의 주범은 **망 위상 생성자**였다 (2026-08-25)
+## 핵심 결과 4 — Si–O–Si 각도: 3-ring 은 원인이 아니라 증상이다 (분석 13, 확정)
+
+`ring_angle_s4.py` (`prod_*.data` 스냅샷 기반, 트라젝토리 평균과 0.15° 이내 일치 —
+검증됨. E-V 재계산과 무관하게 확정).
+
+- 3원환 산소는 **모든 구조에서** 비3원환보다 18~20° 좁다 (기하학적 강제, 정량 확인).
+- 그런데 7net 자기망의 전체 각도 이동(−10.48°, vs BKS 2e13) 중 **3-ring 비율 증가로
+  설명되는 몫은 11%뿐**. 89%는 비3원환 산소 자체가 전역적으로 좁아진 것.
+- 사다리: BKS 151.9° → 7net(BKS망) 145.2° → 7net(자기망) **140.7°** → AIMD 138.65°.
+- ⚠ **결론 수정**: "3원환이 많아서 망이 변형되고 그래서 무르다"는 사슬은 데이터가
+  지지하지 않는다. 방어 가능한 문장: *"7net 자기 망은 Si–O–Si 가 전역적으로 좁고,
+  3-ring 초과는 그 전역 변화가 고리 통계에 드러난 한 단면이다."*
+- 분석 9(3-ring↔K 상관)도 재검토 대상 — 매개변수가 3-ring 이 아니라 전역 각일 가능성.
+  E-V 재실행 후 **K vs 평균 Si–O–Si 각**으로도 그려볼 것.
+
+## 핵심 결과 5 — E-V: 탄성률 오차의 주범은 **망 위상 생성자**였다 (2026-08-25) — ⚠ 잠정
+
+**⚠ 아래 수치는 LAMMPS minimize 가 전점 미수렴(`max force evaluations`)인 상태로 낸
+값이다. 방향성 참고만 하고 논문/발표 인용 금지. 수정판 재실행 후 다시 볼 것
+(재실행 명령은 "남은 작업" 1번).**
 
 `04_analysis/dat/ev_s4_summary.dat` · 스크립트 `src/ev_s4_summary.py`, `src/bm3.py`
 해석 전문은 `NOTE.md` "S4 분석 8" 절.
@@ -212,27 +237,50 @@ E(V)/P(V) 두 경로 ρ₀ 0.006 % · K₀ 0.7 % 일치. pilot 이 V₀ 를 5 ba
 **⚠ [A] 를 "순수 냉각률 효과"로 부르지 말 것**: 두 BKS 망은 냉각률 외에 시드·용융이력·
 300 K 평형 길이도 다르다. 정확히는 "BKS 망 두 실현의 차이"이고, 요점은 그게 K 에서 2 %라는 것.
 
-## 다섯 지표가 같은 방향
+## 다섯 지표가 같은 방향 (★ E-V·3-ring 부분은 재확인 전까지 방향성으로만)
 
-3-ring 2.1배↑ · 배열에너지 2.4~3.5배↑ · Tg 800 K↓ · **K 11 %↓(같은 밀도)** · ρ₀ 4.2 %↓
+3-ring 2.1배↑ · 배열에너지 2.4~3.5배↑ · Tg 800 K↓ · 평균 Si–O–Si −10.48°(전역, 확정)
+· **K 11 %↓(같은 밀도, 잠정)** · ρ₀ 4.2 %↓(잠정)
 → **7net 이 스스로 만든 망은 더 변형되고 더 성기고 더 무른 망이다.**
 정합성이지 인과 사슬의 분리 검증은 아니다. 그리고 7net 은 전부 시드 1개다.
+★ 분석 13에 따르면 매개는 "3-ring 비율"이 아니라 "전역 Si–O–Si 각"일 가능성이 높다 —
+E-V 재실행 후 K vs 평균각 상관도 그려서 확인할 것.
 
-## 남은 작업 (우선순위 순)
+## 남은 작업 (우선순위 순, 2026-08-25 갱신)
 
-**계산은 E-V 까지 다 끝났다. 남은 건 궤적 분석 2건과 선택적 보강이다.**
+**최우선은 E-V 재실행이다 — 이게 끝나야 5번 결과·fig_bulkmod2·3-ring↔K 상관이
+잠정에서 확정으로 넘어간다.** 그 다음은 궤적 분석 2건과 선택적 보강.
 
-1. **[분석, dhl-desktop] `traj_analyze.py`** — `traj_7net_mq.lammpstrj` vs
+1. **[계산, dhl-desktop, ~3-4시간] E-V 재실행.** 수정(`in.relax_s4` 신설,
+   `run_ev_s4.sh`에 Stage-0 자동이완 추가, `in.ev_s4` eval cap 150→400)은 끝났고
+   실행만 안 됐다 (`relaxed_*.data` 파일이 아직 없음 = 미착수 확인됨, 2026-08-25).
+   ```
+   cd ~/projects/lammps_tutorial/SiO2-MLIP/02_run/s4_mq7net
+   rm -f ev/ev_s4_7net_*.txt ev/ev_s4_bksnet2e13_*.txt
+   setsid nohup bash run_ev_s4.sh prod_7net_mq.data 7net > ev_s4_chain.log 2>&1 < /dev/null &
+   PILOT_FS="0.96 0.98 1.00 1.02" \
+     setsid nohup bash run_ev_s4.sh prod_bks_2e13.data bksnet2e13 > ev_s4_bksnet.log 2>&1 < /dev/null &
+   ```
+   끝나면 로그에서 `Stopping criterion`이 전부 `linesearch alpha is zero`인지 먼저
+   확인(=수렴). 그 다음 `ev_s4_summary.py`/`bm3.py` 재피팅 → 핵심 결과 5 수치 교체 →
+   `fig_bulkmod2.png` 재생성 → NOTE.md 분석 8/9/10 provisional 해제/수정 →
+   `s4_ring_and_pressure.md` memory 의 "잠정" 절을 "확정"으로 이동.
+
+2. **[그림] `fig_bulkmod2.png` 화살표 bbox 겹침 수정** — 화살표 텍스트의 흰 bbox가
+   굵은 빨간(자기망) 곡선 ρ≈2.10~2.15 구간을 가린다. E-V 재계산 후 수치 확정되면
+   그때 손보기로 사용자가 명시적으로 보류함(2026-08-25). 재실행 전엔 건드리지 말 것.
+
+3. **[분석, dhl-desktop] `traj_analyze.py`** — `traj_7net_mq.lammpstrj` vs
    `traj_bks_2e13.lammpstrj`(매칭 냉각률 쌍). 궤적이 커서 원격 실행 후
    `*_stats.dat`/`*_angles.dat`/`*_gr.dat` 만 sync.
-   ★ **3-ring 초과의 독립 확인 경로**: 3원환은 Si–O–Si 를 좁히므로 7net 분포에
-   저각(~130° 이하) 어깨가 있어야 한다. 있으면 ring·배열에너지·K 가 한 줄로 묶인다.
+   ★ 저각 어깨 존재는 이미 `ring_angle_s4.py`(스냅샷)로 확인됐다(분석 13) — 이건
+   트라젝토리 평균으로 노이즈를 줄이는 보강 성격이라 우선순위가 1·2보다 낮다.
 
-2. **[분석] S(q)** (`sq_direct.py`) — S4 궤적에 미실행. RESULTS 4절이 남긴 질문
+4. **[분석] S(q)** (`sq_direct.py`) — S4 궤적에 미실행. RESULTS 4절이 남긴 질문
    ("자체 melt-quench 로 위상을 다시 만들면 FSDP 가 움직이는가")에 직접 답한다.
-   지금은 K 가 11 % 움직였으니 FSDP 도 움직일 가능성이 높다 — 확인 가치가 커졌다.
+   K 가 (잠정) 11 % 움직였으니 FSDP 도 움직일 가능성이 높다 — 확인 가치가 크다.
 
-3. **[계산, 12분] ring 반복 2개** — `prod_bks_2e13_r2/r3.data` 가 없다(스윕이 패치 전
+5. **[계산, 12분] ring 반복 2개** — `prod_bks_2e13_r2/r3.data` 가 없다(스윕이 패치 전
    스크립트로 돌았다). 패치된 `in.mqbks_fast` 로 두 개만 재실행하면 ring 오차막대가
    추정치 → 실측치가 된다.
    ```
@@ -244,17 +292,19 @@ E(V)/P(V) 두 경로 ρ₀ 0.006 % · K₀ 0.7 % 일치. pilot 이 V₀ 를 5 ba
    done
    ```
 
-4. **[분석, 계산 불필요] 1e14 민감도** — Tg 회귀에서 경계선(DR 2.7×)인 1e14 를 빼고
+6. **[분석, 계산 불필요] 1e14 민감도** — Tg 회귀에서 경계선(DR 2.7×)인 1e14 를 빼고
    기울기가 얼마나 움직이는지. 10^4.4배 환산의 강건성이 여기 달렸다.
 
-5. **[그림] K(ρ) 3+1 곡선** — `fig_bulkmod.py` 에 ③(7net 자기 망) 곡선을 추가하면
-   "같은 밀도에서 위상만 바꿔도 K 가 내려간다"가 한 장에 들어온다. 아직 안 만듦.
-   (`bm3.py` 가 scipy 없이 피팅하므로 Mac 에서도 그릴 수 있다.)
+7. **[문서] RESULTS.md 갱신** — 2절의 "포텐셜을 MLIP 로 갈아끼워도 이 오차는 안 줄어든다"
+   는 검증 후보이지 아직 확정이 아니다(E-V 재실행 대기). E-V 재계산 후 2·5·9절 갱신.
 
-6. **[문서] RESULTS.md 갱신** — 2절의 "포텐셜을 MLIP 로 갈아끼워도 이 오차는 안 줄어든다"
-   는 이제 **검증된 예측**이 됐다. S4 결과를 반영해 다시 쓸 것. 5절(ring)·9절(한계)도.
-
-7. `_to_delete/s4_chain.log` 삭제 · `./sync.sh` 양쪽.
+8. **[정리] 로컬 미커밋 변경 sync.** 2026-08-25 기준 Mac 샌드박스에 커밋 안 된 변경:
+   `NEXT_SESSION_PROMPT.md`/`NOTE.md`(이 갱신), `fig_rings_s4.py`+`fig_rings_s4.png`
+   (단일 패널 재설계), `S4_rings_summary.dat`, `fig_bulkmod.py`+`fig_bulkmod2.png`,
+   신규 `_bak/fig_rings_s4_3panel_20260825.py`. 또한 `fig_rings_1.png` 가 삭제된 것으로
+   잡히는데 이 세션에서 지운 적 없음 — 원인 확인 후 `./sync.sh` 양쪽.
+   (참고: 이 환경의 git은 index.lock 을 스스로 정리 못 할 때가 있다 — 남아있으면
+   `_to_delete/`로 옮기고 사용자에게 알릴 것, 강제로 지우려 하지 말 것.)
 
 ## 확정된 판단 — 되돌리지 말 것 (재논쟁 금지)
 
@@ -274,6 +324,16 @@ E(V)/P(V) 두 경로 ρ₀ 0.006 % · K₀ 0.7 % 일치. pilot 이 V₀ 를 5 ba
 - **300K NPT tail 런은 하지 않는다.** 7net 100ps NPT = 54시간이고, 애초에 답이 필요한
   자유도는 부피인데 그건 0K E-V 스캔이 45분에 **같은 자로**(RESULTS 2절과 동일 방법)
   답한다. 이 판단을 되돌리려면 NPT가 E-V로 안 되는 무엇을 주는지부터 말할 것.
+- **LAMMPS minimize 결과는 `grep "Stopping criterion" <log>`로 종료 사유 확인 전엔
+  못 쓴다.** `max force evaluations`면 미수렴 — 그 점은 버려야 한다. S4 E-V 14점
+  전부가 이걸로 걸렸었다(분석 12). `c_maxf`(원자별)를 `ftol`(전역 2-norm)과 직접
+  비교하지 말 것 — 다른 양이다.
+- **시드 1개짜리 계열엔 계수오차(Poisson 등)조차 오차막대로 그리지 않는다.** 계수오차와
+  실현간 산포는 다른 양이고 후자가 훨씬 크다(BKS 5e12 두 실현: 1.80% vs 3.07%).
+  없으면 오차막대 없이 그리고 범례에 "1 seed"라고만 명시한다 (`fig_rings_s4.py` 참고).
+- **3-ring 초과를 "무름의 원인"으로 쓰지 말 것.** 분석 13에서 3-ring 이 설명하는 각도
+  이동은 11%뿐 — 전역적 Si–O–Si 좁힘이 89%. "3-ring 초과는 원인이 아니라 증상"이 정확한
+  서술이다.
 
 ---
 
@@ -299,27 +359,50 @@ E(V)/P(V) 두 경로 ρ₀ 0.006 % · K₀ 0.7 % 일치. pilot 이 V₀ 를 5 ba
   in.mqbks_fast            확장 스윕용 프로파일-only 버전 (RDF/dump 없음)
   run_bks_controls.sh      완료된 3종 통제런 러너
   run_bks_sweep.sh         미실행 — flock 락 걸림, 8개 추가 rate/반복
-  in.ev_s4, run_ev_s4.sh   미실행 — 자체 형성 망 0K E-V 스캔 (NPT tail 검증 대체).
-                           2단계: pilot 3점으로 V0 실측 -> main 7점 V0 대칭 격자
-  ev/                      E-V 스캔 출력 (pilot/scan txt)
+  in.relax_s4              [신규] 300K 스냅샷 0K 사전이완 (400-eval). E-V 버그 수정의 핵심.
+                           아직 실행된 적 없음(relaxed_*.data 없음 = 미착수 증거)
+  in.ev_s4, run_ev_s4.sh   자체 형성 망 0K E-V 스캔. run_ev_s4.sh 에 Stage-0(in.relax_s4
+                           자동 실행) 추가됨. eval cap 150→400. **1회 실행했으나 그 결과
+                           (ev/ev_s4_*.txt)는 버그 있던 구판 — 수정판 재실행 대기**
+  in.ev_bks_s4, run_ev_bks_s4.sh   BKS 포텐셜로 BKS망(2e13) E-V — tight tol(1e-5)이라
+                           버그 영향 없음. 완료.
+  ev/                      E-V 스캔 출력 (pilot/scan txt) — 7net/bksnet2e13 쪽은 구판
   RESUME.txt                (이제 참고용, 본런은 끝났음)
-  NOTE.md                    설계 근거 전체
+  NOTE.md                    설계 근거 전체 (S4 분석 1~14)
   ckpt/, logs/, profiles/    체크포인트 · 로그 · Tg용 프로파일(T,epa,P,MSD)
-  prod_7net_mq.data, prod_bks_{2e13,5e12,5e13}.data   ring stats 입력이 된 최종 구조
+  prod_7net_mq.data, prod_bks_{2e13,5e12,5e13}.data   ring/각도 통계 입력이 된 최종 구조
   traj_7net_mq.lammpstrj, traj_bks_2e13.lammpstrj      아직 미분석 궤적 (traj_analyze 대상)
   rdf_*.dat                  LAMMPS 자체 RDF (거친 bin, 0.04Å)
 
 04_analysis/
   src/fig_tg_s4.py           Tg 3-panel 비교 그림 (핵심 스크립트)
   src/ring_stats.py          ring statistics 계산 (이번에 재사용)
-  src/traj_analyze.py        결합각·배위수·세밀 g(r) — 미실행
+  src/ring_angle_s4.py       [신규] Si–O–Si 각도, 3-ring 여부로 분리 (분석 13, 확정)
+  src/traj_analyze.py        결합각·배위수·세밀 g(r) — 미실행 (스냅샷판이 이미 답함, 보강용)
   src/sq_direct.py, sq_analyze.py   S(q) — 미실행
+  src/bm3.py                 [신규] scipy 없는 BM3 EOS 피터 (Gauss-Newton)
+  src/ev_s4_summary.py       [신규] E-V [A]냉각률/[B]위상 분해, 공통창 재피팅 포함
   fig/fig_tg_s4.png           Tg 비교 그림
   dat/tg_s4_summary.dat       Tg 수치 요약
   dat/S4_{7net,BKS_2e13,BKS_5e12,BKS_5e13}_rings.dat   ring stats 원시 출력
-  src/fig_rings_s4.py         S4 ring 3-panel 비교 그림
+  dat/S4_angles_by_ring.dat   [신규] Si–O–Si 각도, 3-ring/비3-ring 분리 출력
+  src/fig_rings_s4.py         S4 ring 비교 그림 (단일 패널, BKS/7net/AIMD 막대 — 2026-08-25
+                              3패널에서 재설계). 옛판: `_bak/fig_rings_s4_3panel_20260825.py`
   src/ring_robust_s4.py       RCUT 민감도·결함 검증
   fig/fig_rings_s4.png        S4 ring 비교 그림
   dat/S4_rings_summary.dat    7net-BKS 차이·오차·σ
   dat/S4_rings_robust.dat     RCUT 스윕 원시 출력
+  src/fig_bulkmod.py          [3곡선 개정] BKS/BKS망, 7net/BKS망, 7net/자기망(굵은 다이아).
+                              출력은 fig_bulkmod2.png. ⚠ 현재 수치는 잠정(E-V 버그 데이터)
+  fig/fig_bulkmod2.png        위 그림 산출물. ⚠ 잠정 + 화살표 bbox 가 곡선을 가리는
+                              시각 버그 있음(둘 다 E-V 재계산 후 처리 예정)
+  fig/fig_bulkmod1.png        구판 보관용(사용자가 직접 저장, 참고만, 그대로 둘 것)
 ```
+
+## project memory (mcp__remote-devices__project_memory_read 로 확인)
+
+- `s4_ring_and_pressure.md` — S4 확정/잠정 결론과 "되돌리지 말 것" 규칙. 이 문서보다
+  최신일 수 있으니 새 세션에서 반드시 같이 읽을 것.
+- `feedback_workflow.md` — 작업 방식 교훈(minimize 종료사유 확인, 남의 input 전제 확인,
+  패키지 우회 금지, 곡선 말없이 안 빼기, 유효숫자, 시드1개 오차막대 금지, 패널 남발 자제).
+- `MEMORY.md` — 위 두 파일 인덱스.

@@ -150,10 +150,15 @@ ax.plot(RHO_EXP, K_EXP, "*", ms=18, mfc="k", mec="w", mew=1.0, zorder=9)
 ktop, kown = F["net_bks1"]["Kx"], F["net_own"]["Kx"]
 ax.annotate("", xy=(RHO_EXP, kown + 0.35), xytext=(RHO_EXP, ktop - 0.35),
             arrowprops=dict(arrowstyle="<->", lw=1.5, color=NET_COL), zorder=8)
-ax.text(RHO_EXP - 0.007, 0.5 * (ktop + kown),
-        f"$-${ktop-kown:.1f} GPa\nfrom topology\n+ quench rate",
+ax.text(RHO_EXP - 0.007, 0.5 * (ktop + kown) +1 ,
+        f"from topology\n+ quench rate",
         fontsize=7.5, ha="right", va="center", color=NET_COL, linespacing=1.35,
-        bbox=dict(fc="white", ec="none", alpha=0.85, pad=1.5), zorder=9)
+        bbox=dict(fc="white", ec="none", alpha=0.70, pad=1.), zorder=9)
+
+ax.text(RHO_EXP + 0.006, 0.5 * (ktop + kown) - 1,
+        f"$-${ktop-kown:.1f} GPa",
+        fontsize=7.5, ha="left", va="center", color=NET_COL, linespacing=1.35,
+        bbox=dict(fc="white", ec="none", alpha=0.05, pad=1.), zorder=9)
 
 # ---- 표 ---------------------------------------------------------------
 # ★ 표 위치·크기를 만질 때는 **아래 TABLE 딕셔너리만** 고치면 된다.

@@ -1,5 +1,7 @@
 # King ring, distinct fraction. BKS = 4 runs (5e12 x2 seeds, 2e13, 5e13)
-# err = Poisson(7net) (+) Poisson(BKS) (+) BKS run-to-run scatter
+# err = Poisson(7net) (+) Poisson(BKS) (+) BKS run-to-run scatter (7net: no own scatter term)
+# 참고: 냉각률 스윕(5e12~5e13)에서도 3-ring 순위는 안 뒤집힘 (아래 BKSmin/BKSmax 참고;
+#       상세 강건성은 ring_robust_s4.py, NOTE.md 'S4 분석 1' 참고)
 #   n    7net%  BKSmean%  BKSmin%  BKSmax%   diff%p   err%p  sigma
   3     7.17      2.81     1.80     3.43     4.35    1.44    3.0
   4    15.58     14.92    14.24    15.54     0.66    1.98    0.3
@@ -9,4 +11,4 @@
   8     4.73      3.81     3.34     4.17     0.93    1.20    0.8
   9     0.38      0.25     0.13     0.33     0.13    0.29    0.4
 
-# mean ring size (distinct):  7net 5.488   BKS 2e13 5.554  BKS 5e12 5.563  BKS 5e13 5.533  BKS 5e12* 5.580
+# mean ring size (distinct):  7net 5.488   BKS mean 5.558
