@@ -8,42 +8,24 @@
 
 이 그림이 말하는 것 (S4 결과 반영)
   1. BKS 망 위에서는 포텐셜을 무엇으로 읽든 K 가 +19~23 % 로 붙어 있다.
-     (파란 곡선과 가는 붉은 곡선이 서로 가깝다)
-  2. **7net 이 자기 힘으로 망을 만들면 K 가 뚝 떨어진다**
-     (rho_exp 에서 43.9 -> 37.7 GPa, 실험 37 까지의 간극을 대부분 지운다).
-  -> K 오차의 주범은 포텐셜이 아니라 **망 위상 생성자**다.
-
-★ 2026-08-25 (2차 개정) — 냉각률 곡선(7net / BKS net 2e13)을 **뺐다.**
-  사용자 판단: 이 계산의 목적은 논문이 아니라 MLIP 사용 경험 증빙이고, 빠른 퀜칭
-  BKS 망을 정밀화하는 데 시간을 더 쓰지 않는다. 그래서 그 스캔([A] 냉각률 효과의
-  기준선)은 재실행하지 않고 그림·표에서 제외했다.
-  **결과로 잃은 것**: [A](냉각률) / [B](위상)의 **수치 분해**. 남는 것은 두 항의
-  **합**뿐이다 — 그림의 화살표 라벨이 "from topology + quench rate" 인 이유다.
-  되살리려면 `ev_s4_bksnet2e13_scan.txt` 를 cap >= 1200 으로 재실행한 뒤
-  SRC 에 "net_bks2" 를 되돌리면 된다 (구판: _bak/fig_bulkmod_pre_drop_bksnet2e13_20260825.py).
-  참고로 구판의 잠정 분해는 [A] -0.94 / [B] -4.87 GPa 였고, 그 수치는 미수렴
-  스캔에서 나온 것이라 인용 금지였다.
-
-⚠ **두 7net 곡선의 이완 수준이 다르다** (2026-08-25 확인, 의도적으로 남겨둔 한계):
-   - 자기망(굵은 빨강): 11 점 전부 "linesearch alpha is zero", 최종 힘 2-norm
-     0.018~0.047 -> 잡음 바닥까지 내려갔다. **인용 가능.**
-   - BKS망 5e12(가는 빨강, = ev220_scan.txt): 7 점 중 6 점이 "max force evaluations",
-     최종 2-norm 0.017~0.395. RESULTS 2 절의 rho0 2.2185 / K0 43.23 이 이 스캔이다.
-   -> 따라서 **두 곡선의 K 를 직접 빼서 "위상 효과 = 몇 GPa" 라고 쓰지 말 것.**
-      같은 자가 아니다. 그림은 두 곡선의 **위치 관계**를 보여주는 용도이고,
-      화살표의 낙차도 그 한계 위에서 읽어야 한다.
-      (자기망 쪽 실측: 미수렴 2 점을 cap 1200 으로 재실행했을 때 K@2.20 이
-       37.84 -> 37.74 로 0.1 GPa 만 움직였다. 이완 부족의 영향이 늘 크지는 않다는
-       뜻이지, BKS망 스캔에서도 작다는 보장은 아니다.)
+     (파란 곡선과 붉은 띠가 서로 가깝다)
+  2. **같은 BKS 망을 냉각률만 4배 바꿔 만들어도 K 는 거의 안 움직인다**
+     (rho_exp 에서 0.9 GPa, 2.1 %). 곡선을 하나 더 그리지 않고 표 아래 각주로 적는다 —
+     ★ 처음엔 두 냉각률 곡선 사이를 '띠'로 칠했는데 **그림이 거짓말을 했다**:
+       두 피팅의 K0' 가 -2.02 와 -0.52 로 크게 달라 rho ~ 2.24 에서 교차하고
+       양 끝에서 3 GPa 까지 벌어지는 부채꼴이 된다. "띠 두께 = 냉각률 효과"는
+       rho_exp 에서만 참이다. (K0' 차이는 +-5 % 창 7점 피팅의 잡음으로 본다 —
+       RESULTS 2절이 "K0' 를 물리적 주장으로 쓰지 말 것"이라 한 그 사정.)
+  3. **7net 이 자기 힘으로 망을 만들면 K 가 뚝 떨어진다**
+     (rho_exp 에서 42.98 -> 38.11 GPa, 실험까지의 간극 81 % 제거).
+  -> K 오차의 주범은 포텐셜도 냉각률도 아니라 **망 위상 생성자**다.
+     수치 분해는 04_analysis/dat/ev_s4_summary.dat, 근거는 s4_mq7net/NOTE.md "분석 8".
 
 읽는 법 — 색은 **포텐셜**, 선 굵기는 **망**
   파랑 = BKS 포텐셜, 빨강 = 7net 포텐셜 (프로젝트 공통 약속)
-  가는 빨강 = 7net 이 **BKS 가 만든 망**을 읽은 것 (냉각률 **5e12**)
-  굵은 빨강 = 7net 이 **자기가 만든 망**을 읽은 것 (냉각률 2e13)
-  ⚠ **두 빨강은 냉각률이 다르다** (5e12 vs 2e13). 매칭 냉각률 쌍(2e13/2e13)이
-    되려면 폐기한 net_bks2 스캔이 있어야 했다. 그래서 낙차 라벨이
-    "from topology + quench rate" — 두 효과의 합이라고 그림이 스스로 밝힌다.
-  곡선 3개가 이 그림이 감당할 수 있는 한계다.
+  가는 빨강 = 7net 이 **BKS 가 만든 망**을 읽은 것 (냉각률 2e13, 자기망과 매칭)
+  굵은 빨강 = 7net 이 **자기가 만든 망**을 읽은 것
+  냉각률을 맞춘 쌍만 그린다 — 곡선 3개가 이 그림이 감당할 수 있는 한계다.
 
 ⚠ **BKS 곡선의 K 는 인용하지 말 것** (선은 맥락용으로만 그린다).
    부피창을 바꾸면 K 가 최대 20 % 움직인다 (BM3 잔차 292 / 793 bar).
@@ -89,12 +71,8 @@ RHO_EXP, K_EXP = 2.20, 37          # Deschamps 2014 / Yokoyama 2010 (05_doc/SOUR
 SRC = {
     "bks":      "02_run/s2_relax/ev_bks_scan_tail.txt",              # BKS  / BKS net 5e12
     "net_bks1": "02_run/s2_relax/ev220_scan.txt",                    # 7net / BKS net 5e12
+    "net_bks2": "02_run/s4_mq7net/ev/ev_s4_bksnet2e13_scan.txt",     # 7net / BKS net 2e13
     "net_own":  "02_run/s4_mq7net/ev/ev_s4_7net_scan.txt",           # 7net / OWN net 2e13
-    # "net_bks2": "02_run/s4_mq7net/ev/ev_s4_bksnet2e13_scan.txt",   # 7net / BKS net 2e13
-    #   2026-08-25 제외. 위 docstring "2차 개정" 참조 — 스캔이 미수렴(11/11)이고
-    #   재실행하지 않기로 했다. 되살리려면 이 줄의 주석을 풀고 파일을 재실행판으로
-    #   교체하면 된다. 그림의 곡선/표는 원래도 이 항목을 쓰지 않았고,
-    #   [A]/[B] 분해 출력에만 쓰였다.
 }
 F = {}
 for k, fn in SRC.items():
@@ -124,11 +102,25 @@ ax.plot(rr, K_of_rho(*v["pf"], rr), "-", c=BKS_COL, lw=1.6, zorder=3)
 ax.plot(MASS / v["V"], K_of_rho(*v["pf"], MASS / v["V"]), "o", ms=4.0,
         mfc="w", mec=BKS_COL, mew=1.1, zorder=4)
 
-# ---- (2) 7net on BKS-made network (5e12) ----
-#   RESULTS 2절의 기준 곡선(rho0 2.219, K@2.20 43.9)이라 문서와의 대조가 여기 걸려
-#   있고, K(rho) 함정을 보여주는 것도 이 곡선이다.
-#   ⚠ 단 이 스캔은 7 점 중 6 점이 minimize eval 상한에서 잘렸다 (docstring 참조).
-#     곡선의 **모양**(K0')은 그 계통오차에 노출돼 있다. 위치 비교에만 쓴다.
+# ---- (2) 7net on BKS-made network ----
+#   5e12 = **곡선으로** 그린다. RESULTS 2절의 기준 곡선(rho0 2.219, K@2.20 43.9)이라
+#     문서와의 대조가 여기 걸려 있고, K(rho) 함정을 보여주는 것도 이 곡선이다.
+#   2e13 = **rho_exp 의 점 하나로만** 그린다. [B](순수 위상 효과)의 기준선이라
+#     필요한 것은 K@2.20 = 43.0 **한 숫자뿐**이다. 곡선을 그리면 쓰지도 않을 모양을
+#     보여주게 되고, 하필 그 모양이 다른 두 스캔과 반대로 휜다.
+#
+#   ★ 왜 곡선을 안 그리는지 — "피팅이 나빠서"가 아니다 (2026-08-25 진단):
+#       잔차 RMS 35 bar (셋 중 **가장 좋음**), K0' = -0.52 ± 0.06,
+#       leave-one-out 진폭 0.13 (5e12 는 0.27, 자기망은 0.68) -> **가장 단단한 피팅**.
+#       그리고 피팅과 무관하게 원자료 |dP/dV| 가 V 증가에 따라 **감소**한다(-0.666),
+#       다른 두 스캔은 **증가**한다(+1.159, +0.614). 곡률의 부호가 자료 수준에서 다르다.
+#   ★ 대신 의심스러운 것은 **이완 정도**다: maxf 중앙값이 0.064 eV/A 로
+#       5e12(0.037)·자기망(0.028)의 두 배다. minimize 가 150 eval 상한에서 멈추는데
+#       이 구조만 끝까지 덜 풀린 채로 멈춘다 -> 부피에 따라 다르게 덜 풀리면
+#       P(V) 의 **곡률**이 계통적으로 휜다. K@2.20 은 LOO 0.06 GPa 로 무사하지만
+#       K0'(모양)는 이 계통오차에 노출된다.
+#   -> 우리가 인용하는 것은 K@2.20 하나이고 그건 튼튼하다. 모양은 안 그린다.
+#      (모양이 필요해지면 이 스캔을 eval 상한 400 이상으로 재실행할 것. 약 1시간.)
 v = F["net_bks1"]
 rr = np.linspace(v["rlo"], v["rhi"], 400)
 ax.plot(rr, K_of_rho(*v["pf"], rr), "-", c=NET_COL, lw=1.5, zorder=3)
@@ -151,10 +143,10 @@ for key, col in (("bks", BKS_COL), ("net_bks1", NET_COL), ("net_own", NET_COL)):
 # ---- 실험값 ----
 ax.plot(RHO_EXP, K_EXP, "*", ms=18, mfc="k", mec="w", mew=1.0, zorder=9)
 
-# ---- rho_exp 에서의 낙차: BKS망(5e12) -> 자기망 ----
-# 2e13 스캔을 폐기했으므로 화살표는 5e12 곡선에서 잰다.
-# 이 낙차는 위상 효과 + 냉각률 효과의 **합**이다 — 라벨에 그대로 쓴다.
-# 두 항으로 쪼갠 수치는 이제 없다 (docstring "2차 개정" 참조).
+# ---- rho_exp 에서의 낙차: 띠 -> 자기망 ----
+# 2e13 을 그림에서 뺐으므로 화살표는 5e12 곡선에서 잰다.
+# 그러면 이 낙차는 위상 효과 + 냉각률 효과의 **합**이다 — 라벨에 그대로 쓴다.
+# 순수 위상 효과([B] = -4.87)는 ev_s4_summary.dat / NOTE 분석 8 에 있다.
 ktop, kown = F["net_bks1"]["Kx"], F["net_own"]["Kx"]
 ax.annotate("", xy=(RHO_EXP, kown + 0.35), xytext=(RHO_EXP, ktop - 0.35),
             arrowprops=dict(arrowstyle="<->", lw=1.5, color=NET_COL), zorder=8)
@@ -180,13 +172,9 @@ ax.text(RHO_EXP + 0.006, 0.5 * (ktop + kown) - 1,
 #              -> 상자를 옮기면 열도 같이 따라온다 (예전엔 절대값이라 따로 고쳐야 했다)
 #              lab 만 왼쪽정렬, 나머지는 오른쪽정렬(숫자 자릿수 맞추려고)
 TABLE = dict(
-    x=0.015, y=0.015, w=0.78, fs=7.2, row_dy=0.05, pad=0.025,
-    hdr_extra=0.045,          # 헤더 2번째 줄(단위)이 차지하는 높이. 상자가 위로 늘어난다.
-    cols=dict(lab=0.020, rate=0.33, r0=0.44, k0=0.55, kx=0.76),
+    x=0.015, y=0.015, w=0.70, fs=7.2, row_dy=0.05, pad=0.025,
+    cols=dict(lab=0.020, rate=0.31, r0=0.40, k0=0.49, kx=0.68),
 )
-# ※ 2026-08-25: 헤더에 **단위 줄**을 붙이면서 w 0.70 -> 0.78, 열 간격을 넓혔다.
-#   단위 문자열이 열 간격보다 넓으면 옆 열과 겹친다 — (g/cm^3) 대신 **(g/cc)** 를
-#   쓰는 이유다(프로젝트 다른 출력도 g/cc 표기). 단위를 길게 바꾸려면 간격부터 확인할 것.
 # ※ 열 간격은 figsize 에 딸려 온다. 그림 크기를 바꾸면(현재 5.0x4.0)
 #   axes 분율은 그대로인데 글자는 pt 단위라 상대적으로 커져 열이 붙는다.
 #   -> figsize 를 줄이면 w 를 늘리거나 fs 를 줄일 것.
@@ -196,32 +184,21 @@ ROWS = [("BKS / BKS net", "5e12", "bks", BKS_COL, "normal"),
         ("7net / OWN net", "2e13", "net_own", NET_COL, "bold")]
 
 # 높이·행 y 는 행 수에서 자동으로 나온다 (행을 늘리거나 줄여도 상자가 따라간다)
-# 헤더는 **2줄**(이름 + 단위)이라 row_dy + hdr_extra 를 차지한다.
 T = TABLE
-_hdr_h = T["row_dy"] + T["hdr_extra"]                      # 헤더 블록 높이(2줄)
-_h = 2 * T["pad"] + _hdr_h + len(ROWS) * T["row_dy"]
-_top = T["y"] + _h - T["pad"]                              # 상자 안쪽 위 끝
-_hdr_y = _top - 0.5 * _hdr_h                               # 헤더 블록 중심
+_h = 2 * T["pad"] + (len(ROWS) + 1) * T["row_dy"]        # 헤더 1줄 + 데이터 행
+_hdr_y = T["y"] + _h - T["pad"] - 0.5 * T["row_dy"]
 CX = {k: T["x"] + dx for k, dx in T["cols"].items()}
 
 ax.add_patch(Rectangle((T["x"], T["y"]), T["w"], _h,
                        transform=ax.transAxes, fc="white", ec="0.75", lw=0.7,
                        alpha=0.96, zorder=10))
 FS = T["fs"]
-# 헤더: 이름 + 줄바꿈 + 단위. **한 개의 text 로 그린다** —
-#   ha="right" 로 열 위치(오른쪽 끝)를 데이터와 맞추고,
-#   ma="center" 로 **두 줄끼리는 서로 가운데 정렬**한다.
-#   (별도 text 두 개로 그리면 열 중심을 몰라 가운데를 맞출 수 없다.)
-HDR = (("rate", "quench" + "\n" + r"$\mathrm{(K/s)}$"),
-       ("r0",   r"$\rho_0$" + "\n" + r"$\mathrm{(g/cc)}$"),
-       ("k0",   r"$K_0$" + "\n" + r"$\mathrm{(GPa)}$"),
-       ("kx",   rf"$K$ @ {RHO_EXP:.2f}" + "\n" + r"$\mathrm{(GPa)}$"))
-for key, lab in HDR:
+for key, lab in (("rate", "quench"), ("r0", r"$\rho_0$"), ("k0", r"$K_0$"),
+                 ("kx", rf"$K$ @ {RHO_EXP:.2f}")):
     ax.text(CX[key], _hdr_y, lab, transform=ax.transAxes, fontsize=FS,
-            ha="right", va="center", ma="center", color="0.35",
-            linespacing=1.35, zorder=11)
+            ha="right", va="center", color="0.35", zorder=11)
 for i, (lab, rate, key, col, wt) in enumerate(ROWS):
-    y = _top - _hdr_h - T["row_dy"] * (i + 0.5)
+    y = _hdr_y - T["row_dy"] * (i + 1)
     v = F[key]
     ax.text(CX["lab"], y, lab, transform=ax.transAxes, fontsize=FS,
             ha="left", va="center", color="0.15", fontweight=wt, zorder=11)
@@ -268,8 +245,7 @@ for lab, rate, key, *_ in ROWS:
     v = F[key]
     print(f"{lab+' '+rate:<24}{v['rho0']:>9.4f}{v['K0']:>8.2f}{v['Kx']:>9.2f}"
           f"{100*(v['Kx']-K_EXP)/K_EXP:>+8.1f}%")
-print(f"\nBKS망(5e12) -> 자기망 낙차 @rho_exp : "
-      f"{F['net_bks1']['Kx']-F['net_own']['Kx']:.2f} GPa"
-      f"  (위상 + 냉각률의 **합**. 분해는 없다 — bksnet2e13 스캔 폐기)")
-print("⚠ 두 곡선의 이완 수준이 다르다(자기망 전점 수렴 / BKS망 6점 미수렴).")
-print("  이 낙차를 '위상 효과 = N GPa' 로 인용하지 말 것. docstring 참조.")
+print(f"\n띠 두께 @rho_exp (냉각률 4배 효과) : "
+      f"{abs(F['net_bks1']['Kx']-F['net_bks2']['Kx']):.2f} GPa")
+print(f"띠 -> 자기망 낙차 @rho_exp (위상 효과): "
+      f"{F['net_bks2']['Kx']-F['net_own']['Kx']:.2f} GPa")

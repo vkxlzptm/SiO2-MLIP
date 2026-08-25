@@ -57,4 +57,142 @@ atom_style      charge
 read_data       ${dfile}
 read_data       relaxed_7net.data
 Reading data file ...
-  orthogonal box = (-0.13095
+  orthogonal box = (-0.13095199 -0.13140962 -0.15165528) to (30.269865 30.375648 35.055481)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  2160 atoms
+  reading velocities ...
+  2160 velocities
+  read_data CPU = 0.021 seconds
+mass            1 15.9994
+mass            2 28.0855
+
+pair_style      e3gnn
+PairE3GNN using device : CPU
+pair_coeff      * * ../../01_input/pot/deployed_nano_4.5.pt O Si
+Chemical specie 'O' is assigned to type 1
+Chemical specie 'Si' is assigned to type 2
+from sevenn version '0.13.0' single precision model, deployed: 2026-08-10
+FlashTP: no
+OEQ: no
+
+neighbor        1.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+change_box      all x scale ${s} y scale ${s} z scale ${s} remap
+change_box      all x scale 0.98569638 y scale ${s} z scale ${s} remap
+change_box      all x scale 0.98569638 y scale 0.98569638 z scale ${s} remap
+change_box      all x scale 0.98569638 y scale 0.98569638 z scale 0.98569638 remap
+Changing box ...
+  orthogonal box = (0.086468884 -0.13140962 -0.15165528) to (30.052444 30.375648 35.055481)
+  orthogonal box = (0.086468884 0.086771063 -0.15165528) to (30.052444 30.157467 35.055481)
+  orthogonal box = (0.086468884 0.086771063 0.10013947) to (30.052444 30.157467 34.803686)
+
+velocity        all set 0.0 0.0 0.0
+
+variable        epa  equal pe/atoms
+variable        dens equal density
+variable        fmag atom sqrt(fx*fx+fy*fy+fz*fz)
+compute         maxf all reduce max v_fmag
+
+thermo          20
+thermo_style    custom step pe v_epa press vol v_dens c_maxf
+
+min_style       cg
+min_modify      dmax 0.05
+minimize        0.0 1.0e-3 ${cap} ${cap}    # 2026-08-25: 150 -> 400 -> 가변(기본 1200).
+minimize        0.0 1.0e-3 1200 ${cap}    
+minimize        0.0 1.0e-3 1200 1200    
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 5.5
+  ghost atom cutoff = 5.5
+  binsize = 2.75, bins = 11 11 13
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair e3gnn, perpetual
+      attributes: full, newton on
+      pair build: full/bin/atomonly
+      stencil: full/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 9.239 | 9.239 | 9.239 Mbytes
+   Step         PotEng         v_epa          Press          Volume         v_dens         c_maxf    
+         0  -16894.418     -7.8214897      81072.742      31271.288      2.2971894      1.0468878    
+        20  -16917.418     -7.8321382      24391.262      31271.288      2.2971894      0.33931195   
+        40  -16917.897     -7.8323598      23173.145      31271.288      2.2971894      0.13737344   
+        60  -16918.017     -7.8324152      22885.007      31271.288      2.2971894      0.11189134   
+        80  -16918.064     -7.8324372      22777.079      31271.288      2.2971894      0.063769911  
+       100  -16918.078     -7.8324436      22765.279      31271.288      2.2971894      0.036578906  
+       120  -16918.084     -7.8324462      22796.634      31271.288      2.2971894      0.025852693  
+       140  -16918.087     -7.8324477      22777.638      31271.288      2.2971894      0.021614074  
+       160  -16918.091     -7.8324494      22740.123      31271.288      2.2971894      0.03148609   
+       180  -16918.095     -7.8324516      22702.207      31271.288      2.2971894      0.034115302  
+       200  -16918.099     -7.8324533      22673.558      31271.288      2.2971894      0.037331629  
+       220  -16918.104     -7.8324556      22646.53       31271.288      2.2971894      0.049100731  
+       240  -16918.109     -7.8324581      22582.675      31271.288      2.2971894      0.05015347   
+       260  -16918.113     -7.8324597      22571.329      31271.288      2.2971894      0.032559466  
+       280  -16918.115     -7.8324605      22552.944      31271.288      2.2971894      0.024777423  
+       300  -16918.116     -7.832461       22571.701      31271.288      2.2971894      0.018835472  
+       303  -16918.116     -7.832461       22572.4        31271.288      2.2971894      0.023604257  
+Loop time of 1355.8 on 6 procs for 303 steps with 2160 atoms
+
+462.8% CPU use with 1 MPI tasks x 6 OpenMP threads
+
+Minimization stats:
+  Stopping criterion = linesearch alpha is zero
+  Energy initial, next-to-last, final = 
+     -16894.4176863603  -16918.1158419539  -16918.1158419539
+  Force two-norm initial, final = 21.230635 0.046919045
+  Force max component initial, final = 0.96991956 0.019682705
+  Final line search alpha, max atom move = 3.8146973e-06 7.5083562e-08
+  Iterations, force evaluations = 303 644
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1355.8     | 1355.8     | 1355.8     |   0.0 |100.00
+Neigh   | 0.0030452  | 0.0030452  | 0.0030452  |   0.0 |  0.00
+Comm    | 0.012622   | 0.012622   | 0.012622   |   0.0 |  0.00
+Output  | 0.0018052  | 0.0018052  | 0.0018052  |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.02733    |            |       |  0.00
+
+Nlocal:           2160 ave        2160 max        2160 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           3118 ave        3118 max        3118 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:              0 ave           0 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:       103672 ave      103672 max      103672 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 103672
+Ave neighs/atom = 47.996296
+Neighbor list builds = 1
+Dangerous builds = 0
+#   ev220 도 150 으로 창 끝(f=0.94)에서 cap 에 걸렸다(2-norm 0.395). 이완된 구조에서
+#   출발해도 큰 변형 점은 150 이 모자란다. 보통은 그 전에 "linesearch alpha is zero"
+#   로 조기 종료하므로 실제 추가 비용은 창 끝 몇 점뿐이다.
+#
+# ★ 2026-08-25 (2차 진단). **ftol = 1.0e-3 은 이 시스템에서 도달 불가능한 값이다.**
+#   400-cap 실행에서 정상 종료("linesearch alpha is zero")한 9 점의 최종 전역 힘
+#   2-norm 이 0.016 ~ 0.035 eV/A 였다 — ftol 보다 20~35 배 크다. 즉 CG 는 ftol 을
+#   만족해서 멈춘 적이 한 번도 없고, 항상 **수치 잡음 바닥에 닿아** 라인서치가
+#   죽으면서 멈췄다. 2160 원자 MLIP 힘의 바닥이 거기다.
+#   -> 따라서 "수렴했다"의 실질 판정선은 ftol 이 아니라
+#      **(a) 종료 사유 = linesearch alpha is zero  AND
+#        (b) 최종 2-norm 이 0.02~0.035 잡음 바닥 대역 안** 이다.
+#      cap 을 올리는 것은 (a) 를 확보하기 위한 조치이지 ftol 을 맞추려는 게 아니다.
+#      ftol 을 잡음 바닥 위로 올리는 것은 하지 않는다 — 그러면 점마다 다른 깊이에서
+#      멈춰 P(V) 곡률이 다시 계통적으로 휜다(분석 12 와 같은 실패).
+
+variable        Vf equal vol
+variable        Df equal density
+variable        Ef equal pe
+variable        ef equal pe/atoms
+variable        Pf equal press
+variable        Ff equal c_maxf
+print           "EVPOINT ${s} ${Vf} ${Df} ${Ef} ${ef} ${Pf} ${Ff}"
+EVPOINT 0.98569638 31271.2878423022 2.29718935213685 -16918.1158419539 -7.83246103794162 22572.3997944339 0.02360425733682
+Total wall time: 0:22:37
