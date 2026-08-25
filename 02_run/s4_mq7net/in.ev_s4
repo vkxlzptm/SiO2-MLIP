@@ -46,6 +46,7 @@
 variable        dfile index prod_7net_mq.data
 variable        tag   index 7net
 variable        s     index 1.0
+variable        cap   index 1200        # minimize eval 상한. -var cap 으로 덮어쓸 수 있다.
 
 units           metal
 boundary        p p p
@@ -75,10 +76,22 @@ thermo_style    custom step pe v_epa press vol v_dens c_maxf
 
 min_style       cg
 min_modify      dmax 0.05
-minimize        0.0 1.0e-3 400 400          # 2026-08-25: 150 -> 400.
+minimize        0.0 1.0e-3 ${cap} ${cap}    # 2026-08-25: 150 -> 400 -> 가변(기본 1200).
 #   ev220 도 150 으로 창 끝(f=0.94)에서 cap 에 걸렸다(2-norm 0.395). 이완된 구조에서
 #   출발해도 큰 변형 점은 150 이 모자란다. 보통은 그 전에 "linesearch alpha is zero"
 #   로 조기 종료하므로 실제 추가 비용은 창 끝 몇 점뿐이다.
+#
+# ★ 2026-08-25 (2차 진단). **ftol = 1.0e-3 은 이 시스템에서 도달 불가능한 값이다.**
+#   400-cap 실행에서 정상 종료("linesearch alpha is zero")한 9 점의 최종 전역 힘
+#   2-norm 이 0.016 ~ 0.035 eV/A 였다 — ftol 보다 20~35 배 크다. 즉 CG 는 ftol 을
+#   만족해서 멈춘 적이 한 번도 없고, 항상 **수치 잡음 바닥에 닿아** 라인서치가
+#   죽으면서 멈췄다. 2160 원자 MLIP 힘의 바닥이 거기다.
+#   -> 따라서 "수렴했다"의 실질 판정선은 ftol 이 아니라
+#      **(a) 종료 사유 = linesearch alpha is zero  AND
+#        (b) 최종 2-norm 이 0.02~0.035 잡음 바닥 대역 안** 이다.
+#      cap 을 올리는 것은 (a) 를 확보하기 위한 조치이지 ftol 을 맞추려는 게 아니다.
+#      ftol 을 잡음 바닥 위로 올리는 것은 하지 않는다 — 그러면 점마다 다른 깊이에서
+#      멈춰 P(V) 곡률이 다시 계통적으로 휜다(분석 12 와 같은 실패).
 
 variable        Vf equal vol
 variable        Df equal density
