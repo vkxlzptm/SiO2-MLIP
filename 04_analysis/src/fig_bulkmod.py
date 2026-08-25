@@ -182,11 +182,14 @@ ax.text(RHO_EXP + 0.006, 0.5 * (ktop + kown) - 1,
 TABLE = dict(
     x=0.015, y=0.015, w=0.78, fs=7.2, row_dy=0.05, pad=0.025,
     hdr_extra=0.045,          # 헤더 2번째 줄(단위)이 차지하는 높이. 상자가 위로 늘어난다.
-    cols=dict(lab=0.020, rate=0.33, r0=0.44, k0=0.55, kx=0.76),
+    cols=dict(lab=0.020, rate=0.30, r0=0.415, k0=0.525, kx=0.685),
 )
-# ※ 2026-08-25: 헤더에 **단위 줄**을 붙이면서 w 0.70 -> 0.78, 열 간격을 넓혔다.
-#   단위 문자열이 열 간격보다 넓으면 옆 열과 겹친다 — (g/cm^3) 대신 **(g/cc)** 를
-#   쓰는 이유다(프로젝트 다른 출력도 g/cc 표기). 단위를 길게 바꾸려면 간격부터 확인할 것.
+# ※ 2026-08-25 (2차): 수치 열을 전부 **가운데 정렬**로 바꿨다.
+#   -> 따라서 아래 cols 값은 **열의 오른쪽 끝이 아니라 열의 중심**이다 (lab 만 왼쪽 끝).
+#   오른쪽 정렬이었을 때는 "K @ 2.20" 열의 데이터가 "45.3  (+23%)" 로 유독 길어
+#   헤더가 데이터 덩어리 한가운데 오지 않고 치우쳐 보였다.
+#   ※ 열 간격은 데이터/단위 중 **더 넓은 쪽**이 결정한다. 지금 병목은
+#     rho_0 의 단위 (g/cm^3) 다. 열을 옮기거나 단위를 늘릴 때는 그려서 확인할 것.
 # ※ 열 간격은 figsize 에 딸려 온다. 그림 크기를 바꾸면(현재 5.0x4.0)
 #   axes 분율은 그대로인데 글자는 pt 단위라 상대적으로 커져 열이 붙는다.
 #   -> figsize 를 줄이면 w 를 늘리거나 fs 를 줄일 것.
@@ -208,17 +211,15 @@ ax.add_patch(Rectangle((T["x"], T["y"]), T["w"], _h,
                        transform=ax.transAxes, fc="white", ec="0.75", lw=0.7,
                        alpha=0.96, zorder=10))
 FS = T["fs"]
-# 헤더: 이름 + 줄바꿈 + 단위. **한 개의 text 로 그린다** —
-#   ha="right" 로 열 위치(오른쪽 끝)를 데이터와 맞추고,
-#   ma="center" 로 **두 줄끼리는 서로 가운데 정렬**한다.
-#   (별도 text 두 개로 그리면 열 중심을 몰라 가운데를 맞출 수 없다.)
+# 헤더: 이름 + 줄바꿈 + 단위. **한 개의 text 로 그린다** (ma="center" 로 두 줄끼리 정렬).
+# 수치 열은 헤더·데이터 모두 ha="center" — cols 값이 열의 **중심**이다.
 HDR = (("rate", "quench" + "\n" + r"$\mathrm{(K/s)}$"),
-       ("r0",   r"$\rho_0$" + "\n" + r"$\mathrm{(g/cc)}$"),
+       ("r0",   r"$\rho_0$" + "\n" + r"$\mathrm{(g/cm^3)}$"),
        ("k0",   r"$K_0$" + "\n" + r"$\mathrm{(GPa)}$"),
        ("kx",   rf"$K$ @ {RHO_EXP:.2f}" + "\n" + r"$\mathrm{(GPa)}$"))
 for key, lab in HDR:
     ax.text(CX[key], _hdr_y, lab, transform=ax.transAxes, fontsize=FS,
-            ha="right", va="center", ma="center", color="0.35",
+            ha="center", va="center", ma="center", color="0.35",
             linespacing=1.35, zorder=11)
 for i, (lab, rate, key, col, wt) in enumerate(ROWS):
     y = _top - _hdr_h - T["row_dy"] * (i + 0.5)
@@ -226,14 +227,14 @@ for i, (lab, rate, key, col, wt) in enumerate(ROWS):
     ax.text(CX["lab"], y, lab, transform=ax.transAxes, fontsize=FS,
             ha="left", va="center", color="0.15", fontweight=wt, zorder=11)
     ax.text(CX["rate"], y, rate, transform=ax.transAxes, fontsize=FS,
-            ha="right", va="center", color="0.45", fontweight=wt, zorder=11)
+            ha="center", va="center", color="0.45", fontweight=wt, zorder=11)
     ax.text(CX["r0"], y, f"{v['rho0']:.2f}", transform=ax.transAxes, fontsize=FS,
-            ha="right", va="center", color=col, fontweight=wt, zorder=11)
+            ha="center", va="center", color=col, fontweight=wt, zorder=11)
     ax.text(CX["k0"], y, f"{v['K0']:.1f}", transform=ax.transAxes, fontsize=FS,
-            ha="right", va="center", color=col, fontweight=wt, zorder=11)
+            ha="center", va="center", color=col, fontweight=wt, zorder=11)
     ax.text(CX["kx"], y, f"{v['Kx']:.1f}  ({100*(v['Kx']-K_EXP)/K_EXP:+.0f}%)",
             transform=ax.transAxes, fontsize=FS,
-            ha="right", va="center", color=col, fontweight=wt, zorder=11)
+            ha="center", va="center", color=col, fontweight=wt, zorder=11)
 
 # 냉각률 효과는 표의 두 5e12/2e13 행이 직접 보여준다.
 ax.set_xlabel(r"$\rho$ (g/cm$^3$)")
