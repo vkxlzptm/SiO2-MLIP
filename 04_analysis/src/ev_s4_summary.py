@@ -36,13 +36,34 @@ SET = [(lab, fn) for lab, fn in SET_ALL if (ROOT / fn).exists()]
 MISSING = [lab for lab, fn in SET_ALL if not (ROOT / fn).exists()]
 GRID = [2.0762, 2.1595, 2.2000, 2.2185, 2.2500, 2.3000, 2.3442]
 
-out, fits = [], {}
+# ── 창(부피구간) 민감도 ─────────────────────────────────────────────────────
+# 스캔마다 f 격자가 달라 V/V0 창이 다르다. BM3 의 K0·K0' 는 창에 의존하므로
+# (RESULTS 2절: BKS 는 창을 바꾸면 K0 가 3.4 % 움직인다) 창이 다른 행끼리 뺄셈하면
+# 위상/냉각률 효과에 **창 효과가 섞인다.**
+# -> 각 행을 (i) 전 점, (ii) |ln(V/V0)| <= WIN_HALF 인 공통 좁은 창, 두 번 피팅해
+#    K@2.20 을 나란히 낸다. 둘이 붙어 있으면 창은 문제가 아니라는 게 데이터로 증명된다.
+WIN_HALF = 0.050        # +-5.0 % — 모든 스캔이 최소 4점을 갖는 폭
+
+
+def fit_window(V, P, half=WIN_HALF, npass=3):
+    """V0 를 모르는 채로 시작하므로 전 점 피팅 -> 창 적용 -> 재피팅을 반복한다."""
+    V0, K0, Kp = fit_PV(V, P)
+    m = np.ones(len(V), bool)
+    for _ in range(npass):
+        m = np.abs(np.log(V / V0)) <= half
+        if m.sum() < 4:
+            return None, m
+        V0, K0, Kp = fit_PV(V[m], P[m])
+    return (V0, K0, Kp), m
+
+
+out, fits, fitsw = [], {}, {}
 w = out.append
 w("# S4 E-V summary — BM3 fits (bm3.py, scipy-free; scipy 대조 검증됨)")
 w(f"# experiment: rho = {RHO_EXP} g/cc, K = {K_EXP} GPa")
 w("#")
-w(f"# {'structure':<24}{'rho0':>8}{'vs exp':>9}{'K0':>8}{'vs exp':>9}"
-  f"{'K@2.20':>9}{'vs exp':>9}{'K0p':>7}{'Pres(bar)':>11}")
+w(f"# {'structure':<24}{'rho0':>8}{'vs exp':>9}{'K0':>8}{'K@2.20':>9}{'vs exp':>9}"
+  f"{'K0p':>7}{'Pres':>7}{'V/V0 window':>15}{'K@2.20|win':>12}{'dK':>8}{'n':>3}")
 for lab, fn in SET:
     V, E, P = load_scan(ROOT / fn)
     V0, K0, Kp = fit_PV(V, P)
@@ -51,9 +72,14 @@ for lab, fn in SET:
     k22 = float(K_of_rho(V0, K0, Kp, RHO_EXP))
     from bm3 import bm3_P
     res = (P - bm3_P(V, V0, K0, Kp)) * 1e4
-    w(f"{lab:<26}{r0:>8.4f}{100*(r0-RHO_EXP)/RHO_EXP:>+8.2f}%{K0:>8.2f}"
-      f"{100*(K0-K_EXP)/K_EXP:>+8.1f}%{k22:>9.2f}{100*(k22-K_EXP)/K_EXP:>+8.1f}%"
-      f"{Kp:>7.2f}{np.sqrt((res**2).mean()):>11.0f}")
+    pw, mw = fit_window(V, P)
+    fitsw[lab] = pw
+    kw = float(K_of_rho(*pw, RHO_EXP)) if pw else float("nan")
+    rel = V / V0
+    w(f"{lab:<26}{r0:>8.4f}{100*(r0-RHO_EXP)/RHO_EXP:>+8.2f}%{K0:>8.2f}{k22:>9.2f}"
+      f"{100*(k22-K_EXP)/K_EXP:>+8.1f}%{Kp:>7.2f}{np.sqrt((res**2).mean()):>7.0f}"
+      f"{f'{rel.min():.3f}-{rel.max():.3f}':>15}{kw:>12.2f}"
+      f"{100*(kw-k22)/k22:>+7.1f}%{int(mw.sum()):>3d}")
 
 w("#")
 w("# K(rho) — same-density comparison (the only fair one)")
@@ -73,6 +99,7 @@ def delta(w, title, k_from, k_to, note=""):
     a, b = fits[k_from], fits[k_to]
     ra, rb = MASS / a[0], MASS / b[0]
     ka = float(K_of_rho(*a, RHO_EXP)); kb = float(K_of_rho(*b, RHO_EXP))
+    aw, bw = fitsw.get(k_from), fitsw.get(k_to)
     w(f"# {title}")
     if note:
         w(f"#   {note}")
@@ -83,6 +110,11 @@ def delta(w, title, k_from, k_to, note=""):
       f"   |  vs exp {100*(ka-K_EXP)/K_EXP:+.1f} % -> {100*(kb-K_EXP)/K_EXP:+.1f} %")
     if (ka - K_EXP) != 0:
         w(f"#   K 간극 중 사라진 비율: {100*(1-(kb-K_EXP)/(ka-K_EXP)):.0f} %")
+    if aw and bw:
+        kaw = float(K_of_rho(*aw, RHO_EXP)); kbw = float(K_of_rho(*bw, RHO_EXP))
+        w(f"#   [공통창 ±{100*WIN_HALF:.0f}% 재피팅] K@2.20 {kaw:.2f} -> {kbw:.2f} "
+          f"({kbw-kaw:+.2f} GPa, {100*(kbw-kaw)/kaw:+.1f} %)"
+          f"  <- 전 점({kb-ka:+.2f})과 붙으면 창 효과 아님")
     w("#")
 
 
