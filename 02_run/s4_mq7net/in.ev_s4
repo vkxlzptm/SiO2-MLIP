@@ -75,7 +75,10 @@ thermo_style    custom step pe v_epa press vol v_dens c_maxf
 
 min_style       cg
 min_modify      dmax 0.05
-minimize        0.0 1.0e-3 150 150
+minimize        0.0 1.0e-3 400 400          # 2026-08-25: 150 -> 400.
+#   ev220 도 150 으로 창 끝(f=0.94)에서 cap 에 걸렸다(2-norm 0.395). 이완된 구조에서
+#   출발해도 큰 변형 점은 150 이 모자란다. 보통은 그 전에 "linesearch alpha is zero"
+#   로 조기 종료하므로 실제 추가 비용은 창 끝 몇 점뿐이다.
 
 variable        Vf equal vol
 variable        Df equal density

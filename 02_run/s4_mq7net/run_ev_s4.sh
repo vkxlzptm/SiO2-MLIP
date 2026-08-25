@@ -62,6 +62,22 @@ runpt() {   # $1 = f (부피비, V0 기준 아님 — V_ref = prod 구조의 부
   grep "^EVPOINT" "$lg" | awk '{$1="";print}'
 }
 
+# ================== 0단계: 0 K 이완 (2026-08-25 추가) ==================
+# ★ 이게 없어서 1차 실행의 14개 점이 전부 "max force evaluations" 로 잘렸다.
+#   기존 in.ev220 은 **이미 이완된** relaxed220.data 를 읽었다는 전제가 있었는데
+#   in.ev_s4 는 300 K 스냅샷을 직접 읽으면서 그 전제를 못 지켰다.
+#   옛 프로토콜대로 이완을 먼저 하고, 그 산물에서 스캔한다.
+RELAXED="relaxed_${TAG}.data"
+if [ ! -f "$RELAXED" ]; then
+  echo "=========== STAGE 0: 0 K relax -> ${RELAXED} (약 13분) ===========" >&2
+  lmp_7net -var dfile "$DFILE" -var out "$RELAXED" \
+           -in in.relax_s4 -log "logs/relax_${TAG}.log" 2>&1 | tail -3 >&2
+  grep -h "Stopping criterion\|Force two-norm\|^RELAXED" "logs/relax_${TAG}.log" >&2
+else
+  echo "=========== STAGE 0: ${RELAXED} 이미 있음, 건너뜀 ===========" >&2
+fi
+DFILE="$RELAXED"
+
 # ================== 1단계: P = 0 괄호치기 ==================
 # f = 0.98 / 1.00 / 1.02 / 1.04 (rho 2.245 ~ 2.115). 점 하나(5분) 더 써서
 # **평형점을 양쪽에서 괄호친다** — 한쪽에만 점을 찍으면 2차 피팅이 외삽이 되고,
