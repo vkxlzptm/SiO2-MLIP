@@ -62,7 +62,7 @@ Reading data file ...
   2160 atoms
   reading velocities ...
   2160 velocities
-  read_data CPU = 0.012 seconds
+  read_data CPU = 0.008 seconds
 mass            1 15.9994
 mass            2 28.0855
 
@@ -79,13 +79,13 @@ neighbor        1.0 bin
 neigh_modify    every 1 delay 0 check yes
 
 change_box      all x scale ${s} y scale ${s} z scale ${s} remap
-change_box      all x scale 0.98648483 y scale ${s} z scale ${s} remap
-change_box      all x scale 0.98648483 y scale 0.98648483 z scale ${s} remap
-change_box      all x scale 0.98648483 y scale 0.98648483 z scale 0.98648483 remap
+change_box      all x scale 0.99179960 y scale ${s} z scale ${s} remap
+change_box      all x scale 0.99179960 y scale 0.99179960 z scale ${s} remap
+change_box      all x scale 0.99179960 y scale 0.99179960 z scale 0.99179960 remap
 Changing box ...
-  orthogonal box = (0.074484122 -0.13140962 -0.15165528) to (30.064429 30.375648 35.055481)
-  orthogonal box = (0.074484122 0.074744418 -0.15165528) to (30.064429 30.169494 35.055481)
-  orthogonal box = (0.074484122 0.074744418 0.086259937) to (30.064429 30.169494 34.817566)
+  orthogonal box = (-0.0063025543 -0.13140962 -0.15165528) to (30.145216 30.375648 35.055481)
+  orthogonal box = (-0.0063025543 -0.0063245796 -0.15165528) to (30.145216 30.250563 35.055481)
+  orthogonal box = (-0.0063025543 -0.0063245796 -0.0072989777) to (30.145216 30.250563 34.911124)
 
 velocity        all set 0.0 0.0 0.0
 
@@ -106,7 +106,7 @@ Neighbor list info ...
   max neighbors/atom: 2000, page size: 100000
   master list distance cutoff = 5.5
   ghost atom cutoff = 5.5
-  binsize = 2.75, bins = 11 11 13
+  binsize = 2.75, bins = 11 12 13
   1 neighbor lists, perpetual/occasional/extra = 1 0 0
   (1) pair e3gnn, perpetual
       attributes: full, newton on
@@ -115,46 +115,46 @@ Neighbor list info ...
       bin: standard
 Per MPI rank memory allocation (min/avg/max) = 9.238 | 9.238 | 9.238 Mbytes
    Step         PotEng         v_epa          Press          Volume         v_dens         c_maxf    
-         0  -16742.543     -7.7511775      112494.23      31346.389      2.2916857      5.6844737    
-        20  -16923.618     -7.8350083      9164.3213      31346.389      2.2916857      1.7096869    
-        40  -16926.627     -7.8364012      7244.8978      31346.389      2.2916857      0.62457818   
-        60  -16927.3       -7.8367129      6879.1478      31346.389      2.2916857      0.14409021   
-        80  -16927.456     -7.8367851      6764.5725      31346.389      2.2916857      0.11821568   
-        82  -16927.461     -7.8367877      6772.5627      31346.389      2.2916857      0.063411222  
-Loop time of 383.015 on 6 procs for 82 steps with 2160 atoms
+         0  -16773.148     -7.7653462      80558.134      31855.767      2.2550413      5.3491135    
+        20  -16925.371     -7.83582        53.814251      31855.767      2.2550413      1.3958463    
+        40  -16927.998     -7.8370362      317.8995       31855.767      2.2550413      0.32802382   
+        60  -16928.458     -7.837249      -35.286787      31855.767      2.2550413      0.17087416   
+        80  -16928.561     -7.8372969     -28.506671      31855.767      2.2550413      0.041702157  
+        81  -16928.563     -7.8372977     -26.034966      31855.767      2.2550413      0.05889877   
+Loop time of 316.176 on 6 procs for 81 steps with 2160 atoms
 
-452.9% CPU use with 1 MPI tasks x 6 OpenMP threads
+465.4% CPU use with 1 MPI tasks x 6 OpenMP threads
 
 Minimization stats:
   Stopping criterion = max force evaluations
   Energy initial, next-to-last, final = 
-     -16742.5434931793  -16927.4588120449  -16927.4614055749
-  Force two-norm initial, final = 96.515231 0.36623805
-  Force max component initial, final = 5.3086963 0.05280358
-  Final line search alpha, max atom move = 0.42613462 0.022501433
-  Iterations, force evaluations = 82 151
+     -16773.1478333475  -16928.5613686185  -16928.5629310594
+  Force two-norm initial, final = 90.003975 0.28170903
+  Force max component initial, final = 4.8878822 0.057386532
+  Final line search alpha, max atom move = 0.39765732 0.022820175
+  Iterations, force evaluations = 81 150
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 382.99     | 382.99     | 382.99     |   0.0 | 99.99
-Neigh   | 0.0062676  | 0.0062676  | 0.0062676  |   0.0 |  0.00
-Comm    | 0.005841   | 0.005841   | 0.005841   |   0.0 |  0.00
-Output  | 0.00079797 | 0.00079797 | 0.00079797 |   0.0 |  0.00
+Pair    | 316.16     | 316.16     | 316.16     |   0.0 | 99.99
+Neigh   | 0.0062028  | 0.0062028  | 0.0062028  |   0.0 |  0.00
+Comm    | 0.003029   | 0.003029   | 0.003029   |   0.0 |  0.00
+Output  | 0.00048812 | 0.00048812 | 0.00048812 |   0.0 |  0.00
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.01122    |            |       |  0.00
+Other   |            | 0.00674    |            |       |  0.00
 
 Nlocal:           2160 ave        2160 max        2160 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           3133 ave        3133 max        3133 min
+Nghost:           3117 ave        3117 max        3117 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 Neighs:              0 ave           0 max           0 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
-FullNghs:       104896 ave      104896 max      104896 min
+FullNghs:       103298 ave      103298 max      103298 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 
-Total # of neighbors = 104896
-Ave neighs/atom = 48.562963
+Total # of neighbors = 103298
+Ave neighs/atom = 47.823148
 Neighbor list builds = 2
 Dangerous builds = 0
 
@@ -165,5 +165,5 @@ variable        ef equal pe/atoms
 variable        Pf equal press
 variable        Ff equal c_maxf
 print           "EVPOINT ${s} ${Vf} ${Df} ${Ef} ${ef} ${Pf} ${Ff}"
-EVPOINT 0.98648483 31346.388780046 2.29168565358545 -16927.4614055749 -7.83678768776618 6772.56266214104 0.0634112217925494
-Total wall time: 0:06:27
+EVPOINT 0.99179960 31855.7671875156 2.25504126257854 -16928.5629310594 -7.83729765326822 -26.0349659315568 0.0588987703545652
+Total wall time: 0:05:18

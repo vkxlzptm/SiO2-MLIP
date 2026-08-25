@@ -62,7 +62,7 @@ Reading data file ...
   2160 atoms
   reading velocities ...
   2160 velocities
-  read_data CPU = 0.012 seconds
+  read_data CPU = 0.008 seconds
 mass            1 15.9994
 mass            2 28.0855
 
@@ -79,13 +79,13 @@ neighbor        1.0 bin
 neigh_modify    every 1 delay 0 check yes
 
 change_box      all x scale ${s} y scale ${s} z scale ${s} remap
-change_box      all x scale 0.98648483 y scale ${s} z scale ${s} remap
-change_box      all x scale 0.98648483 y scale 0.98648483 z scale ${s} remap
-change_box      all x scale 0.98648483 y scale 0.98648483 z scale 0.98648483 remap
+change_box      all x scale 0.98514715 y scale ${s} z scale ${s} remap
+change_box      all x scale 0.98514715 y scale 0.98514715 z scale ${s} remap
+change_box      all x scale 0.98514715 y scale 0.98514715 z scale 0.98514715 remap
 Changing box ...
-  orthogonal box = (0.074484122 -0.13140962 -0.15165528) to (30.064429 30.375648 35.055481)
-  orthogonal box = (0.074484122 0.074744418 -0.15165528) to (30.064429 30.169494 35.055481)
-  orthogonal box = (0.074484122 0.074744418 0.086259937) to (30.064429 30.169494 34.817566)
+  orthogonal box = (0.094817404 -0.13140962 -0.15165528) to (30.044096 30.375648 35.055481)
+  orthogonal box = (0.094817404 0.095148759 -0.15165528) to (30.044096 30.14909 35.055481)
+  orthogonal box = (0.094817404 0.095148759 0.10980788) to (30.044096 30.14909 34.794018)
 
 velocity        all set 0.0 0.0 0.0
 
@@ -115,46 +115,46 @@ Neighbor list info ...
       bin: standard
 Per MPI rank memory allocation (min/avg/max) = 9.238 | 9.238 | 9.238 Mbytes
    Step         PotEng         v_epa          Press          Volume         v_dens         c_maxf    
-         0  -16742.543     -7.7511775      112494.23      31346.389      2.2916857      5.6844737    
-        20  -16923.618     -7.8350083      9164.3213      31346.389      2.2916857      1.7096869    
-        40  -16926.627     -7.8364012      7244.8978      31346.389      2.2916857      0.62457818   
-        60  -16927.3       -7.8367129      6879.1478      31346.389      2.2916857      0.14409021   
-        80  -16927.456     -7.8367851      6764.5725      31346.389      2.2916857      0.11821568   
-        82  -16927.461     -7.8367877      6772.5627      31346.389      2.2916857      0.063411222  
-Loop time of 383.015 on 6 procs for 82 steps with 2160 atoms
+         0  -16733.266     -7.7468826      120977.87      31219.044      2.3010336      5.8118117    
+        20  -16922.566     -7.8345211      10637.294      31219.044      2.3010336      1.6208375    
+        40  -16925.988     -7.8361057      9118.1275      31219.044      2.3010336      0.4111504    
+        60  -16926.693     -7.8364321      8656.0163      31219.044      2.3010336      0.22741182   
+        80  -16926.844     -7.8365017      8526.9782      31219.044      2.3010336      0.07815958   
+        83  -16926.851     -7.8365051      8542.3331      31219.044      2.3010336      0.068214156  
+Loop time of 322.42 on 6 procs for 83 steps with 2160 atoms
 
-452.9% CPU use with 1 MPI tasks x 6 OpenMP threads
+463.0% CPU use with 1 MPI tasks x 6 OpenMP threads
 
 Minimization stats:
   Stopping criterion = max force evaluations
   Energy initial, next-to-last, final = 
-     -16742.5434931793  -16927.4588120449  -16927.4614055749
-  Force two-norm initial, final = 96.515231 0.36623805
-  Force max component initial, final = 5.3086963 0.05280358
-  Final line search alpha, max atom move = 0.42613462 0.022501433
-  Iterations, force evaluations = 82 151
+     -16733.2664273212  -16926.8486465754  -16926.8509438693
+  Force two-norm initial, final = 98.267015 0.35286416
+  Force max component initial, final = 5.4183865 0.052719176
+  Final line search alpha, max atom move = 0.49606555 0.026152167
+  Iterations, force evaluations = 83 150
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 382.99     | 382.99     | 382.99     |   0.0 | 99.99
-Neigh   | 0.0062676  | 0.0062676  | 0.0062676  |   0.0 |  0.00
-Comm    | 0.005841   | 0.005841   | 0.005841   |   0.0 |  0.00
-Output  | 0.00079797 | 0.00079797 | 0.00079797 |   0.0 |  0.00
+Pair    | 322.4      | 322.4      | 322.4      |   0.0 | 99.99
+Neigh   | 0.0063522  | 0.0063522  | 0.0063522  |   0.0 |  0.00
+Comm    | 0.0030621  | 0.0030621  | 0.0030621  |   0.0 |  0.00
+Output  | 0.00047953 | 0.00047953 | 0.00047953 |   0.0 |  0.00
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.01122    |            |       |  0.00
+Other   |            | 0.006761   |            |       |  0.00
 
 Nlocal:           2160 ave        2160 max        2160 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           3133 ave        3133 max        3133 min
+Nghost:           3140 ave        3140 max        3140 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 Neighs:              0 ave           0 max           0 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
-FullNghs:       104896 ave      104896 max      104896 min
+FullNghs:       105290 ave      105290 max      105290 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 
-Total # of neighbors = 104896
-Ave neighs/atom = 48.562963
+Total # of neighbors = 105290
+Ave neighs/atom = 48.74537
 Neighbor list builds = 2
 Dangerous builds = 0
 
@@ -165,5 +165,5 @@ variable        ef equal pe/atoms
 variable        Pf equal press
 variable        Ff equal c_maxf
 print           "EVPOINT ${s} ${Vf} ${Df} ${Ef} ${ef} ${Pf} ${Ff}"
-EVPOINT 0.98648483 31346.388780046 2.29168565358545 -16927.4614055749 -7.83678768776618 6772.56266214104 0.0634112217925494
-Total wall time: 0:06:27
+EVPOINT 0.98514715 31219.0438808786 2.30103361695014 -16926.8509438693 -7.83650506660617 8542.33308584048 0.0682141558413759
+Total wall time: 0:05:24
