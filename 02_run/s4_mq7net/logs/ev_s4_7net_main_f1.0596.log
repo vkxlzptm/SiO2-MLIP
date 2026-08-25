@@ -54,7 +54,7 @@ boundary        p p p
 atom_style      charge
 
 read_data       ${dfile}
-read_data       prod_7net_mq.data
+read_data       relaxed_7net.data
 Reading data file ...
   orthogonal box = (-0.13095199 -0.13140962 -0.15165528) to (30.269865 30.375648 35.055481)
   1 by 1 by 1 MPI processor grid
@@ -62,7 +62,7 @@ Reading data file ...
   2160 atoms
   reading velocities ...
   2160 velocities
-  read_data CPU = 0.008 seconds
+  read_data CPU = 0.006 seconds
 mass            1 15.9994
 mass            2 28.0855
 
@@ -99,7 +99,7 @@ thermo_style    custom step pe v_epa press vol v_dens c_maxf
 
 min_style       cg
 min_modify      dmax 0.05
-minimize        0.0 1.0e-3 150 150
+minimize        0.0 1.0e-3 400 400          # 2026-08-25: 150 -> 400.
 Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
 Neighbor list info ...
   update: every = 1 steps, delay = 0 steps, check = yes
@@ -115,47 +115,54 @@ Neighbor list info ...
       bin: standard
 Per MPI rank memory allocation (min/avg/max) = 8.855 | 8.855 | 8.855 Mbytes
    Step         PotEng         v_epa          Press          Volume         v_dens         c_maxf    
-         0  -16806.397     -7.7807392     -67096.845      34598.576      2.0762724      3.9417987    
-        20  -16924.023     -7.8351957     -15991.945      34598.576      2.0762724      0.50470843   
-        40  -16925.653     -7.8359504     -15765.977      34598.576      2.0762724      0.20772946   
-        60  -16925.828     -7.8360313     -15681.689      34598.576      2.0762724      0.046506228  
-        79  -16925.863     -7.8360475     -15631.265      34598.576      2.0762724      0.036081662  
-Loop time of 286.338 on 6 procs for 79 steps with 2160 atoms
+         0  -16891.543     -7.8201589     -66925.517      34598.576      2.0762724      1.1685968    
+        20  -16925.209     -7.8357448     -16669.767      34598.576      2.0762724      0.37455734   
+        40  -16925.717     -7.8359799     -15856.065      34598.576      2.0762724      0.073471608  
+        60  -16925.813     -7.8360247     -15664.455      34598.576      2.0762724      0.050866588  
+        80  -16925.86      -7.8360461     -15589.684      34598.576      2.0762724      0.048791602  
+       100  -16925.877     -7.8360542     -15606.455      34598.576      2.0762724      0.029312544  
+       120  -16925.881     -7.836056      -15630.407      34598.576      2.0762724      0.013591896  
+       140  -16925.882     -7.8360565     -15637.278      34598.576      2.0762724      0.0059308281 
+       152  -16925.882     -7.8360565     -15632.078      34598.576      2.0762724      0.0032297459 
+Loop time of 767.928 on 6 procs for 152 steps with 2160 atoms
 
-484.2% CPU use with 1 MPI tasks x 6 OpenMP threads
+493.9% CPU use with 1 MPI tasks x 6 OpenMP threads
 
 Minimization stats:
-  Stopping criterion = max force evaluations
+  Stopping criterion = linesearch alpha is zero
   Energy initial, next-to-last, final = 
-     -16806.3966615635  -16925.8613157995  -16925.8626876188
-  Force two-norm initial, final = 62.282845 0.25114332
-  Force max component initial, final = 3.3747656 0.027609596
-  Final line search alpha, max atom move = 0.20260729 0.0055939055
-  Iterations, force evaluations = 79 151
+     -16891.5431167197  -16925.8821270339  -16925.8821270339
+  Force two-norm initial, final = 22.803201 0.021661138
+  Force max component initial, final = 1.0720388 0.0027033403
+  Final line search alpha, max atom move = 1.5258789e-05 4.1249699e-08
+  Iterations, force evaluations = 152 408
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 286.32     | 286.32     | 286.32     |   0.0 | 99.99
-Neigh   | 0.0059536  | 0.0059536  | 0.0059536  |   0.0 |  0.00
-Comm    | 0.0030228  | 0.0030228  | 0.0030228  |   0.0 |  0.00
-Output  | 0.00037617 | 0.00037617 | 0.00037617 |   0.0 |  0.00
+Pair    | 767.9      | 767.9      | 767.9      |   0.0 |100.00
+Neigh   | 0.0060981  | 0.0060981  | 0.0060981  |   0.0 |  0.00
+Comm    | 0.0082005  | 0.0082005  | 0.0082005  |   0.0 |  0.00
+Output  | 0.00090034 | 0.00090034 | 0.00090034 |   0.0 |  0.00
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.006787   |            |       |  0.00
+Other   |            | 0.01645    |            |       |  0.00
 
 Nlocal:           2160 ave        2160 max        2160 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
-Nghost:           2987 ave        2987 max        2987 min
+Nghost:           2984 ave        2984 max        2984 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 Neighs:              0 ave           0 max           0 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
-FullNghs:        94080 ave       94080 max       94080 min
+FullNghs:        94100 ave       94100 max       94100 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
 
-Total # of neighbors = 94080
-Ave neighs/atom = 43.555556
+Total # of neighbors = 94100
+Ave neighs/atom = 43.564815
 Neighbor list builds = 2
 Dangerous builds = 0
+#   ev220 도 150 으로 창 끝(f=0.94)에서 cap 에 걸렸다(2-norm 0.395). 이완된 구조에서
+#   출발해도 큰 변형 점은 150 이 모자란다. 보통은 그 전에 "linesearch alpha is zero"
+#   로 조기 종료하므로 실제 추가 비용은 창 끝 몇 점뿐이다.
 
 variable        Vf equal vol
 variable        Df equal density
@@ -164,5 +171,5 @@ variable        ef equal pe/atoms
 variable        Pf equal press
 variable        Ff equal c_maxf
 print           "EVPOINT ${s} ${Vf} ${Df} ${Ef} ${ef} ${Pf} ${Ff}"
-EVPOINT 1.01948455 34598.5762720633 2.0762724134677 -16925.8626876188 -7.83604754056426 -15631.2650157271 0.0360816621084764
-Total wall time: 0:04:48
+EVPOINT 1.01948455 34598.5762720633 2.0762724134677 -16925.8821270339 -7.83605654029347 -15632.0776030434 0.00322974588553231
+Total wall time: 0:12:49
