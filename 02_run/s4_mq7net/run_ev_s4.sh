@@ -34,13 +34,19 @@ cd "$(dirname "$0")"
 ulimit -s 262144
 export OMP_NUM_THREADS=6 MKL_NUM_THREADS=6
 
-exec 9>/tmp/.s4_ev_scan.lock
-flock -n 9 || { echo "이미 실행 중이다. 중복 실행 차단."; exit 1; }
-
-mkdir -p logs ev
-
 DFILE=${1:-prod_7net_mq.data}
 TAG=${2:-7net}
+
+# ★ 2026-08-25 수정: 락을 TAG 별로 건다.
+#   원래는 /tmp/.s4_ev_scan.lock 하나였다. 그래서 NEXT_SESSION_PROMPT "남은 작업 1번"의
+#   두 체인(7net / bksnet2e13)을 동시에 백그라운드로 던졌을 때 **두 번째가 즉시 죽었다**
+#   ("이미 실행 중이다. 중복 실행 차단." 한 줄만 남기고). 7net 쪽만 완주한 원인이다.
+#   같은 TAG 의 중복 실행만 막으면 되므로 락 파일을 TAG 로 분리한다.
+#   (동시에 두 체인을 돌리면 코어 경합이 나니, 순차 실행을 권한다 — 아래 주석 참조.)
+exec 9>"/tmp/.s4_ev_scan_${TAG}.lock"
+flock -n 9 || { echo "TAG=${TAG} 체인이 이미 실행 중이다. 중복 실행 차단."; exit 1; }
+
+mkdir -p logs ev
 # pilot 점 목록. 기본은 S4 자체 형성 망(f0 ~ 1.019)에 맞춰져 있다.
 # **다른 구조를 돌릴 때는 반드시 다시 잡아라** — pilot 이 P=0 을 괄호치지 못하면
 # 격자를 만들지 않고 멈춘다(외삽 방지). 예:
