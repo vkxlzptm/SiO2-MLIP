@@ -23,6 +23,8 @@ venv/
 # --- os / editor ---
 .DS_Store
 .ipynb_checkpoints/
+# MS Office 잠금/임시 파일 (문서를 연 동안 생김. 아래 *~ 는 접미사 물결이라 다른 패턴)
+~$*
 
 # --- keep ---
 !.gitkeep

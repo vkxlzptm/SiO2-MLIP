@@ -213,8 +213,8 @@ ax.legend(h, l, loc="upper right", framealpha=0.94, fontsize=7.6,
           handlelength=1.9, borderpad=0.45, labelspacing=0.45)
 ax.set_title("Who built the network sets the elastic error", fontsize=11)
 fig.tight_layout()
-fig.savefig(FIG / "fig_bulkmod.png", dpi=300)
-print(f"-> {FIG}/fig_bulkmod.png\n")
+fig.savefig(FIG / "fig_bulkmod2.png", dpi=300)
+print(f"-> {FIG}/fig_bulkmod2.png\n")
 
 print(f"{'구조':<24}{'rho0':>9}{'K0':>8}{'K@2.20':>9}{'vs exp':>9}")
 for lab, rate, key, *_ in ROWS:
