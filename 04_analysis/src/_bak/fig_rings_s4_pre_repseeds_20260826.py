@@ -106,61 +106,36 @@ def load_rings(path):
     return out_f, out_c
 
 
-def t_cdf(x, df):
-    """Student t CDF. df=2 는 해석식이 있어 scipy 없이 계산된다."""
-    if df == 2:
-        return 0.5 * (1 + x / np.sqrt(2 + x * x))
-    from scipy import stats                      # 다른 df 가 필요해지면 그때만 scipy
-    return stats.t.cdf(x, df)
-
-
 net_f, net_cnt = load_rings(DAT / "S4_7net_rings.dat")
 
-# ★ 2026-08-26 개정 — **매칭 냉각률 반복 시드가 생겨 표본 설계를 바꿨다.**
-#   이전 판은 "BKS 4-sample rule"(냉각률 3종 + 독립시드 1개)로 산포를 **추정**했다.
-#   그 규칙의 전제는 "S4 BKS 3종이 같은 시드에서 갈라져 서로 독립이 아니다" 였는데,
-#   이제 **같은 냉각률(2e13)·다른 시드 3개**(90210/90211/90212)가 있으므로
-#   실현간 산포를 **직접 잰다**. 냉각률이 섞인 폭으로 대신하지 않는다.
-#   (프로젝트 확정 규칙: "매칭 냉각률 비교가 필수" — 7net 도 2e13 이다.)
-BKS_REP = ["S4_BKS_2e13_rings.dat",        # seed 90210
-           "S4_BKS_2e13_r2_rings.dat",     # seed 90211
-           "S4_BKS_2e13_r3_rings.dat"]     # seed 90212
-# 다른 냉각률 런 — 막대에는 안 넣고 **점으로만** 얹는다(냉각률 무관성을 그림에서 보이기 위해).
-BKS_OTHER = [("S4_BKS_5e12_rings.dat", "5e12"),
-             ("S4_BKS_5e13_rings.dat", "5e13"),
-             ("BKS220_rings.dat",      "5e12*")]
-B = np.array([load_rings(DAT / f)[0] for f in BKS_REP])      # (3, 7) 매칭 냉각률
-b_mean, b_sd = B.mean(0), B.std(0, ddof=1)                   # 실측 실현간 산포
-O = np.array([load_rings(DAT / f)[0] for f, _ in BKS_OTHER]) # (3, 7) 다른 냉각률
+bks_files = ["S4_BKS_2e13_rings.dat", "S4_BKS_5e12_rings.dat",
+             "S4_BKS_5e13_rings.dat", "BKS220_rings.dat"]
+B = np.array([load_rings(DAT / f)[0] for f in bks_files])   # (4, 7)
+b_mean, b_lo, b_hi = B.mean(0), B.min(0), B.max(0)
 
 # ------------------------------------------------------------------ figure
-fig, ax = plt.subplots(figsize=(4.6, 3.3))   # 2026-08-26: 범례 3줄 되며 키움
+fig, ax = plt.subplots(figsize=(3.8, 3.0))
 w = 0.27
 ax.bar(NS - w, b_mean, width=w, color=BKS_COL, alpha=0.85, edgecolor="k", lw=0.7,
-       zorder=2, yerr=b_sd,
+       zorder=2, yerr=[b_mean - b_lo, b_hi - b_mean],
        error_kw=dict(lw=0.9, capsize=2.0, ecolor="0.2"))
-# 다른 냉각률 런을 작은 점으로 — 오차막대(실현간 산포) 안에 들어오는지 눈으로 보인다
-for k in range(O.shape[0]):
-    ax.plot(NS - w, O[k], "o", ms=2.6, mfc="w", mec="0.25", mew=0.7, zorder=4,
-            label="BKS other rates" if k == 0 else None)
 ax.bar(NS, net_f, width=w, color=NET_COL, alpha=0.85, edgecolor="k", lw=0.7, zorder=2)
 ax.bar(NS + w, aimd, width=w, color=AIMD_COL, alpha=0.85, edgecolor="k", lw=0.7, zorder=2)
 
 ax.set_xlabel("Ring size  (number of Si)")
 ax.set_ylabel("Fraction  (distinct rings)")
-ax.set_xticks(NS); ax.set_xlim(2.4, 9.6); ax.set_ylim(0, 0.50)   # 범례 자리
+ax.set_xticks(NS); ax.set_xlim(2.4, 9.6); ax.set_ylim(0, 0.46)
 ax.yaxis.set_minor_locator(AutoMinorLocator(2))
 
-h_bks, = ax.plot([], [], "s", c=BKS_COL, ms=8, mec="k", mew=0.7, label="BKS, matched rate 2e13 (3 seeds)")
+h_bks, = ax.plot([], [], "s", c=BKS_COL, ms=8, mec="k", mew=0.7, label="BKS (4 runs)")
 h_net, = ax.plot([], [], "s", c=NET_COL, ms=8, mec="k", mew=0.7, label=f"{NET_LABEL} (self-quenched)")
 h_aimd, = ax.plot([], [], "s", c=AIMD_COL, ms=8, mec="k", mew=0.7,
                   label="AIMD PBE (Dechant 2026, 120 atoms)")
-h_dot, = ax.plot([], [], "o", ms=3.4, mfc="w", mec="0.25", mew=0.8,
-                 ls="none", label="BKS, other rates (5e12, 5e13)")
-# 오차막대 = 매칭 냉각률 3시드의 **실측** sd. 7net 은 시드 1개라 오차막대 없음(project rule).
-ax.legend(handles=[h_bks, h_dot, h_net, h_aimd], loc="upper left", frameon=False,
-          fontsize=7.4, bbox_to_anchor=(0.005, 1.005), handletextpad=0.4,
-          labelspacing=0.32, borderpad=0.2)
+leg1 = ax.legend(handles=[h_bks, h_net], loc="upper left", frameon=False, fontsize=8.0,
+                  ncols=2, bbox_to_anchor=(0.007, 1.0), columnspacing=0.9, handletextpad=0.4)
+ax.add_artist(leg1)
+ax.legend(handles=[h_aimd], loc="upper left", frameon=False, fontsize=8.0,
+          bbox_to_anchor=(0.007, 0.905), handletextpad=0.4)
 ax.set_title("Ring size distribution  (King criterion)", fontsize=10.5)
 
 fig.tight_layout()
@@ -171,38 +146,28 @@ print(f"-> {FIG}/fig_rings_s4.png")
 # 계수오차(Poisson) + BKS 실현간 산포(5e12 두 실현 차이/sqrt2) 를 합쳐 diff 의 유의성만 표로 남긴다.
 ndist_net = np.maximum(net_cnt / NS, 1e-9)
 sig_net = net_f / np.sqrt(ndist_net)
-Bc = np.array([load_rings(DAT / f)[1] for f in BKS_REP])
-# ★ 2026-08-26: **Poisson 을 따로 더하지 않는다.**
-#   3 시드의 sd 는 실측치이므로 그 안에 이미 계수 요동이 들어 있다.
-#   여기에 Poisson 을 다시 합치면 **이중계산**이 된다(이전 판의 오류).
-#   BKS 쪽 불확도 = 실측 sd 하나면 충분하고, 그게 가장 정직하다.
-#   7net 은 시드가 1 개라 실현간 산포를 잴 방법이 없어 **계수오차만** 넣는다
-#   (그래서 아래 err 는 7net 쪽이 과소평가된 값이다 — 표 주석에 명시).
-sig_b_tot = b_sd
+Bc = np.array([load_rings(DAT / f)[1] for f in bks_files])
+ndist_b = np.maximum(Bc / NS, 1e-9)
+sig_b_count = (B / np.sqrt(ndist_b)).mean(0)
+sig_b_real = np.abs(B[1] - B[3]) / np.sqrt(2)          # 5e12 (S4) vs 5e12* (s0), n=2 보수적 추정
+sig_b_tot = np.sqrt(sig_b_count**2 + sig_b_real**2)
 d_tot = np.sqrt(sig_net**2 + sig_b_tot**2)
 diff = 100 * (net_f - b_mean)
 err = 100 * d_tot
 
 with open(DAT / "S4_rings_summary.dat", "w") as f:
-    hdr = (f"{'n':>3}{'7net%':>9}{'BKSmean%':>10}{'BKSsd%':>9}{'otherLo%':>10}{'otherHi%':>10}"
-           f"{'diff%p':>9}{'err%p':>8}{'sigma':>7}{'p':>8}\n")
-    f.write("# King ring, distinct fraction.\n")
-    f.write("# BKS = **matched quench rate 2e13, 3 independent seeds** (90210/90211/90212).\n")
-    f.write("#   -> BKSsd is the MEASURED run-to-run scatter (not an estimate from mixed rates).\n")
-    f.write("# err = Poisson(7net) (+) measured BKS sd.  NOT double-counted:\n")
-    f.write("#   the 3-seed sd already contains counting noise, so no Poisson is added on the BKS side.\n")
-    f.write("#   7net has 1 seed -> only counting error; its true uncertainty is LARGER than shown.\n")
-    f.write("# p = two-sided t-test, 2 dof, prediction interval sd*sqrt(1+1/3). **Prefer p over sigma**\n")
-    f.write("#   -- with n=3 the sd itself is uncertain, so 'N sigma' reads as overconfident.\n")
-    f.write("# other rates (5e12, 5e13, 5e12*) are plotted as dots, not in the bar. See NOTE 'S4 analysis 19'.\n")
+    hdr = (f"{'n':>3}{'7net%':>9}{'BKSmean%':>10}{'BKSmin%':>9}{'BKSmax%':>9}"
+           f"{'diff%p':>9}{'err%p':>8}{'sigma':>7}\n")
+    f.write("# King ring, distinct fraction. BKS = 4 runs (5e12 x2 seeds, 2e13, 5e13)\n")
+    f.write("# err = Poisson(7net) (+) Poisson(BKS) (+) BKS run-to-run scatter (7net: no own scatter term)\n")
+    f.write("# 참고: 냉각률 스윕(5e12~5e13)에서도 3-ring 순위는 안 뒤집힘 (아래 BKSmin/BKSmax 참고;\n")
+    f.write("#       상세 강건성은 ring_robust_s4.py, NOTE.md 'S4 분석 1' 참고)\n")
     f.write("# " + hdr)
     print("\n" + hdr, end="")
     for i, nn in enumerate(NS):
-        tstat = diff[i] / (100 * b_sd[i] * np.sqrt(1 + 1/3)) if b_sd[i] > 0 else np.nan
-        pval = 2 * (1 - t_cdf(abs(tstat), 2)) if np.isfinite(tstat) else np.nan
         line = (f"{nn:>3d}{100*net_f[i]:>9.2f}{100*b_mean[i]:>10.2f}"
-                f"{100*b_sd[i]:>9.2f}{100*O[:, i].min():>10.2f}{100*O[:, i].max():>10.2f}"
-                f"{diff[i]:>9.2f}{err[i]:>8.2f}{abs(diff[i])/err[i]:>7.1f}{pval:>8.3f}\n")
+                f"{100*b_lo[i]:>9.2f}{100*b_hi[i]:>9.2f}{diff[i]:>9.2f}"
+                f"{err[i]:>8.2f}{abs(diff[i])/err[i]:>7.1f}\n")
         f.write(line); print(line, end="")
     mn = lambda fr: float((NS * fr).sum())
     tail = (f"\n# mean ring size (distinct):  7net {mn(net_f):.3f}   BKS mean {mn(b_mean):.3f}\n")
