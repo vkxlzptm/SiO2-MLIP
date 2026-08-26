@@ -71,11 +71,6 @@ plt.rcParams.update({
 exp = np.loadtxt(ROOT / "04_analysis/dat/zeidler_sq_ambient.dat")
 bks = np.loadtxt(ROOT / "02_run/s0_requench/bks220_sqd.dat")
 net = np.loadtxt(ROOT / "02_run/s3_md/7net220_sqd.dat")
-own = np.loadtxt(ROOT / "02_run/s4_mq7net/s4_7net_sqd.dat")      # S4: 7net 자기 형성 망
-# ※ BKS 2e13 통제런(`s4_bks2e13_sqd.dat`)은 **곡선으로 그리지 않는다.**
-#   기존 BKS(5e12)와 q_FSDP 1.593 vs 1.588 로 사실상 겹쳐 곡선이 하나 더 늘 뿐이다.
-#   그 역할(냉각률이 FSDP 를 안 움직인다는 통제)은 아래 출력표와 RESULTS 본문이 맡는다.
-#   -> 필요하면 이 파일을 SET 에 넣으면 된다: np.loadtxt(.../s4_bks2e13_sqd.dat)
 
 
 FIT_LO, FIT_HI = 1.05, 2.15
@@ -154,23 +149,14 @@ def bandlimit(q, s, qout=None, rmax=15.2, rlim=60.0, nr=6000):
 QMIN_PLOT = float(exp[:, 0].min())
 
 
-# ★ 색 약속 (2026-08-25 개정) — **색이 "포텐셜 + 망"의 조합을 뜻한다**
-#     파랑  = BKS 포텐셜 / BKS 망      (순수 BKS)
-#     보라  = 7net 포텐셜 / BKS 망      (섞인 것: 파랑 + 빨강)
-#     빨강  = 7net 포텐셜 / 7net 자기망 (순수 7net)
-#   두 7net 계열을 같은 빨강 실선으로 그렸더니 구분이 안 됐다. 굵기 차이만으로는
-#   부족하다. 보라는 임의의 색이 아니라 **"7net 이 BKS 가 만든 망을 읽었다"는
-#   혼합 상태 자체**를 나타내므로 범례를 안 봐도 뜻이 통한다.
-#   ⚠ 기존 fig_sq.png 는 7net 이 빨강이었다. 그 그림은 _bak 에 그대로 있다.
 SET = [("Neutron diff. (exp.)", "k", exp[:, 0], exp[:, 1], None, 1.9, None),
        ("BKS", "tab:blue", bks[:, 0], bks[:, 1], bks[:, 2], 1.3, bks[:, 3]),
-       ("7net on BKS-net", "#8E44AD", net[:, 0], net[:, 1], net[:, 2], 1.4, net[:, 3]),
-       ("7net on 7net-net", "tab:red", own[:, 0], own[:, 1], own[:, 2], 2.2, own[:, 3])]
+       ("7net-Nano-4.5", "tab:red", net[:, 0], net[:, 1], net[:, 2], 1.3, net[:, 3])]
 pk = {lab: peak(q, s) for lab, _, q, s, *_ in SET}
 qe = pk[SET[0][0]][0]
 QFIT = np.linspace(FIT_LO, FIT_HI, 400)
 
-fig, ax = plt.subplots(1, 2, figsize=(7.4, 3.3),   # 2026-08-25: 라벨 4줄이 곡선과 겹쳐 키움
+fig, ax = plt.subplots(1, 2, figsize=(7.0, 2.9),
                        gridspec_kw={"width_ratios": [2.1, 1]})
 a, b = ax
 
@@ -239,28 +225,25 @@ a.text(1-0.02, 0.045,"exp.: Zeidler $et\\ al.$, PRL 113, 135501 (2014)", transfo
 
 # ---------- (b) FSDP 확대 ----------
 draw(b, "fit")
-for lab, c, _q, _s, _e, lw, _nq in SET:
+for lab, c, *_ in SET:
     qp, _, sp = pk[lab][:3]
     b.plot([qp], [sp], "o", ms=7, mfc=c, mec="w", mew=1.5, zorder=6)
-    # 두 빨강(BKS망 / 자기망)이 같은 색이므로 세로 점선도 **굵기로** 구분한다
-    b.axvline(qp, ls=":", lw=1.0 if lw < 2 else 1.8, c=c, alpha=0.85, zorder=1)
-b.set_xlim(1.08, 2.08); b.set_ylim(0.80, 2.25)   # 상단 여유 = (b) 라벨 4줄 자리
-b.set_xticks([1.2, 1.6, 2.0])
+    b.axvline(qp, ls=":", lw=1.0, c=c, alpha=0.85, zorder=1)
+b.set_xlim(1.05, 2.15); b.set_ylim(0.80, 2.0)
 b.set_xlabel(r"$q$ ($\rm\AA^{-1}$)")
 b.set_title("FSDP", fontsize=10)
 b.text(0.955, 0.955, "(b)", transform=b.transAxes, fontsize=11.5,
        fontweight="bold", ha="right", va="top")
 
 b.text(0.07, 0.955, r"$q_{\rm FSDP}$ ($\rm\AA^{-1}$)", transform=b.transAxes,
-       fontsize=7.5, ha="left", va="top", color="0.15")#, fontweight="bold")
+       fontsize=7.5, ha="left", va="top", color="0.15")
 for j, (nm, c, lab) in enumerate([("exp.", "k", SET[0][0]),
                                   ("BKS", "tab:blue", "BKS"),
-                                  ("7net/BKS-net", "#8E44AD", "7net on BKS-net"),
-                                  ("7net/own-net", "tab:red", "7net on 7net-net")]):
+                                  ("7net-Nano-4.5", "tab:red", "7net-Nano-4.5")]):
     qp = pk[lab][0]
     # % 는 붙여 쓴다. SI/ISO 31-0 은 띄우라고 하지만 PRL·PRB 등 대부분의 저널 관행은 붙임.
     txt = f"{nm}: {qp:.2f}" + ("" if j == 0 else f" ({100*(qp/qe-1):+.0f}%)")
-    b.text(0.07, 0.955 - 0.082 * (j + 1), txt, transform=b.transAxes,
+    b.text(0.05, 0.955 - 0.082 * (j + 1), txt, transform=b.transAxes,
            fontsize=7.5, ha="left", va="top", color=c,
            fontweight="bold" if j else "normal", zorder=8,
            # 세로 점선이 글자를 가로질러 읽기 나쁘다 → 흰 배경을 깔되 테두리는 없앤다
@@ -276,12 +259,8 @@ for a_ in ax:
 fig.suptitle("Neutron structure factor of a-SiO$_2$ at 300 K", 
              fontsize=11, y=0.995, x=0.5)
 fig.tight_layout(rect=[0, 0, 1, 1.10])
-fig.savefig(FIG / "fig_sq_s4.png", dpi=300)
-print(f"-> {FIG}/fig_sq_s4.png\n")
-# ★ 출력 파일명이 fig_sq.png -> fig_sq_s4.png 로 바뀌었다 (2026-08-25).
-#   기존 fig_sq.png(3계열, 06_ppt 인용 중)는 **그대로 둔다**. 다시 만들려면
-#   _bak/fig_sq_pre_s4_20260825.py 를 돌린다. 그림 원본도
-#   fig/_bak/fig_sq_pre_s4_20260825.png 에 보관.
+fig.savefig(FIG / "fig_sq.png", dpi=300)
+print(f"-> {FIG}/fig_sq.png\n")
 
 print(f"{'':28s}{'q_FSDP':>9s}{'±':>7s}{'vs exp':>9s}{'S_peak':>9s}{'vs exp':>9s}")
 se = pk[SET[0][0]][2]

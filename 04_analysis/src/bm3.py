@@ -9,7 +9,10 @@ BM3 는 파라미터 3~4개짜리 매끄러운 모형이라 **가우스-뉴턴(�
 ★ 검증: 이 구현이 scipy curve_fit 과 같은 답을 주는지 아래 두 데이터로 대조했다
   (2026-08-24, 유효숫자 4자리까지 일치).
       s2_relax/ev220_scan.txt        -> rho0 2.2185, K0 43.23, K0' -2.02
-      s4_mq7net/ev/ev_s4_7net_scan.txt -> rho0 2.1595, K0 39.28, K0' -1.36
+      s4_mq7net/ev/ev_s4_7net_scan.txt -> rho0 2.1594, K0 39.10, K0' -1.60
+  ※ 2026-08-25: 아래 s4 참조값을 39.28/-1.36 -> 39.10/-1.60 으로 갱신했다.
+    스캔 자체가 바뀌었기 때문이다(미수렴 2점을 cap 1200 으로 재실행, 분석 15).
+    코드가 바뀐 게 아니다.
   `python3 bm3.py` 로 이 대조를 다시 돌릴 수 있다.
 
 단위: V [A^3], P [GPa], E [eV], K0 [GPa].
@@ -84,7 +87,7 @@ if __name__ == "__main__":
     from pathlib import Path
     ROOT = Path(__file__).resolve().parents[2]
     ref = {"ev220_scan.txt": (2.2185, 43.23, -2.02),
-           "ev_s4_7net_scan.txt": (2.1595, 39.28, -1.36)}
+           "ev_s4_7net_scan.txt": (2.1594, 39.10, -1.60)}
     for fn in [ROOT / "02_run/s2_relax/ev220_scan.txt",
                ROOT / "02_run/s4_mq7net/ev/ev_s4_7net_scan.txt",
                ROOT / "02_run/s2_relax/ev_bks_scan_tail.txt"]:
